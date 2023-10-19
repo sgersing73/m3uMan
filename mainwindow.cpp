@@ -660,7 +660,7 @@ void MainWindow::SaveM3u()
     const QDateTime now = QDateTime::currentDateTime();
     const QString timestamp = now.toString(QLatin1String("yyyyMMddhhmmss"));
 
-    const QString filename = QString::fromLatin1("iptv-%1.m3u").arg(timestamp);
+    const QString filename = m_AppDataPath + "/" + QString::fromLatin1("/iptv-%1.m3u").arg(timestamp);
 
     QFile newDoc(filename);
 
