@@ -13,6 +13,9 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = m3uMan
 TEMPLATE = app
 
+LIBS       += -LC:/Users/sgersing/VLC-Qt_1.1.0_win32_msvc2015/lib -lVLCQtCore -lVLCQtWidgets
+INCLUDEPATH += C:/Users/sgersing/VLC-Qt_1.1.0_win32_msvc2015/include
+
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which has been marked as deprecated (the exact warnings
 # depend on your compiler). Please consult the documentation of the

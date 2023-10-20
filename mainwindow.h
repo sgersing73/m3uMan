@@ -32,6 +32,13 @@ namespace Ui {
 class MainWindow;
 }
 
+class VlcInstance;
+class VlcMedia;
+class VlcMediaPlayer;
+
+class EqualizerDialog;
+
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -97,6 +104,7 @@ private slots:
 
 private:
     QString         curFile;
+    QDir            dir;
     DbManager       db;
     bool            somethingchanged;
     FileDownloader  *m_pImgCtrl;
@@ -105,6 +113,13 @@ private:
     QStandardPaths  *path;
     QString         m_AppDataPath;
     QString         m_SettingsFile;
+
+    VlcInstance *_instance;
+    VlcMedia *_media;
+    VlcMediaPlayer *_player;
+
+    EqualizerDialog *_equalizerDialog;
+
 };
 
 #endif // MAINWINDOW_H

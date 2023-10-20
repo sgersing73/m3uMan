@@ -1,13 +1,34 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include <VLCQtCore/Common.h>
+#include <VLCQtCore/Instance.h>
+#include <VLCQtCore/Media.h>
+#include <VLCQtCore/MediaPlayer.h>
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-    QDir dir;
-
     ui->setupUi(this);
+
+    _instance = new VlcInstance(VlcCommon::args(), this);
+    _player = new VlcMediaPlayer(_instance);
+    _player->setVideoWidget(ui->widVideo);
+   // _equalizerDialog->setMediaPlayer(_player);
+
+    ui->widVideo->setMediaPlayer(_player);
+
+
+    //connect(ui->actionOpenLocal, &QAction::triggered, this, &SimplePlayer::openLocal);
+    //connect(ui->actionOpenUrl, &QAction::triggered, this, &SimplePlayer::openUrl);
+    connect(ui->actionPause, &QAction::toggled, _player, &VlcMediaPlayer::togglePause);
+    connect(ui->actionStop, &QAction::triggered, _player, &VlcMediaPlayer::stop);
+    //connect(ui->openLocal, &QPushButton::clicked, this, &SimplePlayer::openLocal);
+    //connect(ui->openUrl, &QPushButton::clicked, this, &SimplePlayer::openUrl);
+    //connect(ui->pause, &QPushButton::toggled, ui->actionPause, &QAction::toggle);
+    //connect(ui->stop, &QPushButton::clicked, _player, &VlcMediaPlayer::stop);
+    //connect(ui->equalizer, &QPushButton::clicked, _equalizerDialog, &EqualizerDialog::show);
 
     m_AppDataPath = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
     dir.mkpath(m_AppDataPath);
@@ -66,6 +87,10 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 MainWindow::~MainWindow()
 {
+    delete _player;
+    delete _media;
+    delete _instance;
+
     delete ui;
 }
 
@@ -779,6 +804,7 @@ void MainWindow::loadImage()
 
 void MainWindow::on_cmdPlayStream_clicked()
 {
+    /*
     QString program = "vlc";
     QStringList arguments;
 
@@ -786,6 +812,14 @@ void MainWindow::on_cmdPlayStream_clicked()
 
     m_Process->setProcessChannelMode(QProcess::MergedChannels);
     m_Process->start(program, arguments);
+    */
+
+    if (ui->edtStationUrl->text().isEmpty())
+        return;
+
+    _media = new VlcMedia(ui->edtStationUrl->text(), _instance);
+
+    _player->open(_media);
 }
 
 void MainWindow::on_edtStationUrl_textChanged(const QString &arg1)
