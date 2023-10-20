@@ -93,6 +93,8 @@ private slots:
 
     void on_cmdPlayStream_clicked();
 
+    void on_edtStationUrl_textChanged(const QString &arg1);
+
 private:
     QString         curFile;
     DbManager       db;

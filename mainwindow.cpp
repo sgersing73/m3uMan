@@ -260,6 +260,7 @@ void MainWindow::getFileData(const QString &filename)
         db.removeObsoleteEXTINFs();
     }
 
+    fillComboGroupTitels();
     fillTreeWidget();
 }
 
@@ -294,10 +295,8 @@ QStringList MainWindow::splitCommandLine(const QString & cmdLine)
 
 QTreeWidgetItem* MainWindow::addTreeRoot(const QString& name, const QString& description, const QString& id)
 {
-    // QTreeWidgetItem(QTreeWidget * parent, int type = Type)
     QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui->treeWidget);
 
-    // QTreeWidgetItem::setText(int column, const QString & text)
     treeItem->setText(0, name);
     treeItem->setText(1, description);
     treeItem->setText(2, id);
@@ -317,7 +316,7 @@ void MainWindow::addTreeChild(QTreeWidgetItem *parent, const QString& name, cons
     }
     treeItem->setText(2, id);
 
-    treeItem->setStatusTip(0, tr("double click to remove the station to the playlist"));
+    treeItem->setStatusTip(0, tr("double click to add the station to the selected playlist"));
 
     if ( used.toInt() > 0 ) {
         treeItem->setBackgroundColor(0, QColor("#4CAF50") );
@@ -506,6 +505,7 @@ void MainWindow::fillTwPls_Item()
     QString id;
     QString extinf_id;
     QString tvg_name;
+    bool    added = false;
 
     int pls_id = ui->cboPlaylists->itemData(ui->cboPlaylists->currentIndex()).toString().toInt();
 
@@ -529,9 +529,17 @@ void MainWindow::fillTwPls_Item()
         treeItem->setData(0, 1, id);
         treeItem->setData(1, 1, extinf_id);
         treeItem->setStatusTip(0, tr("double click to remove the station"));
+
+        added = true;
     }
 
     delete select;
+
+    ui->cmdMoveUp->setEnabled( added );
+    ui->cmdMoveDown->setEnabled( added );
+    ui->cmdMakePlaylist->setEnabled( added );
+    ui->edtStationUrl->setText("");
+
 }
 
 void MainWindow::on_cboPlaylists_currentTextChanged(const QString &arg1)
@@ -778,4 +786,10 @@ void MainWindow::on_cmdPlayStream_clicked()
 
     m_Process->setProcessChannelMode(QProcess::MergedChannels);
     m_Process->start(program, arguments);
+}
+
+void MainWindow::on_edtStationUrl_textChanged(const QString &arg1)
+{
+     ui->cmdGatherData->setEnabled(arg1.trimmed().length() > 0);
+     ui->cmdPlayStream->setEnabled(arg1.trimmed().length() > 0);
 }
