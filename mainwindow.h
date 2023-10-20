@@ -22,6 +22,7 @@
 #include <QProcess>
 #include <QFlags>
 #include <QStandardPaths>
+#include <QDir>
 
 #include "dbmanager.h"
 #include "filedownloader.h"
@@ -101,6 +102,7 @@ private:
     QString         m_OutputString;
     QStandardPaths  *path;
     QString         m_AppDataPath;
+    QString         m_SettingsFile;
 };
 
 #endif // MAINWINDOW_H

@@ -5,11 +5,16 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+    QDir dir;
+
     ui->setupUi(this);
 
     m_AppDataPath = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
+    dir.mkpath(m_AppDataPath);
 
-    QSettings settings("Freeware", "m3uMan");
+    m_SettingsFile = m_AppDataPath + "/settings.ini";
+
+    QSettings settings(m_SettingsFile, QSettings::IniFormat);
     restoreGeometry(settings.value("geometry").toByteArray());
     restoreState(settings.value("windowState").toByteArray());
     ui->splitter->restoreState(settings.value("splitter").toByteArray());
@@ -39,18 +44,16 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(m_Process, SIGNAL(finished(int)), this, SLOT(processFinished()));
 
     somethingchanged = false;
-
-    qDebug() << QDir::homePath();
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    QSettings settings("Freeware", "m3uMan");
+    qDebug() << m_SettingsFile;
+    QSettings settings(m_SettingsFile, QSettings::IniFormat);
     settings.setValue("geometry", saveGeometry());
     settings.setValue("windowState", saveState());
     settings.setValue("splitter",ui->splitter->saveState());
     settings.setValue("iptvurl", ui->edtUrl->text());
-
     settings.sync(); // forces to write the settings to storage
 
     if (maybeSave()) {
@@ -90,6 +93,7 @@ void MainWindow::createActions() {
      exitAct->setShortcuts(QKeySequence::Quit);
      exitAct->setStatusTip(tr("Exit the application"));
      fileToolBar->addAction(exitAct);
+     fileToolBar->setObjectName("toolbarFile");
 
      QMenu *helpMenu = menuBar()->addMenu(tr("&Help"));
 
