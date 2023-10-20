@@ -1,13 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>images/copy.png</file>
-        <file>images/cut.png</file>
-        <file>images/new.png</file>
-        <file>images/open.png</file>
-        <file>images/paste.png</file>
-        <file>images/save.png</file>
-        <file>images/state-download.png</file>
-        <file>images/iptv-2-32.png</file>
         <file>images/application.png</file>
     </qresource>
 </RCC>

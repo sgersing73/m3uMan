@@ -403,10 +403,10 @@ void MainWindow::fillComboPlaylists()
         ui->cboPlaylists->addItem(title, id);
     }
 
-    ui->cmdDeletePlaylist->setEnabled( ui->cboPlaylists->count() != 0 );
-    ui->cmdRenamePlaylist->setEnabled( ui->cboPlaylists->count() != 0 );
-
     delete select;
+
+    ui->cmdDeletePlaylist->setEnabled( ui->cboPlaylists->count() != 0 );
+    ui->cmdRenamePlaylist->setEnabled( ui->cboPlaylists->count() != 0 );   
 }
 
 
