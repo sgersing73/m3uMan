@@ -1,11 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include <VLCQtCore/Common.h>
-#include <VLCQtCore/Instance.h>
-#include <VLCQtCore/Media.h>
-#include <VLCQtCore/MediaPlayer.h>
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -14,21 +9,18 @@ MainWindow::MainWindow(QWidget *parent) :
 
     _instance = new VlcInstance(VlcCommon::args(), this);
     _player = new VlcMediaPlayer(_instance);
+    _equalizerDialog = new EqualizerDialog(this);
+
     _player->setVideoWidget(ui->widVideo);
-   // _equalizerDialog->setMediaPlayer(_player);
+    _equalizerDialog->setMediaPlayer(_player);
 
     ui->widVideo->setMediaPlayer(_player);
 
-
-    //connect(ui->actionOpenLocal, &QAction::triggered, this, &SimplePlayer::openLocal);
-    //connect(ui->actionOpenUrl, &QAction::triggered, this, &SimplePlayer::openUrl);
     connect(ui->actionPause, &QAction::toggled, _player, &VlcMediaPlayer::togglePause);
     connect(ui->actionStop, &QAction::triggered, _player, &VlcMediaPlayer::stop);
-    //connect(ui->openLocal, &QPushButton::clicked, this, &SimplePlayer::openLocal);
-    //connect(ui->openUrl, &QPushButton::clicked, this, &SimplePlayer::openUrl);
-    //connect(ui->pause, &QPushButton::toggled, ui->actionPause, &QAction::toggle);
-    //connect(ui->stop, &QPushButton::clicked, _player, &VlcMediaPlayer::stop);
-    //connect(ui->equalizer, &QPushButton::clicked, _equalizerDialog, &EqualizerDialog::show);
+    connect(ui->cmdPause, &QPushButton::clicked, _player, &VlcMediaPlayer::togglePause);
+    connect(ui->cmdStop, &QPushButton::clicked, _player, &VlcMediaPlayer::stop);
+    connect(ui->actionEqualizer, &QAction::triggered, _equalizerDialog, &EqualizerDialog::show);
 
     m_AppDataPath = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
     dir.mkpath(m_AppDataPath);
@@ -40,6 +32,8 @@ MainWindow::MainWindow(QWidget *parent) :
     restoreState(settings.value("windowState").toByteArray());
     ui->splitter->restoreState(settings.value("splitter").toByteArray());
     ui->edtUrl->setText(settings.value("iptvurl").toByteArray());
+
+    ui->treeWidget->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
     createActions();
     createStatusBar();
@@ -337,14 +331,14 @@ void MainWindow::addTreeChild(QTreeWidgetItem *parent, const QString& name, cons
     treeItem->setText(1, description);
 
     if ( state.toInt() == 0 ) {
-         treeItem->setBackgroundColor(2, QColor("#FFCCCB") );
+         treeItem->setBackground(2, QColor("#FFCCCB") );
     }
     treeItem->setText(2, id);
 
     treeItem->setStatusTip(0, tr("double click to add the station to the selected playlist"));
 
     if ( used.toInt() > 0 ) {
-        treeItem->setBackgroundColor(0, QColor("#4CAF50") );
+        treeItem->setBackground(0, QColor("#4CAF50") );
     }
 
     parent->addChild(treeItem);

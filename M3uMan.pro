@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QMAKE_CXXFLAGS_WARN_OFF -= -Wunused-parameter
+QMAKE_CXXFLAGS = -Wno-unused-parameter
 
 QT       += sql core gui network
 
@@ -13,8 +13,9 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = m3uMan
 TEMPLATE = app
 
-LIBS       += -LC:/Users/sgersing/VLC-Qt_1.1.0_win32_msvc2015/lib -lVLCQtCore -lVLCQtWidgets
-INCLUDEPATH += C:/Users/sgersing/VLC-Qt_1.1.0_win32_msvc2015/include
+#LIBS       += -LC:/Users/sgersing/VLC-Qt_1.1.0_win32_msvc2015/lib -lVLCQtCore -lVLCQtWidgets
+#INCLUDEPATH += C:/Users/sgersing/VLC-Qt_1.1.0_win32_msvc2015/include
+LIBS       += -lVLCQtCore -lVLCQtWidgets
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which has been marked as deprecated (the exact warnings
@@ -30,6 +31,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
+        EqualizerDialog.cpp \
         main.cpp \
         mainwindow.cpp \
         dbmanager.cpp \
@@ -37,12 +39,14 @@ SOURCES += \
         gatherdata.cpp
 
 HEADERS += \
+        EqualizerDialog.h \
         mainwindow.h \
         dbmanager.h \
         filedownloader.h \
         gatherdata.h
 
 FORMS += \
+        EqualizerDialog.ui \
         mainwindow.ui
 
 # Default rules for deployment.

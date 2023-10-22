@@ -24,19 +24,26 @@
 #include <QStandardPaths>
 #include <QDir>
 
+#include <VLCQtCore/Common.h>
+#include <VLCQtCore/Instance.h>
+#include <VLCQtCore/Media.h>
+#include <VLCQtCore/MediaPlayer.h>
+
 #include "dbmanager.h"
 #include "filedownloader.h"
 #include "gatherdata.h"
+
+#include "EqualizerDialog.h"
 
 namespace Ui {
 class MainWindow;
 }
 
-class VlcInstance;
-class VlcMedia;
-class VlcMediaPlayer;
+//class VlcInstance;
+//class VlcMedia;
+//class VlcMediaPlayer;
 
-class EqualizerDialog;
+//class EqualizerDialog;
 
 
 class MainWindow : public QMainWindow
@@ -114,9 +121,9 @@ private:
     QString         m_AppDataPath;
     QString         m_SettingsFile;
 
-    VlcInstance *_instance;
-    VlcMedia *_media;
-    VlcMediaPlayer *_player;
+    VlcInstance     *_instance;
+    VlcMedia        *_media;
+    VlcMediaPlayer  *_player;
 
     EqualizerDialog *_equalizerDialog;
 

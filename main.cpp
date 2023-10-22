@@ -8,8 +8,6 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationName("Freeware");
     QCoreApplication::setApplicationName("m3uMan");
 
-    a.setWindowIcon(QIcon(":/images/application.png"));
-
     MainWindow w;
     w.show();
 
