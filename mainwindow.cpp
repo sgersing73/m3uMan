@@ -151,7 +151,7 @@ bool MainWindow::maybeSave()
 void MainWindow::on_edtLoad_clicked() {
 
     QString fileName = QFileDialog::getOpenFileName(this, ("Open m3u File"),
-                                                     QDir::homePath(),
+                                                     m_AppDataPath,
                                                      ("m3u Listen (*.m3u)"));
 
     if ( !fileName.isNull() ) {
@@ -165,6 +165,8 @@ void MainWindow::getFileData(const QString &filename)
     int counter = 0;
     int linecount = 0;
     bool ende = false;
+    int obsolete = 0;
+    int newfiles = 0;
 
     QString tags;
     QString station;
@@ -251,6 +253,7 @@ void MainWindow::getFileData(const QString &filename)
                     db.updateEXTINF_state_byRef( query->value(0).toByteArray().toInt(), 1 );
                 } else {
                     db.addEXTINF(tvg_name, tvg_id, group_title, tvg_logo, url);
+                    newfiles++;
                 }
 
                 query->clear();
@@ -271,12 +274,30 @@ void MainWindow::getFileData(const QString &filename)
 
     file.close();
 
-    QMessageBox::StandardButton reply;
-    reply = QMessageBox::question(this, "m3uMan", "Remove all obsolete stations?",
-                                  QMessageBox::Yes|QMessageBox::No);
-    if (reply == QMessageBox::Yes) {
+    QSqlQuery *test;
 
-        db.removeObsoleteEXTINFs();
+    test = db.countEXTINF_byState();
+    while ( test->next() ) {
+
+        qDebug() << "obsolete" << test->value(0).toByteArray().constData() << test->value(1).toByteArray().constData();
+
+        if( test->value(0).toByteArray().toInt() == 0 ) {
+            obsolete = test->value(1).toByteArray().toInt();
+        }
+    }
+
+    if ( obsolete > 0 ) {
+        QMessageBox::StandardButton reply;
+        reply = QMessageBox::question(this, "m3uMan", QString("Remove %1 obsolete stations?").arg(obsolete),
+                                      QMessageBox::Yes|QMessageBox::No);
+        if (reply == QMessageBox::Yes) {
+
+            db.removeObsoleteEXTINFs();
+        }
+    }
+
+    if ( newfiles > 0 ) {
+        QMessageBox::information(this, "m3uMan", QString("%1 new stations added!").arg(newfiles), QMessageBox::Ok);
     }
 
     fillComboGroupTitels();
@@ -524,7 +545,11 @@ void MainWindow::fillTwPls_Item()
     QString id;
     QString extinf_id;
     QString tvg_name;
+    QString logo;
+    QString url;
     bool    added = false;
+    QFile   file;
+    QPixmap buttonImage;
 
     int pls_id = ui->cboPlaylists->itemData(ui->cboPlaylists->currentIndex()).toString().toInt();
 
@@ -535,12 +560,17 @@ void MainWindow::fillTwPls_Item()
     ui->twPLS_Items->setColumnCount(1);
     ui->twPLS_Items->setHeaderLabels(QStringList() << "Stations");
 
+    ui->lvStations->clear();
+    ui->lvStations->setFlow(QListView::Flow::LeftToRight);
+
     select = db.selectPLS_Items(pls_id);
     while ( select->next() ) {
 
         id = select->value(0).toByteArray().constData();
         extinf_id = select->value(2).toByteArray().constData();
+        logo = select->value(8).toByteArray().constData();
         tvg_name = select->value(5).toByteArray().constData();
+        url = select->value(9).toByteArray().constData();
 
         QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui->twPLS_Items);
 
@@ -548,6 +578,21 @@ void MainWindow::fillTwPls_Item()
         treeItem->setData(0, 1, id);
         treeItem->setData(1, 1, extinf_id);
         treeItem->setStatusTip(0, tr("double click to remove the station"));
+
+        file.setFileName(m_AppDataPath + "/logos/" + QUrl(logo).fileName());
+        if ( file.exists() ) {
+
+            file.open(QIODevice::ReadOnly);
+
+            buttonImage.loadFromData(file.readAll());
+            QListWidgetItem* item = new QListWidgetItem(buttonImage, "");
+
+            item->setData(4, url);
+            item->setData(Qt::DecorationRole, buttonImage.scaled(50,50,Qt::KeepAspectRatio, Qt::SmoothTransformation));
+            ui->lvStations->addItem(item);
+
+            file.close();
+        }
 
         added = true;
     }
@@ -790,34 +835,85 @@ void MainWindow::processFinished()
 
 void MainWindow::loadImage()
 {
-    QPixmap buttonImage;
-    buttonImage.loadFromData(m_pImgCtrl->downloadedData());
 
-    ui->lblLogo->setPixmap(buttonImage);
+    QPixmap buttonImage;
+    dir.mkpath(m_AppDataPath + "/logos/");
+
+    QString filename = m_AppDataPath + "/logos/" + m_pImgCtrl->filename();
+
+    QFile file(filename);
+
+    if ( ( ! file.exists() ) or ( file.size() == 0 ) ) {
+        file.open(QIODevice::WriteOnly);
+        file.write(m_pImgCtrl->downloadedData());
+        file.close();
+    }
+
+    if ( file.exists() ) {
+
+        file.open(QIODevice::ReadOnly);
+        buttonImage.loadFromData(file.readAll());
+
+        ui->lblLogo->setPixmap(buttonImage);
+    } else {
+        ui->lblLogo->setText("no data!");
+    }
 }
 
 void MainWindow::on_cmdPlayStream_clicked()
 {
-    /*
-    QString program = "vlc";
-    QStringList arguments;
+    if ( ui->chkExtern->isChecked() ) {
 
-    arguments << ui->edtStationUrl->text();
+        QString program = "vlc";
+        QStringList arguments;
 
-    m_Process->setProcessChannelMode(QProcess::MergedChannels);
-    m_Process->start(program, arguments);
-    */
+        arguments << ui->edtStationUrl->text();
 
-    if (ui->edtStationUrl->text().isEmpty())
-        return;
+        m_Process->setProcessChannelMode(QProcess::MergedChannels);
+        m_Process->start(program, arguments);
 
-    _media = new VlcMedia(ui->edtStationUrl->text(), _instance);
+    } else {
 
-    _player->open(_media);
+        if (ui->edtStationUrl->text().isEmpty())
+            return;
+
+        _media = new VlcMedia(ui->edtStationUrl->text(), _instance);
+
+        _player->open(_media);
+    }
 }
 
 void MainWindow::on_edtStationUrl_textChanged(const QString &arg1)
 {
      ui->cmdGatherData->setEnabled(arg1.trimmed().length() > 0);
      ui->cmdPlayStream->setEnabled(arg1.trimmed().length() > 0);
+}
+
+
+void MainWindow::on_lvStations_itemClicked(QListWidgetItem *item)
+{
+    QVariant url =  item->data(4);
+
+    if ( ! url.toString().isEmpty() ) {
+
+        _media = new VlcMedia(url.toString(), _instance);
+
+        _player->open(_media);
+    }
+}
+
+void MainWindow::on_cmdSavePosition_clicked()
+{
+    QTreeWidgetItem *item;
+
+    for (int i = 0; i < ui->twPLS_Items->topLevelItemCount(); i++) {
+
+        item = ui->twPLS_Items->topLevelItem(i);
+
+        db.updatePLS_item_pls_pos(item->data(0, 1).toInt() , i );
+    }
+
+    fillTwPls_Item();
+
+    statusBar()->showMessage("positions set...", 2000);
 }

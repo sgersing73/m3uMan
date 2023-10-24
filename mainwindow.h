@@ -23,6 +23,7 @@
 #include <QFlags>
 #include <QStandardPaths>
 #include <QDir>
+#include <QListWidgetItem>
 
 #include <VLCQtCore/Common.h>
 #include <VLCQtCore/Instance.h>
@@ -39,20 +40,13 @@ namespace Ui {
 class MainWindow;
 }
 
-//class VlcInstance;
-//class VlcMedia;
-//class VlcMediaPlayer;
-
-//class EqualizerDialog;
-
-
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
     explicit MainWindow(QWidget *parent = nullptr);
-    ~MainWindow();
+    ~MainWindow() override;
 
 protected:
     void closeEvent(QCloseEvent *event) override;
@@ -78,11 +72,10 @@ private:
 
     QTreeWidgetItem* addTreeRoot(const QString &, const QString &, const QString &);
     void addTreeChild(QTreeWidgetItem *parent, const QString &, const QString &, const QString &, const QString &, const QString &);
-
-public slots:
-    void on_edtLoad_clicked();
+    void get_media_sub_items( const libvlc_media_t& media );
 
 private slots:
+    void on_edtLoad_clicked();
     void on_cmdNewPlaylist_clicked();
     void on_cmdDeletePlaylist_clicked();
     void on_cmdRenamePlaylist_clicked();
@@ -97,6 +90,9 @@ private slots:
     void on_edtDownload_clicked();
     void on_cmdGatherData_clicked();
     void on_twPLS_Items_itemSelectionChanged();
+    void on_cmdPlayStream_clicked();
+    void on_edtStationUrl_textChanged(const QString &arg1);
+    void on_lvStations_itemClicked(QListWidgetItem *item);
 
     void readyReadStandardOutput();
     void processStarted();
@@ -105,9 +101,7 @@ private slots:
     void SaveM3u();
     void loadImage();
 
-    void on_cmdPlayStream_clicked();
-
-    void on_edtStationUrl_textChanged(const QString &arg1);
+    void on_cmdSavePosition_clicked();
 
 private:
     QString         curFile;

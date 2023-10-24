@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>788</width>
-    <height>520</height>
+    <height>548</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -123,6 +123,16 @@
          </widget>
         </item>
         <item>
+         <widget class="QListWidget" name="lvStations">
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>58</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
          <layout class="QHBoxLayout" name="horizontalLayout_5">
           <item>
            <widget class="QPushButton" name="cmdStop">
@@ -231,6 +241,13 @@
               </property>
              </widget>
             </item>
+            <item>
+             <widget class="QPushButton" name="cmdSavePosition">
+              <property name="text">
+               <string>snap</string>
+              </property>
+             </widget>
+            </item>
            </layout>
           </item>
          </layout>
@@ -257,6 +274,13 @@
             </property>
             <property name="text">
              <string>play</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="chkExtern">
+            <property name="text">
+             <string>play extern</string>
             </property>
            </widget>
           </item>
@@ -288,7 +312,7 @@
      <x>0</x>
      <y>0</y>
      <width>788</width>
-     <height>30</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuVideo">

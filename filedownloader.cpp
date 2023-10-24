@@ -6,6 +6,8 @@ FileDownloader::FileDownloader(QUrl imageUrl, QObject *parent) : QObject(parent)
 
     QNetworkRequest request(imageUrl);
     m_WebCtrl.get(request);
+
+    m_sFilename = imageUrl.fileName();
 }
 
 FileDownloader::~FileDownloader() {
@@ -24,4 +26,9 @@ void FileDownloader::fileDownloaded(QNetworkReply* pReply) {
 QByteArray FileDownloader::downloadedData() const {
 
     return m_DownloadedData;
+}
+
+QString FileDownloader::filename() const {
+
+    return m_sFilename ;
 }

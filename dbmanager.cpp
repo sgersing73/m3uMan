@@ -195,6 +195,19 @@ QSqlQuery* DbManager::selectEXTINF_byRef(int id)
     return select;
 }
 
+QSqlQuery* DbManager::countEXTINF_byState()
+{
+    QSqlQuery *select = new QSqlQuery();
+
+    select->prepare("SELECT state, count(*) FROM extinf group by state");
+
+    if ( ! select->exec() ) {
+         qDebug() << "countEXTINF_byState"  << select->lastError();
+    }
+
+    return select;
+}
+
 bool DbManager::updateEXTINF_state_byRef(int id, int state)
 {
     int retCode = true;
@@ -274,6 +287,24 @@ bool DbManager::updatePLS(int id, const QString & pls_name )
         success = true;
     } else {
         qDebug() << "updatePLS" << query.lastError();
+    }
+
+    return success;
+}
+
+bool DbManager::updatePLS_item_pls_pos(int id, int pls_pos )
+{
+    bool success = false;
+
+    QSqlQuery query;
+    query.prepare("UPDATE pls_item SET pls_pos = :pls_pos WHERE id = :id");
+    query.bindValue(":pls_pos", pls_pos);
+    query.bindValue(":id", id);
+
+    if ( query.exec() ) {
+        success = true;
+    } else {
+        qDebug() << "updatePLS_pls_pos" << query.lastError();
     }
 
     return success;

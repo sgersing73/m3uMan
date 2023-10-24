@@ -23,8 +23,10 @@ public:
     QSqlQuery* selectEXTINF(const QString&, const QString&);
     QSqlQuery* selectEXTINF_group_titles();
     QSqlQuery* selectEXTINF_byUrl(const QString&);
+    QSqlQuery* countEXTINF_byState();
 
     bool updatePLS(int, const QString &);
+    bool updatePLS_item_pls_pos(int, int);
     bool insertPLS(const QString &);
     bool removePLS(int);
     QSqlQuery* selectPLS();
