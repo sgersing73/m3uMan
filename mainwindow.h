@@ -71,7 +71,7 @@ private:
     QStringList splitCommandLine(const QString &);
 
     QTreeWidgetItem* addTreeRoot(const QString &, const QString &, const QString &);
-    void addTreeChild(QTreeWidgetItem *parent, const QString &, const QString &, const QString &, const QString &, const QString &);
+    void addTreeChild(QTreeWidgetItem *parent, const QString &, const QString &, const QString &, const QString &, const QString &, const QString &);
     void get_media_sub_items( const libvlc_media_t& media );
 
 private slots:
@@ -102,6 +102,8 @@ private slots:
     void loadImage();
 
     void on_cmdSavePosition_clicked();
+
+    void on_treeWidget_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
 
 private:
     QString         curFile;

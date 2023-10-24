@@ -344,7 +344,7 @@ QTreeWidgetItem* MainWindow::addTreeRoot(const QString& name, const QString& des
     return treeItem;
 }
 
-void MainWindow::addTreeChild(QTreeWidgetItem *parent, const QString& name, const QString& description, const QString& id, const QString& used, const QString& state)
+void MainWindow::addTreeChild(QTreeWidgetItem *parent, const QString& name, const QString& description, const QString& id, const QString& used, const QString& state, const QString& url)
 {
     QTreeWidgetItem *treeItem = new QTreeWidgetItem();
 
@@ -355,6 +355,7 @@ void MainWindow::addTreeChild(QTreeWidgetItem *parent, const QString& name, cons
          treeItem->setBackground(2, QColor("#FFCCCB") );
     }
     treeItem->setText(2, id);
+    treeItem->setData(Qt::UserRole, 0, url);
 
     treeItem->setStatusTip(0, tr("double click to add the station to the selected playlist"));
 
@@ -374,6 +375,7 @@ void MainWindow::fillTreeWidget()
     QString tvg_id;
     QString used;
     QString state;
+    QString url;
 
     // Add root nodes
     QTreeWidgetItem *item = nullptr;
@@ -410,6 +412,7 @@ void MainWindow::fillTreeWidget()
         title = select->value(1).toByteArray().constData();
         tvg_id = select->value(2).toByteArray().constData();
         id = select->value(0).toByteArray().constData();
+        url = select->value(5).toByteArray().constData();
         used = select->value(7).toByteArray().constData();
         state = select->value(6).toByteArray().constData();
 
@@ -418,7 +421,7 @@ void MainWindow::fillTreeWidget()
             lastgroup = group;
         }
 
-        addTreeChild(item, title, tvg_id, id, used, state);
+        addTreeChild(item, title, tvg_id, id, used, state, url);
     }
 
     ui->treeWidget->blockSignals(false);
@@ -587,7 +590,7 @@ void MainWindow::fillTwPls_Item()
             buttonImage.loadFromData(file.readAll());
             QListWidgetItem* item = new QListWidgetItem(buttonImage, "");
 
-            item->setData(4, url);
+            item->setData(Qt::UserRole, url);
             item->setData(Qt::DecorationRole, buttonImage.scaled(50,50,Qt::KeepAspectRatio, Qt::SmoothTransformation));
             ui->lvStations->addItem(item);
 
@@ -892,7 +895,7 @@ void MainWindow::on_edtStationUrl_textChanged(const QString &arg1)
 
 void MainWindow::on_lvStations_itemClicked(QListWidgetItem *item)
 {
-    QVariant url =  item->data(4);
+    QVariant url =  item->data(Qt::UserRole);
 
     if ( ! url.toString().isEmpty() ) {
 
@@ -916,4 +919,16 @@ void MainWindow::on_cmdSavePosition_clicked()
     fillTwPls_Item();
 
     statusBar()->showMessage("positions set...", 2000);
+}
+
+void MainWindow::on_treeWidget_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
+{
+    QVariant url = current->data(Qt::UserRole,0).toString();
+
+    if ( ! url.toString().isEmpty() and ui->chkAutoPlay->isChecked() ) {
+
+        _media = new VlcMedia(url.toString(), _instance);
+
+        _player->open(_media);
+    }
 }
