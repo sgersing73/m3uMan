@@ -24,6 +24,7 @@
 #include <QStandardPaths>
 #include <QDir>
 #include <QListWidgetItem>
+#include <QXmlStreamReader>
 
 #include <VLCQtCore/Common.h>
 #include <VLCQtCore/Instance.h>
@@ -32,8 +33,6 @@
 
 #include "dbmanager.h"
 #include "filedownloader.h"
-#include "gatherdata.h"
-
 #include "EqualizerDialog.h"
 
 namespace Ui {
@@ -63,6 +62,7 @@ private:
     bool saveFile(const QString &);
     void setCurrentFile(const QString &);
     void getFileData(const QString &);
+    void getEPGFileData(const QString &);
     void fillTreeWidget();
     void fillTwPls_Item();
     void fillComboPlaylists();
@@ -99,11 +99,14 @@ private slots:
     void processFinished();
 
     void SaveM3u();
+    void SaveXML();
     void loadImage();
 
     void on_cmdSavePosition_clicked();
-
     void on_treeWidget_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
+    void on_cmdImportEpg_clicked();
+
+    void on_edtEPGDownload_clicked();
 
 private:
     QString         curFile;
@@ -122,7 +125,6 @@ private:
     VlcMediaPlayer  *_player;
 
     EqualizerDialog *_equalizerDialog;
-
 };
 
 #endif // MAINWINDOW_H

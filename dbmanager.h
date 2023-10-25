@@ -37,6 +37,10 @@ public:
     bool removePLS_Item(int);
     bool removePLS_Items(int);
 
+    bool removeAllPrograms();
+    bool addProgram(const QString&, const QString&, const QString&, const QString&, const QString&);
+    QSqlQuery* selectProgramData(const QString &);
+
 private:
     QSqlDatabase m_db;
 };

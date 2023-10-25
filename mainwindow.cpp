@@ -32,6 +32,7 @@ MainWindow::MainWindow(QWidget *parent) :
     restoreState(settings.value("windowState").toByteArray());
     ui->splitter->restoreState(settings.value("splitter").toByteArray());
     ui->edtUrl->setText(settings.value("iptvurl").toByteArray());
+    ui->edtUrlEpg->setText(settings.value("iptvepgurl").toByteArray());
 
     ui->treeWidget->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
@@ -69,7 +70,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
     settings.setValue("windowState", saveState());
     settings.setValue("splitter",ui->splitter->saveState());
     settings.setValue("iptvurl", ui->edtUrl->text());
-    settings.sync(); // forces to write the settings to storage
+    settings.setValue("iptvepgurl", ui->edtUrlEpg->text());
+    settings.sync();
 
     if (maybeSave()) {
         //writeSettings();
@@ -762,6 +764,35 @@ void MainWindow::SaveM3u()
     }
 }
 
+void MainWindow::SaveXML()
+{
+    const QDateTime now = QDateTime::currentDateTime();
+    const QString timestamp = now.toString(QLatin1String("yyyyMMddhhmmss"));
+
+    const QString filename = m_AppDataPath + "/" + QString::fromLatin1("/epg-%1.xml").arg(timestamp);
+
+    QFile newDoc(filename);
+
+    if ( m_pImgCtrl->downloadedData().size() > 0 ) {
+        if(newDoc.open(QIODevice::WriteOnly)){
+
+            newDoc.write(m_pImgCtrl->downloadedData());
+            newDoc.close();
+
+            statusBar()->showMessage(tr("file %1 saved").arg(filename), 2000);
+
+            QMessageBox(QMessageBox::Information, "Downloader", tr("File %1 download success!").arg(filename), QMessageBox::Ok).exec() ;
+
+            if (ui->chkEPGImport->isChecked() ) {
+                this->getEPGFileData(filename);
+            }
+        }
+    } else {
+        QMessageBox(QMessageBox::Critical, "Downloader", tr("File %1 download fails!").arg(filename), QMessageBox::Ok).exec() ;
+    }
+}
+
+
 void MainWindow::on_cmdGatherData_clicked()
 {
     QString program = "ffprobe";
@@ -782,6 +813,7 @@ void MainWindow::on_twPLS_Items_itemSelectionChanged()
     QString   tvg_id;
     QString   logo;
     QString   url;
+    QString   desc;
 
     qDebug() << ui->twPLS_Items->selectedItems().count();
 
@@ -800,15 +832,26 @@ void MainWindow::on_twPLS_Items_itemSelectionChanged()
             group = select->value(3).toByteArray().constData();
             logo = select->value(4).toByteArray().constData();
             url = select->value(5).toByteArray().constData();
-
-            qDebug() << url;
         }
 
-        delete select;
+        select->clear();
 
         ui->edtStationUrl->setText(url);
 
-        qDebug() << "logo" << logo;
+        select = db.selectProgramData(tvg_id);
+
+        while ( select->next() ) {
+
+            title = select->value(4).toByteArray().constData();
+            desc = select->value(5).toByteArray().constData();
+        }
+
+        ui->edtOutput->clear();
+        ui->edtOutput->append(title);
+        ui->edtOutput->append("");
+        ui->edtOutput->append(desc);
+
+        select->clear();
 
         m_pImgCtrl = new FileDownloader(logo, this);
 
@@ -932,3 +975,104 @@ void MainWindow::on_treeWidget_currentItemChanged(QTreeWidgetItem *current, QTre
         _player->open(_media);
     }
 }
+
+void MainWindow::on_cmdImportEpg_clicked()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, ("Open xmp program File"),
+                                                     m_AppDataPath,
+                                                     ("xml program file (*.xml)"));
+
+    if ( !fileName.isNull() ) {
+        qDebug() << "selected file path : " << fileName.toUtf8();
+        this->getEPGFileData(fileName);
+    }
+}
+
+void MainWindow::getEPGFileData(const QString &sFileName)
+{
+    QFile   *xmlFile;
+    QXmlStreamReader *xmlReader;
+    int     linecount=0;
+    QString line;
+    bool    ende = false;
+
+    QString start, stop, channel, title, desc;
+
+    xmlFile = new QFile(sFileName);
+    if (!xmlFile->open(QIODevice::ReadOnly | QIODevice::Text)) {
+            QMessageBox::critical(this,"Load XML File Problem",
+            tr("Couldn't open %1 to load settings for download").arg(sFileName),
+            QMessageBox::Ok);
+            return;
+    }
+
+    db.removeAllPrograms();
+
+    QProgressDialog progress("Task in progress...", "Cancel", 0, linecount, this);
+
+    xmlReader = new QXmlStreamReader(xmlFile);
+
+    //Parse the XML until we reach end of it
+    while ( !xmlReader->atEnd() && !xmlReader->hasError() && !ende ) {
+
+            if (progress.wasCanceled())
+                ende = true;
+
+            // Read next element
+            QXmlStreamReader::TokenType token = xmlReader->readNext();
+
+            //If token is StartElement - read it
+            if ( token == QXmlStreamReader::StartElement ) {
+
+                    if ( xmlReader->name() == "programme" ) {
+                        start = xmlReader->attributes().value("start").toString();
+                        stop = xmlReader->attributes().value("stop").toString();
+                        channel = xmlReader->attributes().value("channel").toString();
+                    } else if ( xmlReader->name() == "title" ) {
+                        title = xmlReader->readElementText();
+                    } else if ( xmlReader->name() == "desc" ) {
+                        desc = xmlReader->readElementText();
+                    }
+            }
+
+            if(token == QXmlStreamReader::EndElement) {
+
+                if(xmlReader->name() == "programme") {
+                    db.addProgram(start, stop, channel, title, desc);
+                    start = stop = channel = title = desc = "";
+                }
+            }
+
+            linecount++;
+
+            if ( linecount % 100 == 0 ) {
+
+                statusBar()->showMessage(tr("%1 programs").arg(linecount));
+            }
+
+            QCoreApplication::processEvents();
+
+            progress.setValue(linecount);
+    }
+
+    if(xmlReader->hasError()) {
+        QMessageBox::critical(this, "xmlFile.xml Parse Error", xmlReader->errorString(), QMessageBox::Ok);
+        return;
+    }
+
+    //close reader and flush file
+    xmlReader->clear();
+    xmlFile->close();
+}
+
+void MainWindow::on_edtEPGDownload_clicked()
+{
+    if (QMessageBox::Yes == QMessageBox(QMessageBox::Information, "Downloader", "start the download?", QMessageBox::Yes|QMessageBox::No).exec())  {
+
+        QUrl imageUrl(ui->edtUrlEpg->text());
+        m_pImgCtrl = new FileDownloader(imageUrl, this);
+
+        connect(m_pImgCtrl, SIGNAL (downloaded()), this, SLOT (SaveXML()));
+    }
+}
+

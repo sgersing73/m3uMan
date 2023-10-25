@@ -49,10 +49,10 @@ bool DbManager::createTable()
                   "        group_title TEXT, "
                   "        tvg_logo    TEXT, "
                   "        url         TEXT, "
-                  "        state       INTEGER);");
+                  "        state       INTEGER)");
 
     if (!query.exec()) {
-        qDebug() << "createTable" <<  query.lastError();
+        qDebug() << "createTable extinf" <<  query.lastError();
         success = false;
     }
 
@@ -97,6 +97,19 @@ bool DbManager::createTable()
 
     if (!query.exec()) {
         qDebug() << "createIndex idx_extinf_id " <<  query.lastError();
+        success = false;
+    }
+
+    query.prepare("CREATE TABLE IF NOT EXISTS "
+                  "program (id          INTEGER PRIMARY KEY AUTOINCREMENT, "
+                  "         start       TEXT, "
+                  "         stop        TEXT, "
+                  "         channel     TEXT, "
+                  "         title       TEXT, "
+                  "         desc        TEXT)");
+
+    if (!query.exec()) {
+        qDebug() << "createTable program" <<  query.lastError();
         success = false;
     }
 
@@ -393,4 +406,59 @@ bool DbManager::removePLS_Items(int pls_id)
     }
 
     return success;
+}
+
+bool DbManager::addProgram(const QString& start, const QString& stop,
+                           const QString& channel, const QString& title,
+                           const QString& desc)
+{
+   bool success = false;
+
+   // you should check if args are ok first...
+   QSqlQuery query;
+   query.prepare("INSERT INTO program (start, stop, channel, title, desc ) VALUES (:start, :stop, :channel, :title, :desc)");
+   query.bindValue(":start", start);
+   query.bindValue(":stop", stop);
+   query.bindValue(":channel", channel);
+   query.bindValue(":title", title);
+   query.bindValue(":desc", desc);
+
+   if ( query.exec() ) {
+       success = true;
+   } else {
+        qDebug() << "addProgram" << query.lastError();
+   }
+
+   return success;
+}
+
+bool DbManager::removeAllPrograms()
+{
+    bool success = false;
+
+    QSqlQuery query;
+
+    if ( query.exec("DELETE FROM program") ) {
+        success = true;
+    } else {
+        qDebug() << "removeAllPrograms" << query.lastError();
+    }
+
+    return success;
+}
+
+QSqlQuery* DbManager::selectProgramData(const QString &channel)
+{
+    QSqlQuery *select = new QSqlQuery();
+
+    select->prepare("SELECT * FROM program WHERE strftime('%Y%m%d%H%M%S +0000', 'now', 'localtime', '-2 hours') > start AND "
+                    "                            strftime('%Y%m%d%H%M%S +0000', 'now', 'localtime', '-2 hours') < stop AND "
+                    "                            channel = :channel");
+    select->bindValue(":channel", channel);
+
+    if ( ! select->exec() ) {
+        qDebug() << "selectProgramData" << select->lastError();
+    }
+
+    return select;
 }

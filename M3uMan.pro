@@ -35,15 +35,13 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
         dbmanager.cpp \
-        filedownloader.cpp \
-        gatherdata.cpp
+        filedownloader.cpp
 
 HEADERS += \
         EqualizerDialog.h \
         mainwindow.h \
         dbmanager.h \
-        filedownloader.h \
-        gatherdata.h
+        filedownloader.h
 
 FORMS += \
         EqualizerDialog.ui \
