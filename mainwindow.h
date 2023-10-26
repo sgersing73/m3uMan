@@ -30,6 +30,7 @@
 #include <VLCQtCore/Instance.h>
 #include <VLCQtCore/Media.h>
 #include <VLCQtCore/MediaPlayer.h>
+#include <VLCQtCore/Error.h>
 
 #include "dbmanager.h"
 #include "filedownloader.h"
@@ -97,6 +98,7 @@ private slots:
     void readyReadStandardOutput();
     void processStarted();
     void processFinished();
+    void showVlcError();
 
     void SaveM3u();
     void SaveXML();
@@ -107,6 +109,13 @@ private slots:
     void on_cmdImportEpg_clicked();
 
     void on_edtEPGDownload_clicked();
+
+    void on_radAll_clicked();
+    void on_radNew_clicked();
+
+    void on_cmdPlayMoveDown_clicked();
+
+    void on_pushButton_clicked();
 
 private:
     QString         curFile;
@@ -123,6 +132,7 @@ private:
     VlcInstance     *_instance;
     VlcMedia        *_media;
     VlcMediaPlayer  *_player;
+    VlcError        *_error;
 
     EqualizerDialog *_equalizerDialog;
 };

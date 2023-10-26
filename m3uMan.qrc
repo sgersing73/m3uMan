@@ -1,5 +1,8 @@
 <RCC>
     <qresource prefix="/">
         <file>images/application.png</file>
+        <file>images/Ui/icons8-move-up-50.png</file>
+        <file>images/Ui/icons8-move-down-50.png</file>
+        <file>images/Ui/icons8-checkmark-50.png</file>
     </qresource>
 </RCC>

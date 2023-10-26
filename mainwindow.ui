@@ -14,22 +14,110 @@
    <string>m3uMan</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QGridLayout" name="gridLayout_2">
+   <layout class="QGridLayout" name="gridLayout_3">
+    <item row="0" column="0">
+     <widget class="QGroupBox" name="groupBox">
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>82</height>
+       </size>
+      </property>
+      <property name="title">
+       <string/>
+      </property>
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="1" column="5">
+        <widget class="QPushButton" name="cmdImportEpg">
+         <property name="maximumSize">
+          <size>
+           <width>50</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>...</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="5">
+        <widget class="QPushButton" name="edtLoad">
+         <property name="maximumSize">
+          <size>
+           <width>50</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>...</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="3">
+        <widget class="QCheckBox" name="chkEPGImport">
+         <property name="text">
+          <string>import after download</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="edtUrl"/>
+       </item>
+       <item row="0" column="3">
+        <widget class="QCheckBox" name="chkImport">
+         <property name="text">
+          <string>import after download</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="lblUrlEpg">
+         <property name="text">
+          <string>URL for EPG:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="lblUrl">
+         <property name="text">
+          <string>URL for stations:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="edtUrlEpg"/>
+       </item>
+       <item row="0" column="4">
+        <widget class="QPushButton" name="edtDownload">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>29</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>download</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="4">
+        <widget class="QPushButton" name="edtEPGDownload">
+         <property name="text">
+          <string>download</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
     <item row="1" column="0">
      <widget class="QSplitter" name="splitter_2">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
       <widget class="QWidget" name="layoutWidget">
-       <layout class="QVBoxLayout" name="verticalLayout_2">
-        <item>
-         <widget class="QComboBox" name="cboGroupTitels">
-          <property name="toolTip">
-           <string>select a program group you are looking for</string>
-          </property>
-         </widget>
-        </item>
-        <item>
+       <layout class="QGridLayout" name="gridLayout_2">
+        <item row="1" column="0">
          <widget class="QLineEdit" name="edtFilter">
           <property name="toolTip">
            <string>enter the name of a station you are looking for</string>
@@ -39,14 +127,45 @@
           </property>
          </widget>
         </item>
-        <item>
-         <widget class="QCheckBox" name="chkAutoPlay">
-          <property name="text">
-           <string>autoplay</string>
+        <item row="5" column="0">
+         <widget class="QListWidget" name="lvStations">
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>60</height>
+           </size>
           </property>
          </widget>
         </item>
-        <item>
+        <item row="0" column="0">
+         <widget class="QComboBox" name="cboGroupTitels">
+          <property name="toolTip">
+           <string>select a program group you are looking for</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <layout class="QHBoxLayout" name="horizontalLayout_6">
+          <item>
+           <widget class="QRadioButton" name="radAll">
+            <property name="text">
+             <string>show all stations</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="radNew">
+            <property name="text">
+             <string>show only new stations</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="4" column="0">
          <widget class="QSplitter" name="splitter">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
@@ -77,22 +196,35 @@
           </widget>
          </widget>
         </item>
-        <item>
-         <widget class="QListWidget" name="lvStations">
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>60</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-        <item>
+        <item row="6" column="0">
          <layout class="QHBoxLayout" name="horizontalLayout_5">
+          <item>
+           <widget class="QPushButton" name="cmdMoveBackward">
+            <property name="maximumSize">
+             <size>
+              <width>30</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>&lt;&lt;</string>
+            </property>
+           </widget>
+          </item>
           <item>
            <widget class="QPushButton" name="cmdStop">
             <property name="text">
              <string>stop</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="cmdPlayStream">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>play</string>
             </property>
            </widget>
           </item>
@@ -103,7 +235,27 @@
             </property>
            </widget>
           </item>
+          <item>
+           <widget class="QPushButton" name="cmdMoveForward">
+            <property name="maximumSize">
+             <size>
+              <width>30</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>&gt;&gt;</string>
+            </property>
+           </widget>
+          </item>
          </layout>
+        </item>
+        <item row="2" column="0">
+         <widget class="QCheckBox" name="chkAutoPlay">
+          <property name="text">
+           <string>autoplay station when clicked</string>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -178,8 +330,8 @@
              <widget class="QLabel" name="lblLogo">
               <property name="maximumSize">
                <size>
-                <width>320</width>
-                <height>240</height>
+                <width>140</width>
+                <height>16777215</height>
                </size>
               </property>
               <property name="text">
@@ -202,22 +354,43 @@
             </item>
             <item>
              <widget class="QPushButton" name="cmdMoveUp">
+              <property name="toolTip">
+               <string>move item up in list</string>
+              </property>
               <property name="text">
-               <string>up</string>
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset resource="m3uMan.qrc">
+                <normaloff>:/images/Ui/icons8-move-up-50.png</normaloff>:/images/Ui/icons8-move-up-50.png</iconset>
               </property>
              </widget>
             </item>
             <item>
              <widget class="QPushButton" name="cmdMoveDown">
+              <property name="toolTip">
+               <string>move item down in list</string>
+              </property>
               <property name="text">
-               <string>down</string>
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset resource="m3uMan.qrc">
+                <normaloff>:/images/Ui/icons8-move-down-50.png</normaloff>:/images/Ui/icons8-move-down-50.png</iconset>
               </property>
              </widget>
             </item>
             <item>
              <widget class="QPushButton" name="cmdSavePosition">
+              <property name="toolTip">
+               <string>save positions</string>
+              </property>
               <property name="text">
-               <string>snap</string>
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset resource="m3uMan.qrc">
+                <normaloff>:/images/Ui/icons8-checkmark-50.png</normaloff>:/images/Ui/icons8-checkmark-50.png</iconset>
               </property>
              </widget>
             </item>
@@ -228,25 +401,41 @@
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout">
           <item>
-           <widget class="QLineEdit" name="edtStationUrl"/>
-          </item>
-          <item>
            <widget class="QPushButton" name="cmdGatherData">
             <property name="enabled">
              <bool>false</bool>
             </property>
             <property name="text">
-             <string>info</string>
+             <string>stream info</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="cmdPlayStream">
-            <property name="enabled">
-             <bool>false</bool>
+           <widget class="QLineEdit" name="edtStationUrl"/>
+          </item>
+          <item>
+           <widget class="QPushButton" name="cmdPlayMoveDown">
+            <property name="maximumSize">
+             <size>
+              <width>30</width>
+              <height>16777215</height>
+             </size>
             </property>
             <property name="text">
-             <string>play</string>
+             <string>vvv</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton">
+            <property name="maximumSize">
+             <size>
+              <width>30</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>^^^</string>
             </property>
            </widget>
           </item>
@@ -277,101 +466,6 @@
       </widget>
      </widget>
     </item>
-    <item row="0" column="0">
-     <widget class="QGroupBox" name="groupBox">
-      <property name="maximumSize">
-       <size>
-        <width>16777215</width>
-        <height>82</height>
-       </size>
-      </property>
-      <property name="title">
-       <string/>
-      </property>
-      <layout class="QGridLayout" name="gridLayout">
-       <item row="0" column="2">
-        <widget class="QPushButton" name="edtDownload">
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>29</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>download</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QLineEdit" name="edtUrl"/>
-       </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="lblUrl">
-         <property name="text">
-          <string>URL for stations:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="4">
-        <widget class="QPushButton" name="edtLoad">
-         <property name="maximumSize">
-          <size>
-           <width>50</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>...</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="3">
-        <widget class="QCheckBox" name="chkImport">
-         <property name="text">
-          <string>import after download</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QLineEdit" name="edtUrlEpg"/>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="lblUrlEpg">
-         <property name="text">
-          <string>URL for EPG:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="4">
-        <widget class="QPushButton" name="cmdImportEpg">
-         <property name="maximumSize">
-          <size>
-           <width>50</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>...</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="2">
-        <widget class="QPushButton" name="edtEPGDownload">
-         <property name="text">
-          <string>download</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="3">
-        <widget class="QCheckBox" name="chkEPGImport">
-         <property name="text">
-          <string>import after download</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menuBar">
@@ -380,7 +474,7 @@
      <x>0</x>
      <y>0</y>
      <width>788</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuVideo">
@@ -430,6 +524,8 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="m3uMan.qrc"/>
+ </resources>
  <connections/>
 </ui>

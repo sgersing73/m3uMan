@@ -128,7 +128,7 @@ bool DbManager::addEXTINF(const QString& tvg_name, const QString& tvg_id, const 
    query.bindValue(":group_title", group_title);
    query.bindValue(":tvg_logo", tvg_logo);
    query.bindValue(":url", url);
-   query.bindValue(":state", 1);
+   query.bindValue(":state", 2);
 
    if ( query.exec() ) {
        success = true;
@@ -169,11 +169,11 @@ bool DbManager::removeObsoleteEXTINFs()
     return success;
 }
 
-QSqlQuery* DbManager::selectEXTINF(const QString& group, const QString& station)
+QSqlQuery* DbManager::selectEXTINF(const QString& group, const QString& station, const QString& state)
 {
     QSqlQuery *select = new QSqlQuery();
 
-    select->prepare(QString("SELECT *, ( select count(*) from pls_item where pls_item.extinf_id = extinf.id ) FROM extinf WHERE (group_title LIKE '%%1%' or '%1' = '') and tvg_name LIKE '%%2%' ORDER BY group_title").arg(group).arg(station));
+    select->prepare(QString("SELECT *, ( select count(*) from pls_item where pls_item.extinf_id = extinf.id ) FROM extinf WHERE (group_title LIKE '%%1%' OR '%1' = '') AND tvg_name LIKE '%%2%' AND (state = %3 OR %3 = 0) ORDER BY group_title").arg(group).arg(station).arg(state.toInt()));
     if ( ! select->exec() ) {
         qDebug() << "selectEXTINF" << select->lastError();
     }
@@ -221,14 +221,17 @@ QSqlQuery* DbManager::countEXTINF_byState()
     return select;
 }
 
-bool DbManager::updateEXTINF_state_byRef(int id, int state)
+bool DbManager::updateEXTINF_byRef(int id, const QString& tvg_name, const QString& group_title, const QString& tvg_logo,int state)
 {
     int retCode = true;
 
     QSqlQuery *select = new QSqlQuery();
 
-    select->prepare("UPDATE extinf SET state = :state WHERE id = :id");
+    select->prepare("UPDATE extinf SET state = :state, group_title = :group_title, tvg_name = :tvg_name, tvg_logo =:tvg_logo WHERE id = :id");
     select->bindValue(":id", id);
+    select->bindValue(":tvg_name", tvg_name);
+    select->bindValue(":group_title", group_title);
+    select->bindValue(":tvg_logo", tvg_logo);
     select->bindValue(":state", state);
 
     if ( ! select->exec() ) {

@@ -13,6 +13,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     _player->setVideoWidget(ui->widVideo);
     _equalizerDialog->setMediaPlayer(_player);
+    _error = new VlcError();
 
     ui->widVideo->setMediaPlayer(_player);
 
@@ -20,7 +21,11 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionStop, &QAction::triggered, _player, &VlcMediaPlayer::stop);
     connect(ui->cmdPause, &QPushButton::clicked, _player, &VlcMediaPlayer::togglePause);
     connect(ui->cmdStop, &QPushButton::clicked, _player, &VlcMediaPlayer::stop);
+    connect(ui->cmdMoveForward, &QPushButton::clicked, _player, &VlcMediaPlayer::forward);
+    connect(ui->cmdMoveBackward, &QPushButton::clicked, _player, &VlcMediaPlayer::backward);
+
     connect(ui->actionEqualizer, &QAction::triggered, _equalizerDialog, &EqualizerDialog::show);
+    connect(_player, SIGNAL(error()), this, SLOT(showVlcError()));
 
     m_AppDataPath = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
     dir.mkpath(m_AppDataPath);
@@ -225,12 +230,16 @@ void MainWindow::getFileData(const QString &filename)
             if ( line.contains("#EXTINF") ) {
                 tags = line.split(",").at(0);
                 station = line.split(",").at(1);
-            } else if ( line.startsWith("http") ) {
+            } else if ( line.startsWith("http") or line.startsWith("rtp") ) {
                 url = line;
 
                 parser = this->splitCommandLine(tags);
 
                 foreach(QString item, parser) {
+
+                    group_title = "None";
+                    tvg_name = station;
+                    tvg_logo = "https://image.winudf.com/v2/image1/Y29tLnZpdGxhYnMuaXB0djRhbGwuZnJlZV9pY29uXzE1NjQwNTEzNjVfMDI3/icon.png?w=170&fakeurl=1";
 
                     if ( item.contains("tvg-name") ) {
                         tvg_name = item.split("=").at(1);
@@ -251,9 +260,12 @@ void MainWindow::getFileData(const QString &filename)
                 query->last();
                 query->first();
 
+
                 if ( query->isValid() ) {
-                    db.updateEXTINF_state_byRef( query->value(0).toByteArray().toInt(), 1 );
+                  //  qDebug() << "-U-" <<tvg_name<< tvg_id<< group_title<< tvg_logo<< url;
+                    db.updateEXTINF_byRef( query->value(0).toByteArray().toInt(), tvg_name, group_title, tvg_logo, 1 );
                 } else {
+                  //  qDebug() << "-I-" <<tvg_name<< tvg_id<< group_title<< tvg_logo<< url;
                     db.addEXTINF(tvg_name, tvg_id, group_title, tvg_logo, url);
                     newfiles++;
                 }
@@ -353,9 +365,12 @@ void MainWindow::addTreeChild(QTreeWidgetItem *parent, const QString& name, cons
     treeItem->setText(0, name);
     treeItem->setText(1, description);
 
-    if ( state.toInt() == 0 ) {
-         treeItem->setBackground(2, QColor("#FFCCCB") );
+    if ( state.toInt() == 1 ) {
+         treeItem->setBackground(2, QColor("#FFCCCB") ); // light red (active stream )
+    } else if ( state.toInt() == 2 ) {
+         treeItem->setBackground(2, QColor("#90ee90") ); // light green (new stream)
     }
+
     treeItem->setText(2, id);
     treeItem->setData(Qt::UserRole, 0, url);
 
@@ -387,8 +402,6 @@ void MainWindow::fillTreeWidget()
     ui->treeWidget->setColumnCount(3);
     ui->treeWidget->setHeaderLabels(QStringList() << "Group" << "Station" << "ID");
 
-    //select = db.selectEXTINF(ui->edtFilter->text());
-
     if ( ui->cboGroupTitels->currentText().isEmpty() ) {
         group = "EU |";
     } else {
@@ -399,7 +412,13 @@ void MainWindow::fillTreeWidget()
         group = "";
     }
 
-    select = db.selectEXTINF(group, ui->edtFilter->text());
+    if ( ui->radAll->isChecked() ) {
+        state = "0";
+    } else if ( ui->radNew->isChecked() ) {
+        state = "2";
+    }
+
+    select = db.selectEXTINF(group, ui->edtFilter->text(), state);
 
     ui->treeWidget->blockSignals(true);
 
@@ -881,7 +900,6 @@ void MainWindow::processFinished()
 
 void MainWindow::loadImage()
 {
-
     QPixmap buttonImage;
     dir.mkpath(m_AppDataPath + "/logos/");
 
@@ -900,7 +918,7 @@ void MainWindow::loadImage()
         file.open(QIODevice::ReadOnly);
         buttonImage.loadFromData(file.readAll());
 
-        ui->lblLogo->setPixmap(buttonImage);
+        ui->lblLogo->setPixmap(buttonImage.scaledToWidth(ui->lblLogo->maximumWidth()));
     } else {
         ui->lblLogo->setText("no data!");
     }
@@ -966,7 +984,11 @@ void MainWindow::on_cmdSavePosition_clicked()
 
 void MainWindow::on_treeWidget_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
 {
-    QVariant url = current->data(Qt::UserRole,0).toString();
+    QVariant url ;
+
+    if ( current != nullptr ) {
+        url = current->data(Qt::UserRole,0).toString();
+    }
 
     if ( ! url.toString().isEmpty() and ui->chkAutoPlay->isChecked() ) {
 
@@ -1076,3 +1098,37 @@ void MainWindow::on_edtEPGDownload_clicked()
     }
 }
 
+
+void MainWindow::on_radAll_clicked()
+{
+    fillTreeWidget();
+}
+
+void MainWindow::on_radNew_clicked()
+{
+    fillTreeWidget();
+}
+
+void MainWindow::showVlcError()
+{
+    qDebug() << "*******" << _error->errmsg();
+}
+
+void MainWindow::on_cmdPlayMoveDown_clicked()
+{
+    ui->twPLS_Items->clearSelection();
+    ui->twPLS_Items->setCurrentItem(ui->twPLS_Items->itemBelow(ui->twPLS_Items->currentItem() ));
+    ui->twPLS_Items->setItemSelected( ui->twPLS_Items->currentItem(), true );
+
+    on_cmdPlayStream_clicked();
+}
+
+
+void MainWindow::on_pushButton_clicked()
+{
+    ui->twPLS_Items->clearSelection();
+    ui->twPLS_Items->setCurrentItem(ui->twPLS_Items->itemAbove(ui->twPLS_Items->currentItem() ));
+    ui->twPLS_Items->setItemSelected( ui->twPLS_Items->currentItem(), true );
+
+    on_cmdPlayStream_clicked();
+}

@@ -13,7 +13,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = m3uMan
 TEMPLATE = app
 
-LIBS       += -L../m3uMan/win32/VLC-Qt_1.1.0_win32_mingw/lib -lVLCQtCore -lVLCQtWidgets
+LIBS       += -L../m3uMan/win32/VLC-Qt_1.1.0_win32_mingw/lib
 INCLUDEPATH += ../m3uMan/win32/VLC-Qt_1.1.0_win32_mingw/include
 LIBS       += -lVLCQtCore -lVLCQtWidgets
 
