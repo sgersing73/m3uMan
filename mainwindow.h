@@ -103,6 +103,7 @@ private slots:
     void SaveM3u();
     void SaveXML();
     void loadImage();
+    void ShowDownloadProgress();
 
     void on_cmdSavePosition_clicked();
     void on_treeWidget_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);

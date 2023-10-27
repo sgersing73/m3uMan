@@ -15,17 +15,23 @@ public:
     virtual ~FileDownloader();
     QByteArray downloadedData() const;
     QString filename() const ;
+    qint64  downloadedProgress() const;
 
 signals:
     void downloaded();
+    void progress();
 
 private slots:
     void fileDownloaded(QNetworkReply* pReply);
+    void updateDownloadProgress(qint64,qint64);
+    void errorOccurred(QNetworkReply::NetworkError);
 
 private:
     QNetworkAccessManager m_WebCtrl;
     QByteArray            m_DownloadedData;
     QString               m_sFilename;
+    QNetworkReply*        m_reply;
+    qint64                m_iProgress;
 };
 
 #endif // FILEDOWNLOADER_H

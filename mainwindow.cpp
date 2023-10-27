@@ -174,6 +174,7 @@ void MainWindow::getFileData(const QString &filename)
     bool ende = false;
     int obsolete = 0;
     int newfiles = 0;
+    bool ok;
 
     QString tags;
     QString station;
@@ -184,6 +185,7 @@ void MainWindow::getFileData(const QString &filename)
     QString tvg_id;
     QString group_title;
     QString tvg_logo;
+
     QSqlQuery *query = nullptr;
 
     QFile file(filename);
@@ -237,8 +239,8 @@ void MainWindow::getFileData(const QString &filename)
 
                 foreach(QString item, parser) {
 
-                    group_title = "None";
                     tvg_name = station;
+                    group_title = "NoGroup";
                     tvg_logo = "https://image.winudf.com/v2/image1/Y29tLnZpdGxhYnMuaXB0djRhbGwuZnJlZV9pY29uXzE1NjQwNTEzNjVfMDI3/icon.png?w=170&fakeurl=1";
 
                     if ( item.contains("tvg-name") ) {
@@ -260,7 +262,6 @@ void MainWindow::getFileData(const QString &filename)
                 query->last();
                 query->first();
 
-
                 if ( query->isValid() ) {
                   //  qDebug() << "-U-" <<tvg_name<< tvg_id<< group_title<< tvg_logo<< url;
                     db.updateEXTINF_byRef( query->value(0).toByteArray().toInt(), tvg_name, group_title, tvg_logo, 1 );
@@ -275,12 +276,10 @@ void MainWindow::getFileData(const QString &filename)
                 counter++;
 
                 if ( counter % 100 == 0 ) {
-
                     statusBar()->showMessage(tr("%1 stations").arg(counter));                    
                 }
 
                 QCoreApplication::processEvents();
-
                 progress.setValue(counter);
             }
         }
@@ -683,8 +682,9 @@ void MainWindow::on_cmdMakePlaylist_clicked()
     QString         tvg_id;
     QString         logo;
     QString         url;
+    QDir            dir;
 
-    QFile file(ui->cboPlaylists->currentText() + ".m3u");
+    QFile file(dir.homePath() + "/"+ ui->cboPlaylists->currentText() + ".m3u");
 
     if(!file.open(QFile::WriteOnly |
                   QFile::Text))
@@ -752,7 +752,13 @@ void MainWindow::on_edtDownload_clicked()
         m_pImgCtrl = new FileDownloader(imageUrl, this);
 
         connect(m_pImgCtrl, SIGNAL (downloaded()), this, SLOT (SaveM3u()));
+        connect(m_pImgCtrl, SIGNAL (progress()), this, SLOT (ShowDownloadProgress()));
     }
+}
+
+void MainWindow::ShowDownloadProgress(){
+
+    statusBar()->showMessage(tr("file download %1%").arg(m_pImgCtrl->downloadedProgress()), 2000);
 }
 
 void MainWindow::SaveM3u()
@@ -780,7 +786,7 @@ void MainWindow::SaveM3u()
         }
     } else {
         QMessageBox(QMessageBox::Critical, "Downloader", tr("File %1 download fails!").arg(filename), QMessageBox::Ok).exec() ;
-    }
+    }   
 }
 
 void MainWindow::SaveXML()
