@@ -9,22 +9,23 @@ MainWindow::MainWindow(QWidget *parent) :
 
     _instance = new VlcInstance(VlcCommon::args(), this);
     _player = new VlcMediaPlayer(_instance);
-    _equalizerDialog = new EqualizerDialog(this);
+    _equalizerDialog = new EqualizerDialog(this);    
 
     _player->setVideoWidget(ui->widVideo);
     _equalizerDialog->setMediaPlayer(_player);
     _error = new VlcError();
 
+    ui->widSeek->setMediaPlayer(_player);
+    ui->widVolume->setMediaPlayer(_player);
+    ui->widVolume->setVolume(50);
     ui->widVideo->setMediaPlayer(_player);
 
     connect(ui->actionPause, &QAction::toggled, _player, &VlcMediaPlayer::togglePause);
     connect(ui->actionStop, &QAction::triggered, _player, &VlcMediaPlayer::stop);
     connect(ui->cmdPause, &QPushButton::clicked, _player, &VlcMediaPlayer::togglePause);
-    connect(ui->cmdStop, &QPushButton::clicked, _player, &VlcMediaPlayer::stop);
-    connect(ui->cmdMoveForward, &QPushButton::clicked, _player, &VlcMediaPlayer::forward);
-    connect(ui->cmdMoveBackward, &QPushButton::clicked, _player, &VlcMediaPlayer::backward);
-
+    connect(ui->cmdStop, &QPushButton::clicked, _player, &VlcMediaPlayer::stop);    
     connect(ui->actionEqualizer, &QAction::triggered, _equalizerDialog, &EqualizerDialog::show);
+
     connect(_player, SIGNAL(error()), this, SLOT(showVlcError()));
 
     m_AppDataPath = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
@@ -76,6 +77,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
     settings.setValue("iptvurl", ui->edtUrl->text());
     settings.setValue("iptvepgurl", ui->edtUrlEpg->text());
     settings.sync();
+
+    _player->stop();
 
     if (maybeSave()) {
         //writeSettings();
@@ -1128,7 +1131,7 @@ void MainWindow::on_radNew_clicked()
 }
 
 void MainWindow::showVlcError()
-{
+{    
     qDebug() << "*******" << _error->errmsg();
 }
 
@@ -1141,7 +1144,6 @@ void MainWindow::on_cmdPlayMoveDown_clicked()
     on_cmdPlayStream_clicked();
 }
 
-
 void MainWindow::on_pushButton_clicked()
 {
     ui->twPLS_Items->clearSelection();
@@ -1149,4 +1151,14 @@ void MainWindow::on_pushButton_clicked()
     ui->twPLS_Items->setItemSelected( ui->twPLS_Items->currentItem(), true );
 
     on_cmdPlayStream_clicked();
+}
+
+void MainWindow::on_cmdMoveForward_clicked()
+{
+    _player->setTime( _player->time() + 60 * 1000 );
+}
+
+void MainWindow::on_cmdMoveBackward_clicked()
+{
+    _player->setTime( _player->time() - 60 * 1000 );
 }

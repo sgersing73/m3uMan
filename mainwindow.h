@@ -31,6 +31,7 @@
 #include <VLCQtCore/Media.h>
 #include <VLCQtCore/MediaPlayer.h>
 #include <VLCQtCore/Error.h>
+#include <VLCQtWidgets/WidgetSeek.h>
 
 #include "dbmanager.h"
 #include "filedownloader.h"
@@ -118,6 +119,10 @@ private slots:
 
     void on_pushButton_clicked();
 
+    void on_cmdMoveForward_clicked();
+
+    void on_cmdMoveBackward_clicked();
+
 private:
     QString         curFile;
     QDir            dir;
@@ -134,6 +139,7 @@ private:
     VlcMedia        *_media;
     VlcMediaPlayer  *_player;
     VlcError        *_error;
+    VlcWidgetSeek   *_seek;
 
     EqualizerDialog *_equalizerDialog;
 };

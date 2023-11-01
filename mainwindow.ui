@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>776</width>
-    <height>610</height>
+    <height>623</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -82,6 +82,9 @@
          <property name="text">
           <string>import after download</string>
          </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
         </widget>
        </item>
        <item row="0" column="1">
@@ -91,6 +94,9 @@
         <widget class="QCheckBox" name="chkImport">
          <property name="text">
           <string>import after download</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
          </property>
         </widget>
        </item>
@@ -177,23 +183,6 @@
           </property>
          </widget>
         </item>
-        <item row="5" column="0">
-         <widget class="QListWidget" name="lvStations">
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>60</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0">
-         <widget class="QComboBox" name="cboGroupTitels">
-          <property name="toolTip">
-           <string>select a program group you are looking for</string>
-          </property>
-         </widget>
-        </item>
         <item row="3" column="0">
          <layout class="QHBoxLayout" name="horizontalLayout_6">
           <item>
@@ -215,38 +204,14 @@
           </item>
          </layout>
         </item>
-        <item row="4" column="0">
-         <widget class="QSplitter" name="splitter">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
+        <item row="0" column="0">
+         <widget class="QComboBox" name="cboGroupTitels">
+          <property name="toolTip">
+           <string>select a program group you are looking for</string>
           </property>
-          <widget class="QTreeWidget" name="treeWidget">
-           <property name="mouseTracking">
-            <bool>true</bool>
-           </property>
-           <property name="sizeAdjustPolicy">
-            <enum>QAbstractScrollArea::AdjustToContents</enum>
-           </property>
-           <property name="selectionMode">
-            <enum>QAbstractItemView::MultiSelection</enum>
-           </property>
-           <column>
-            <property name="text">
-             <string notr="true">1</string>
-            </property>
-           </column>
-          </widget>
-          <widget class="VlcWidgetVideo" name="widVideo" native="true">
-           <property name="minimumSize">
-            <size>
-             <width>160</width>
-             <height>120</height>
-            </size>
-           </property>
-          </widget>
          </widget>
         </item>
-        <item row="6" column="0">
+        <item row="7" column="0">
          <layout class="QHBoxLayout" name="horizontalLayout_5">
           <item>
            <widget class="QPushButton" name="cmdMoveBackward">
@@ -278,11 +243,7 @@
              <bool>false</bool>
             </property>
             <property name="text">
-             <string/>
-            </property>
-            <property name="icon">
-             <iconset resource="m3uMan.qrc">
-              <normaloff>:/images/Ui/icons8-preview-pane-50.png</normaloff>:/images/Ui/icons8-preview-pane-50.png</iconset>
+             <string>play</string>
             </property>
            </widget>
           </item>
@@ -310,6 +271,16 @@
             </property>
            </widget>
           </item>
+          <item>
+           <widget class="VlcWidgetVolumeSlider" name="widVolume" native="true">
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>30</height>
+             </size>
+            </property>
+           </widget>
+          </item>
          </layout>
         </item>
         <item row="2" column="0">
@@ -317,7 +288,57 @@
           <property name="text">
            <string>autoplay station when clicked</string>
           </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
          </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QSplitter" name="splitter">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <widget class="QTreeWidget" name="treeWidget">
+           <property name="mouseTracking">
+            <bool>true</bool>
+           </property>
+           <property name="sizeAdjustPolicy">
+            <enum>QAbstractScrollArea::AdjustToContents</enum>
+           </property>
+           <property name="selectionMode">
+            <enum>QAbstractItemView::MultiSelection</enum>
+           </property>
+           <column>
+            <property name="text">
+             <string notr="true">1</string>
+            </property>
+           </column>
+          </widget>
+          <widget class="VlcWidgetVideo" name="widVideo" native="true">
+           <property name="minimumSize">
+            <size>
+             <width>160</width>
+             <height>120</height>
+            </size>
+           </property>
+           <property name="autoFillBackground">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </widget>
+        </item>
+        <item row="5" column="0">
+         <widget class="QListWidget" name="lvStations">
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>60</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="0">
+         <widget class="VlcWidgetSeek" name="widSeek" native="true"/>
         </item>
        </layout>
       </widget>
@@ -622,6 +643,18 @@
    <class>VlcWidgetVideo</class>
    <extends>QWidget</extends>
    <header location="global">VLCQtWidgets/WidgetVideo.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>VlcWidgetSeek</class>
+   <extends>QWidget</extends>
+   <header location="global">VLCQtWidgets/WidgetSeek.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>VlcWidgetVolumeSlider</class>
+   <extends>QWidget</extends>
+   <header location="global">VLCQtWidgets/WidgetVolumeSlider.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
