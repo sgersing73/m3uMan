@@ -248,11 +248,13 @@ bool DbManager::deactivateEXTINFs()
     return select->exec("UPDATE extinf SET state = 0");
 }
 
-QSqlQuery* DbManager::selectEXTINF_group_titles()
+QSqlQuery* DbManager::selectEXTINF_group_titles(int state)
 {
     QSqlQuery *select = new QSqlQuery();
 
-    select->prepare("select distinct group_title from extinf order by group_title");
+    select->prepare("select distinct group_title from extinf WHERE (state = :state OR :state = 0) order by group_title");
+    select->bindValue(":state", state);
+
     if ( select->exec() ) {
     }
 

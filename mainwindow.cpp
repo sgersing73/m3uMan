@@ -237,11 +237,11 @@ void MainWindow::getFileData(const QString &filename)
 
                 parser = this->splitCommandLine(tags);
 
-                foreach(QString item, parser) {
+                tvg_name = station;
+                group_title = "NoGroup";
+                tvg_logo = " ";
 
-                    tvg_name = station;
-                    group_title = "NoGroup";
-                    tvg_logo = "https://image.winudf.com/v2/image1/Y29tLnZpdGxhYnMuaXB0djRhbGwuZnJlZV9pY29uXzE1NjQwNTEzNjVfMDI3/icon.png?w=170&fakeurl=1";
+                foreach(QString item, parser) {
 
                     if ( item.contains("tvg-name") ) {
                         tvg_name = item.split("=").at(1);
@@ -478,10 +478,15 @@ void MainWindow::fillComboGroupTitels()
     QSqlQuery *select = nullptr;
     QString title;
     QString id;
+    int state = 0; // alle laden
 
     ui->cboGroupTitels->clear();
 
-    select = db.selectEXTINF_group_titles();
+    if ( ui->radNew->isChecked() ) {
+        state = 2; // nur neue laden
+    }
+
+    select = db.selectEXTINF_group_titles(state);
     while ( select->next() ) {
 
         title = select->value(0).toByteArray().constData();
@@ -612,9 +617,10 @@ void MainWindow::fillTwPls_Item()
 
             item->setData(Qt::UserRole, url);
             item->setData(Qt::DecorationRole, buttonImage.scaled(50,50,Qt::KeepAspectRatio, Qt::SmoothTransformation));
+            item->setToolTip(tvg_name);
             ui->lvStations->addItem(item);
 
-            file.close();
+            file.close();       
         }
 
         added = true;
@@ -776,12 +782,12 @@ void MainWindow::SaveM3u()
             newDoc.write(m_pImgCtrl->downloadedData());
             newDoc.close();
 
-            statusBar()->showMessage(tr("file %1 saved").arg(filename), 2000);
-
-            QMessageBox(QMessageBox::Information, "Downloader", tr("File %1 download success!").arg(filename), QMessageBox::Ok).exec() ;
+            statusBar()->showMessage(tr("File %1 download success!").arg(filename), 5000);
 
             if (ui->chkImport->isChecked() ) {
                 this->getFileData(filename);
+            } else {
+                QMessageBox(QMessageBox::Information, "Downloader", tr("File %1 download success!").arg(filename), QMessageBox::Ok).exec() ;
             }
         }
     } else {
@@ -804,12 +810,12 @@ void MainWindow::SaveXML()
             newDoc.write(m_pImgCtrl->downloadedData());
             newDoc.close();
 
-            statusBar()->showMessage(tr("file %1 saved").arg(filename), 2000);
-
-            QMessageBox(QMessageBox::Information, "Downloader", tr("File %1 download success!").arg(filename), QMessageBox::Ok).exec() ;
+            statusBar()->showMessage(tr("File %1 download success!").arg(filename), 5000);
 
             if (ui->chkEPGImport->isChecked() ) {
                 this->getEPGFileData(filename);
+            } else {
+                QMessageBox(QMessageBox::Information, "Downloader", tr("File %1 download success!").arg(filename), QMessageBox::Ok).exec() ;
             }
         }
     } else {
@@ -878,9 +884,18 @@ void MainWindow::on_twPLS_Items_itemSelectionChanged()
 
         select->clear();
 
-        m_pImgCtrl = new FileDownloader(logo, this);
+        if ( ! logo.trimmed().isEmpty() ) {
 
-        connect(m_pImgCtrl, SIGNAL(downloaded()), SLOT(loadImage()));
+            m_pImgCtrl = new FileDownloader(logo, this);
+
+            connect(m_pImgCtrl, SIGNAL(downloaded()), SLOT(loadImage()));
+
+        } else {
+
+            QPixmap buttonImage (":/images/iptv.png");
+            ui->lblLogo->setPixmap(buttonImage.scaledToWidth(ui->lblLogo->maximumWidth()));
+        }
+
     }
 
 }
@@ -1107,11 +1122,13 @@ void MainWindow::on_edtEPGDownload_clicked()
 
 void MainWindow::on_radAll_clicked()
 {
+    fillComboGroupTitels();
     fillTreeWidget();
 }
 
 void MainWindow::on_radNew_clicked()
 {
+    fillComboGroupTitels();
     fillTreeWidget();
 }
 

@@ -6,12 +6,16 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>788</width>
-    <height>576</height>
+    <width>776</width>
+    <height>610</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>m3uMan</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="m3uMan.qrc">
+    <normaloff>:/images/icons8-retro-tv-100.png</normaloff>:/images/icons8-retro-tv-100.png</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout_3">
@@ -29,6 +33,12 @@
       <layout class="QGridLayout" name="gridLayout">
        <item row="1" column="5">
         <widget class="QPushButton" name="cmdImportEpg">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>30</height>
+          </size>
+         </property>
          <property name="maximumSize">
           <size>
            <width>50</width>
@@ -36,12 +46,22 @@
           </size>
          </property>
          <property name="text">
-          <string>...</string>
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="m3uMan.qrc">
+           <normaloff>:/images/Ui/icons8-input-50.png</normaloff>:/images/Ui/icons8-input-50.png</iconset>
          </property>
         </widget>
        </item>
        <item row="0" column="5">
         <widget class="QPushButton" name="edtLoad">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>30</height>
+          </size>
+         </property>
          <property name="maximumSize">
           <size>
            <width>50</width>
@@ -49,7 +69,11 @@
           </size>
          </property>
          <property name="text">
-          <string>...</string>
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="m3uMan.qrc">
+           <normaloff>:/images/Ui/icons8-input-50.png</normaloff>:/images/Ui/icons8-input-50.png</iconset>
          </property>
         </widget>
        </item>
@@ -89,21 +113,47 @@
        </item>
        <item row="0" column="4">
         <widget class="QPushButton" name="edtDownload">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>30</height>
+          </size>
+         </property>
          <property name="maximumSize">
           <size>
            <width>16777215</width>
            <height>29</height>
           </size>
          </property>
+         <property name="toolTip">
+          <string>download URL for stations</string>
+         </property>
          <property name="text">
-          <string>download</string>
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="m3uMan.qrc">
+           <normaloff>:/images/Ui/icons8-download-50.png</normaloff>:/images/Ui/icons8-download-50.png</iconset>
          </property>
         </widget>
        </item>
        <item row="1" column="4">
         <widget class="QPushButton" name="edtEPGDownload">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>download URL for EPG</string>
+         </property>
          <property name="text">
-          <string>download</string>
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="m3uMan.qrc">
+           <normaloff>:/images/Ui/icons8-download-50.png</normaloff>:/images/Ui/icons8-download-50.png</iconset>
          </property>
         </widget>
        </item>
@@ -207,7 +257,11 @@
              </size>
             </property>
             <property name="text">
-             <string>&lt;&lt;</string>
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="m3uMan.qrc">
+              <normaloff>:/images/Ui/icons8-swipe-left-50.png</normaloff>:/images/Ui/icons8-swipe-left-50.png</iconset>
             </property>
            </widget>
           </item>
@@ -224,7 +278,11 @@
              <bool>false</bool>
             </property>
             <property name="text">
-             <string>play</string>
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="m3uMan.qrc">
+              <normaloff>:/images/Ui/icons8-preview-pane-50.png</normaloff>:/images/Ui/icons8-preview-pane-50.png</iconset>
             </property>
            </widget>
           </item>
@@ -244,7 +302,11 @@
              </size>
             </property>
             <property name="text">
-             <string>&gt;&gt;</string>
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="m3uMan.qrc">
+              <normaloff>:/images/Ui/icons8-swipe-right-50.png</normaloff>:/images/Ui/icons8-swipe-right-50.png</iconset>
             </property>
            </widget>
           </item>
@@ -270,12 +332,19 @@
            <widget class="QPushButton" name="cmdNewPlaylist">
             <property name="maximumSize">
              <size>
-              <width>100</width>
+              <width>30</width>
               <height>16777215</height>
              </size>
             </property>
+            <property name="toolTip">
+             <string>add a new playlist</string>
+            </property>
             <property name="text">
-             <string>new</string>
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="m3uMan.qrc">
+              <normaloff>:/images/Ui/icons8-add-50.png</normaloff>:/images/Ui/icons8-add-50.png</iconset>
             </property>
            </widget>
           </item>
@@ -283,12 +352,19 @@
            <widget class="QPushButton" name="cmdRenamePlaylist">
             <property name="maximumSize">
              <size>
-              <width>100</width>
+              <width>30</width>
               <height>16777215</height>
              </size>
             </property>
+            <property name="toolTip">
+             <string>rename the selected playlist</string>
+            </property>
             <property name="text">
-             <string>rename</string>
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="m3uMan.qrc">
+              <normaloff>:/images/Ui/icons8-replace-50.png</normaloff>:/images/Ui/icons8-replace-50.png</iconset>
             </property>
            </widget>
           </item>
@@ -296,12 +372,19 @@
            <widget class="QPushButton" name="cmdDeletePlaylist">
             <property name="maximumSize">
              <size>
-              <width>100</width>
+              <width>30</width>
               <height>16777215</height>
              </size>
             </property>
+            <property name="toolTip">
+             <string>remove select playliste</string>
+            </property>
             <property name="text">
-             <string>remove</string>
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="m3uMan.qrc">
+              <normaloff>:/images/Ui/icons8-trash-can-50.png</normaloff>:/images/Ui/icons8-trash-can-50.png</iconset>
             </property>
            </widget>
           </item>
@@ -405,8 +488,15 @@
             <property name="enabled">
              <bool>false</bool>
             </property>
+            <property name="toolTip">
+             <string>stream info (needs FFPROBE in path)</string>
+            </property>
             <property name="text">
-             <string>stream info</string>
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="m3uMan.qrc">
+              <normaloff>:/images/Ui/icons8-search-in-cloud-50.png</normaloff>:/images/Ui/icons8-search-in-cloud-50.png</iconset>
             </property>
            </widget>
           </item>
@@ -422,7 +512,11 @@
              </size>
             </property>
             <property name="text">
-             <string>vvv</string>
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="m3uMan.qrc">
+              <normaloff>:/images/Ui/icons8-swipe-down-50.png</normaloff>:/images/Ui/icons8-swipe-down-50.png</iconset>
             </property>
            </widget>
           </item>
@@ -435,14 +529,21 @@
              </size>
             </property>
             <property name="text">
-             <string>^^^</string>
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="m3uMan.qrc">
+              <normaloff>:/images/Ui/icons8-swipe-up-50.png</normaloff>:/images/Ui/icons8-swipe-up-50.png</iconset>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QCheckBox" name="chkExtern">
+            <property name="statusTip">
+             <string>use VLC as external player</string>
+            </property>
             <property name="text">
-             <string>play extern</string>
+             <string>use extern player</string>
             </property>
            </widget>
           </item>
@@ -473,8 +574,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>788</width>
-     <height>21</height>
+     <width>776</width>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuVideo">

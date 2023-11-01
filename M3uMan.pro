@@ -13,8 +13,8 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = m3uMan
 TEMPLATE = app
 
-LIBS       += -L../m3uMan/win32/VLC-Qt_1.1.0_win32_mingw/lib
-INCLUDEPATH += ../m3uMan/win32/VLC-Qt_1.1.0_win32_mingw/include
+win32: LIBS       += -L../m3uMan/win32/VLC-Qt_1.1.0_win32_mingw/lib
+win32: INCLUDEPATH += ../m3uMan/win32/VLC-Qt_1.1.0_win32_mingw/include
 LIBS       += -lVLCQtCore -lVLCQtWidgets
 
 # The following define makes your compiler emit warnings if you use
