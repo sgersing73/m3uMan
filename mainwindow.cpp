@@ -68,8 +68,7 @@ MainWindow::MainWindow(QWidget *parent) :
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
-{
-    qDebug() << m_SettingsFile;
+{    
     QSettings settings(m_SettingsFile, QSettings::IniFormat);
     settings.setValue("geometry", saveGeometry());
     settings.setValue("windowState", saveState());
@@ -174,7 +173,6 @@ void MainWindow::getFileData(const QString &filename)
     bool ende = false;
     int obsolete = 0;
     int newfiles = 0;
-    bool ok;
 
     QString tags;
     QString station;
@@ -612,7 +610,12 @@ void MainWindow::fillTwPls_Item()
 
             file.open(QIODevice::ReadOnly);
 
-            buttonImage.loadFromData(file.readAll());
+            if ( QUrl(logo).fileName().trimmed().isEmpty() ) {
+                buttonImage = QPixmap(":/images/iptv.png");
+            } else {
+                buttonImage.loadFromData(file.readAll());
+            }
+
             QListWidgetItem* item = new QListWidgetItem(buttonImage, "");
 
             item->setData(Qt::UserRole, url);
@@ -846,8 +849,6 @@ void MainWindow::on_twPLS_Items_itemSelectionChanged()
     QString   url;
     QString   desc;
 
-    qDebug() << ui->twPLS_Items->selectedItems().count();
-
     QList<QTreeWidgetItem*>items = ui->twPLS_Items->selectedItems();
 
     foreach( QTreeWidgetItem* mitem, items) {
@@ -885,19 +886,13 @@ void MainWindow::on_twPLS_Items_itemSelectionChanged()
         select->clear();
 
         if ( ! logo.trimmed().isEmpty() ) {
-
             m_pImgCtrl = new FileDownloader(logo, this);
-
             connect(m_pImgCtrl, SIGNAL(downloaded()), SLOT(loadImage()));
-
         } else {
-
             QPixmap buttonImage (":/images/iptv.png");
             ui->lblLogo->setPixmap(buttonImage.scaledToWidth(ui->lblLogo->maximumWidth()));
         }
-
     }
-
 }
 
 void MainWindow::processStarted()

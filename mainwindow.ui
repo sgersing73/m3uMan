@@ -15,7 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="m3uMan.qrc">
-    <normaloff>:/images/icons8-retro-tv-100.png</normaloff>:/images/icons8-retro-tv-100.png</iconset>
+    <normaloff>:/images/app.png</normaloff>:/images/app.png</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout_3">

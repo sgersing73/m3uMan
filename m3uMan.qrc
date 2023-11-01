@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>images/application.png</file>
         <file>images/Ui/icons8-move-up-50.png</file>
         <file>images/Ui/icons8-move-down-50.png</file>
         <file>images/Ui/icons8-checkmark-50.png</file>
@@ -17,5 +16,6 @@
         <file>images/Ui/icons8-swipe-right-50.png</file>
         <file>images/iptv.png</file>
         <file>images/icons8-retro-tv-100.png</file>
+        <file>images/app.png</file>
     </qresource>
 </RCC>
