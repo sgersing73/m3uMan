@@ -76,6 +76,9 @@ private:
     void addTreeChild(QTreeWidgetItem *parent, const QString &, const QString &, const QString &, const QString &, const QString &, const QString &);
     void get_media_sub_items( const libvlc_media_t& media );
 
+    void findAllButtons();
+    QPixmap changeIconColor(QIcon, QColor);
+
 private slots:
     void on_edtLoad_clicked();
     void on_cmdNewPlaylist_clicked();

@@ -7,6 +7,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    this->findAllButtons();
+
     _instance = new VlcInstance(VlcCommon::args(), this);
     _player = new VlcMediaPlayer(_instance);
     _equalizerDialog = new EqualizerDialog(this);    
@@ -1161,4 +1163,38 @@ void MainWindow::on_cmdMoveForward_clicked()
 void MainWindow::on_cmdMoveBackward_clicked()
 {
     _player->setTime( _player->time() - 60 * 1000 );
+}
+
+void MainWindow::findAllButtons() {
+
+    QList<QPushButton *> buttons = this->findChildren<QPushButton *>();
+
+    QList<QPushButton *>::const_iterator iter;
+    for (iter = buttons.constBegin(); iter != buttons.constEnd(); ++iter) {
+
+          QPushButton *button = *iter;
+
+          if( ! button->icon().isNull() ) {
+              button->setIcon( this->changeIconColor( button->icon(), QColor("white") ) );
+          }
+    }
+}
+
+QPixmap MainWindow::changeIconColor(QIcon icon, QColor color) {
+
+    QImage tmpImage = icon.pixmap(20).toImage();
+
+    // Loop all the pixels
+    for(int y = 0; y < tmpImage.height(); y++) {
+      for(int x= 0; x < tmpImage.width(); x++) {
+
+        // Read the alpha value each pixel, keeping the RGB values of your color
+        color.setAlpha(tmpImage.pixelColor(x,y).alpha());
+
+        // Apply the pixel color
+        tmpImage.setPixelColor(x,y,color);
+      }
+    }
+
+    return QPixmap::fromImage(tmpImage);
 }
