@@ -43,23 +43,34 @@ bool DbManager::createTable()
     }
 
     query.prepare("CREATE TABLE IF NOT EXISTS "
+                  "groups (id          INTEGER PRIMARY KEY AUTOINCREMENT, "
+                  "        group_title TEXT, "
+                  "        favorite    INTEGER)");
+
+    if (!query.exec()) {
+        qDebug() << "createTable groups" <<  query.lastError();
+        success = false;
+    }
+
+    query.prepare("CREATE TABLE IF NOT EXISTS "
                   "extinf (id          INTEGER PRIMARY KEY AUTOINCREMENT, "
                   "        tvg_name    TEXT, "
                   "        tvg_id      TEXT, "
-                  "        group_title TEXT, "
+                  "        group_id    INTEGER, "
                   "        tvg_logo    TEXT, "
                   "        url         TEXT, "
-                  "        state       INTEGER)");
+                  "        state       INTEGER, "
+                  "FOREIGN KEY(group_id) REFERENCES groups(id) ON DELETE CASCADE)");
 
     if (!query.exec()) {
         qDebug() << "createTable extinf" <<  query.lastError();
         success = false;
     }
 
-    query.prepare("CREATE INDEX IF NOT EXISTS idx_group_title ON extinf(group_title);");
+    query.prepare("CREATE INDEX IF NOT EXISTS idx_group_id ON extinf(group_id);");
 
     if (!query.exec()) {
-        qDebug() << "createIndex idx_group_title " <<  query.lastError();
+        qDebug() << "createIndex idx_group_id " <<  query.lastError();
         success = false;
     }
 
@@ -113,19 +124,21 @@ bool DbManager::createTable()
         success = false;
     }
 
+
+
     return success;
 }
 
-bool DbManager::addEXTINF(const QString& tvg_name, const QString& tvg_id, const QString& group_title, const QString& tvg_logo, const QString& url)
+bool DbManager::addEXTINF(const QString& tvg_name, const QString& tvg_id, int group_id, const QString& tvg_logo, const QString& url)
 {
    bool success = false;
 
-   // you should check if args are ok first...
    QSqlQuery query;
-   query.prepare("INSERT INTO extinf (tvg_name, tvg_id, group_title, tvg_logo, url, state ) VALUES (:tvg_name, :tvg_id, :group_title, :tvg_logo, :url, :state)");
+
+   query.prepare("INSERT INTO extinf (tvg_name, tvg_id, group_id, tvg_logo, url, state ) VALUES (:tvg_name, :tvg_id, :group_id, :tvg_logo, :url, :state)");
    query.bindValue(":tvg_name", tvg_name);
    query.bindValue(":tvg_id", tvg_id);
-   query.bindValue(":group_title", group_title);
+   query.bindValue(":group_id", group_id);
    query.bindValue(":tvg_logo", tvg_logo);
    query.bindValue(":url", url);
    query.bindValue(":state", 2);
@@ -169,11 +182,22 @@ bool DbManager::removeObsoleteEXTINFs()
     return success;
 }
 
-QSqlQuery* DbManager::selectEXTINF(const QString& group, const QString& station, const QString& state)
+QSqlQuery* DbManager::selectEXTINF(const QString& group_title, const QString& station, const QString& state)
 {
     QSqlQuery *select = new QSqlQuery();
 
-    select->prepare(QString("SELECT *, ( select count(*) from pls_item where pls_item.extinf_id = extinf.id ) FROM extinf WHERE (group_title LIKE '%%1%' OR '%1' = '') AND tvg_name LIKE '%%2%' AND (state = %3 OR %3 = 0) ORDER BY group_title").arg(group).arg(station).arg(state.toInt()));
+    QString test = QString("SELECT *, "
+                           "( select count(*) from pls_item where pls_item.extinf_id = extinf.id ) "
+                           "FROM  extinf, "
+                           "      groups "
+                           "WHERE groups.id = extinf.group_id "
+                           "AND  (group_title LIKE '%%1%' OR '%1' = '') "
+                           "AND   tvg_name LIKE '%%2%' "
+                           "AND  (state = %3 OR %3 = 0) ORDER BY group_title").arg(group_title).arg(station).arg(state.toInt());
+
+    //qDebug() << test;
+
+    select->prepare( test );
     if ( ! select->exec() ) {
         qDebug() << "selectEXTINF" << select->lastError();
     }
@@ -463,6 +487,93 @@ QSqlQuery* DbManager::selectProgramData(const QString &channel)
 
     if ( ! select->exec() ) {
         qDebug() << "selectProgramData" << select->lastError();
+    }
+
+    return select;
+}
+
+int DbManager::addGroup(const QString& group_title)
+{
+   int id = 0;
+
+   QSqlQuery query;
+
+   query.prepare("INSERT INTO groups (group_title, favorite ) VALUES (:group_title, :favorite)");
+   query.bindValue(":group_title", group_title);
+   query.bindValue(":favorite", 0);
+
+   if ( query.exec() ) {
+        id = query.lastInsertId().toInt();
+   } else {
+        qDebug() << "addGroup" << query.lastError() << group_title;
+   }
+
+   return id;
+}
+
+bool DbManager::updateGroup(int id, const QString& group_title, int favorite)
+{
+   bool success = false;
+
+   QSqlQuery query;
+
+   query.prepare("UPDATE groups SET group_title = :group_title, favorite = :favorite WHERE id = :id");
+   query.bindValue(":group_title", group_title);
+   query.bindValue(":favorite", favorite);
+   query.bindValue(":id", id);
+
+   if ( query.exec() ) {
+        success = true;
+   } else {
+        qDebug() << "updateGroup" << query.lastError() << id << group_title << favorite;
+   }
+
+   return success;
+}
+
+bool DbManager::updateGroupFavorite(int id, int favorite)
+{
+   bool success = false;
+
+   QSqlQuery query;
+
+   query.prepare("UPDATE groups SET favorite = :favorite WHERE id = :id");
+   query.bindValue(":favorite", favorite);
+   query.bindValue(":id", id);
+
+   if ( query.exec() ) {
+        success = true;
+   } else {
+        qDebug() << "updateGroupFavorite" << query.lastError() << id <<  favorite;
+   }
+
+   return success;
+}
+
+
+QSqlQuery* DbManager::selectGroup_byTitle(const QString& group_title)
+{
+    QSqlQuery *select = new QSqlQuery();
+
+    select->prepare("SELECT * FROM groups WHERE group_title = :group_title");
+    select->bindValue(":group_title", group_title);
+
+    if ( ! select->exec() ) {
+        qDebug() << "selectGroup_by_title" << select->lastError() << group_title;
+    }
+
+    return select;
+}
+
+QSqlQuery* DbManager::selectGroups(int favorite)
+{
+    QSqlQuery *select = new QSqlQuery();
+
+    select->prepare("SELECT * FROM groups WHERE favorite = :favorite ORDER BY group_title");
+    select->bindValue(":favorite", favorite);
+
+    if ( ! select->exec() ) {
+        qDebug() << "selectGroups" << select->lastError();
     }
 
     return select;

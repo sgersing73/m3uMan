@@ -7,7 +7,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    this->findAllButtons();
+    m_SettingsFile = m_AppDataPath + "/settings.ini";
 
     _instance = new VlcInstance(VlcCommon::args(), this);
     _player = new VlcMediaPlayer(_instance);
@@ -33,7 +33,7 @@ MainWindow::MainWindow(QWidget *parent) :
     m_AppDataPath = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
     dir.mkpath(m_AppDataPath);
 
-    m_SettingsFile = m_AppDataPath + "/settings.ini";
+    this->findAllButtons();
 
     QSettings settings(m_SettingsFile, QSettings::IniFormat);
     restoreGeometry(settings.value("geometry").toByteArray());
@@ -43,6 +43,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->edtUrlEpg->setText(settings.value("iptvepgurl").toByteArray());
 
     ui->treeWidget->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    ui->treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
+
+    connect(ui->treeWidget, SIGNAL(customContextMenuRequested(const QPoint&)),
+            this, SLOT(ShowContextMenu(const QPoint&)));
 
     createActions();
     createStatusBar();
@@ -70,6 +74,62 @@ MainWindow::MainWindow(QWidget *parent) :
     somethingchanged = false;
 }
 
+void MainWindow::ShowContextMenu( const QPoint & pos )
+{
+    QTreeWidgetItem *item = ui->treeWidget->itemAt(pos);
+    if (!item)
+       return;
+
+    QPoint globalPos = ui->treeWidget->mapToGlobal(pos);
+
+    QMenu myMenu;
+    myMenu.addAction("add to favorites");
+    myMenu.addAction("remove from favorites");
+    myMenu.addAction("move all stations to selected playlist");
+    // ...
+
+    QAction* selectedItem = myMenu.exec(globalPos);
+    if (selectedItem)
+    {
+        if ( selectedItem->text().contains("add to favorites") ) {
+            if ( item->childCount() != 0 ) { // Group Item
+                if ( db.updateGroupFavorite(item->text(2).toInt(), 1) )  {
+                    fillComboGroupTitels();
+                    fillTreeWidget();
+                }
+            }
+        }
+        if ( selectedItem->text().contains("remove from favorites") ) {
+            if ( item->childCount() != 0 ) { // Group Item
+                if ( db.updateGroupFavorite(item->text(2).toInt(), 0) ) {
+                    fillComboGroupTitels();
+                    fillTreeWidget();
+                }
+            }
+        }
+        if ( selectedItem->text().contains("move all stations to selected playlist") ) {
+
+            if ( item->childCount() != 0 ) { // Group Item
+                for( int i = 0; i < item->childCount(); ++i ) {
+
+                    const int pls_id = ui->cboPlaylists->itemData(ui->cboPlaylists->currentIndex()).toString().toInt();
+                    const int extinf_id = item->child(i)->text(2).toInt();
+                    const int pls_pos = ui->twPLS_Items->topLevelItemCount() +1;
+
+                    db.insertPLS_Item( pls_id, extinf_id, pls_pos );
+                }
+            }
+
+            this->fillTwPls_Item();
+        }
+
+    }
+    else
+    {
+        // nothing was chosen
+    }
+}
+
 void MainWindow::closeEvent(QCloseEvent *event)
 {    
     QSettings settings(m_SettingsFile, QSettings::IniFormat);
@@ -92,10 +152,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 MainWindow::~MainWindow()
 {
-    delete _player;
-    delete _media;
-    delete _instance;
-
     delete ui;
 }
 
@@ -187,6 +243,7 @@ void MainWindow::getFileData(const QString &filename)
     QString tvg_name;
     QString tvg_id;
     QString group_title;
+    int     group_id;
     QString tvg_logo;
 
     QSqlQuery *query = nullptr;
@@ -260,6 +317,18 @@ void MainWindow::getFileData(const QString &filename)
                     }
                 }
 
+                query = db.selectGroup_byTitle(group_title);
+                query->last();
+                query->first();
+
+                if ( query->isValid() ) {
+                    group_id = query->value(0).toByteArray().toInt();
+                } else {
+                    group_id = db.addGroup(group_title);
+                }
+                query->clear();
+
+                // ------------------------------------------------
                 query = db.selectEXTINF_byUrl(url);
 
                 query->last();
@@ -270,11 +339,11 @@ void MainWindow::getFileData(const QString &filename)
                     db.updateEXTINF_byRef( query->value(0).toByteArray().toInt(), tvg_name, group_title, tvg_logo, 1 );
                 } else {
                   //  qDebug() << "-I-" <<tvg_name<< tvg_id<< group_title<< tvg_logo<< url;
-                    db.addEXTINF(tvg_name, tvg_id, group_title, tvg_logo, url);
+                    db.addEXTINF(tvg_name, tvg_id, group_id, tvg_logo, url);
                     newfiles++;
                 }
-
                 query->clear();
+                // ------------------------------------------------
 
                 counter++;
 
@@ -349,13 +418,17 @@ QStringList MainWindow::splitCommandLine(const QString & cmdLine)
     return list;
 }
 
-QTreeWidgetItem* MainWindow::addTreeRoot(const QString& name, const QString& description, const QString& id)
+QTreeWidgetItem* MainWindow::addTreeRoot(const QString& name, const QString& description, const QString& id, int favorite)
 {
     QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui->treeWidget);
 
     treeItem->setText(0, name);
     treeItem->setText(1, description);
     treeItem->setText(2, id);
+
+    if ( favorite == 1 ) {
+         treeItem->setBackground(0, QColor("orange") );
+    }
 
     return treeItem;
 }
@@ -395,6 +468,8 @@ void MainWindow::fillTreeWidget()
     QString used;
     QString state;
     QString url;
+    QString favorite;
+    QString group_id;
 
     // Add root nodes
     QTreeWidgetItem *item = nullptr;
@@ -420,13 +495,13 @@ void MainWindow::fillTreeWidget()
         state = "2";
     }
 
-    select = db.selectEXTINF(group, ui->edtFilter->text(), state);
+    select = db.selectEXTINF(group, ui->edtFilter->text(), state );
 
     ui->treeWidget->blockSignals(true);
 
     while ( select->next() ) {
 
-        group = select->value(3).toByteArray().constData();
+        group = select->value(8).toByteArray().constData();
 
         if (group.isEmpty()) {
             group = " ";
@@ -435,12 +510,14 @@ void MainWindow::fillTreeWidget()
         title = select->value(1).toByteArray().constData();
         tvg_id = select->value(2).toByteArray().constData();
         id = select->value(0).toByteArray().constData();
+        group_id = select->value(3).toByteArray().constData();
         url = select->value(5).toByteArray().constData();
-        used = select->value(7).toByteArray().constData();
+        used = select->value(10).toByteArray().constData();
         state = select->value(6).toByteArray().constData();
+        favorite = select->value(9).toByteArray().constData();
 
         if ( group != lastgroup ) {
-            item = addTreeRoot(group, "", "");
+            item = addTreeRoot(group, "", group_id, favorite.toInt());
             lastgroup = group;
         }
 
@@ -482,6 +559,7 @@ void MainWindow::fillComboGroupTitels()
     QString title;
     QString id;
     int state = 0; // alle laden
+    int favorite = 0;
 
     ui->cboGroupTitels->clear();
 
@@ -489,12 +567,17 @@ void MainWindow::fillComboGroupTitels()
         state = 2; // nur neue laden
     }
 
-    select = db.selectEXTINF_group_titles(state);
+    if ( ui->chkOnlyFavorites->isChecked() ) {
+        favorite = 1;
+    }
+
+    select = db.selectGroups( favorite );
     while ( select->next() ) {
 
-        title = select->value(0).toByteArray().constData();
+        id    = select->value(0).toByteArray().constData();
+        title = select->value(1).toByteArray().constData();
 
-        ui->cboGroupTitels->addItem(title);
+        ui->cboGroupTitels->addItem(title, id);
     }
 
     delete select;
@@ -555,7 +638,6 @@ void MainWindow::on_cmdRenamePlaylist_clicked()
 
 void MainWindow::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column)
 {
-
     QList<QTreeWidgetItem*>items = ui->treeWidget->selectedItems();
 
     foreach( QTreeWidgetItem* mitem, items) {
@@ -611,7 +693,7 @@ void MainWindow::fillTwPls_Item()
         treeItem->setStatusTip(0, tr("double click to remove the station"));
 
         file.setFileName(m_AppDataPath + "/logos/" + QUrl(logo).fileName());
-        if ( file.exists() ) {
+        if ( file.exists() && file.size() > 0 ) {
 
             file.open(QIODevice::ReadOnly);
 
@@ -624,7 +706,7 @@ void MainWindow::fillTwPls_Item()
             QListWidgetItem* item = new QListWidgetItem(buttonImage, "");
 
             item->setData(Qt::UserRole, url);
-            item->setData(Qt::DecorationRole, buttonImage.scaled(50,50,Qt::KeepAspectRatio, Qt::SmoothTransformation));
+            item->setData(Qt::DecorationRole, buttonImage.scaled(50,50,Qt::KeepAspectRatio, Qt::SmoothTransformation));      
             item->setToolTip(tvg_name);
             ui->lvStations->addItem(item);
 
@@ -894,7 +976,7 @@ void MainWindow::on_twPLS_Items_itemSelectionChanged()
             m_pImgCtrl = new FileDownloader(logo, this);
             connect(m_pImgCtrl, SIGNAL(downloaded()), SLOT(loadImage()));
         } else {
-            QPixmap buttonImage (":/images/iptv.png");
+            const QPixmap buttonImage (":/images/iptv.png");
             ui->lblLogo->setPixmap(buttonImage.scaledToWidth(ui->lblLogo->maximumWidth()));
         }
     }
@@ -1167,6 +1249,9 @@ void MainWindow::on_cmdMoveBackward_clicked()
 
 void MainWindow::findAllButtons() {
 
+    QSettings settings(m_SettingsFile, QSettings::IniFormat);
+    QString iconcolor = settings.value("iconcolor", "black").toByteArray();
+
     QList<QPushButton *> buttons = this->findChildren<QPushButton *>();
 
     QList<QPushButton *>::const_iterator iter;
@@ -1175,7 +1260,8 @@ void MainWindow::findAllButtons() {
           QPushButton *button = *iter;
 
           if( ! button->icon().isNull() ) {
-              button->setIcon( this->changeIconColor( button->icon(), QColor("white") ) );
+
+              button->setIcon( this->changeIconColor( button->icon(), QColor(iconcolor) ) );
           }
     }
 }
@@ -1197,4 +1283,26 @@ QPixmap MainWindow::changeIconColor(QIcon icon, QColor color) {
     }
 
     return QPixmap::fromImage(tmpImage);
+}
+
+void MainWindow::on_actionIcon_color_triggered()
+{
+    QColor color = QColorDialog::getColor(Qt::black, this );
+
+    if ( color.isValid() ) {
+
+        qDebug() << m_SettingsFile;
+
+        QSettings settings(m_SettingsFile, QSettings::IniFormat);
+        settings.setValue("iconcolor", color.name());
+        settings.sync();
+
+        this->findAllButtons();
+    }
+}
+
+void MainWindow::on_chkOnlyFavorites_stateChanged(int arg1)
+{
+    fillComboGroupTitels();
+    fillTreeWidget();
 }

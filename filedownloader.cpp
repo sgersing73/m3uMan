@@ -24,9 +24,10 @@ void FileDownloader::errorOccurred(QNetworkReply::NetworkError code) {
 
 void FileDownloader::updateDownloadProgress(qint64 bytesRead, qint64 totalBytes)
 {
-
-    m_iProgress = (qint64)((bytesRead * 100) / totalBytes);
-    emit progress();
+    if ( bytesRead > 0 && totalBytes > 0 ) {
+        m_iProgress = (qint64)((bytesRead * 100) / totalBytes);
+        emit progress();
+    }
 }
 
 qint64 FileDownloader::downloadedProgress() const {

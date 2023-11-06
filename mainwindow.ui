@@ -186,6 +186,13 @@
         <item row="3" column="0">
          <layout class="QHBoxLayout" name="horizontalLayout_6">
           <item>
+           <widget class="QCheckBox" name="chkOnlyFavorites">
+            <property name="text">
+             <string>only favorites</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QRadioButton" name="radAll">
             <property name="text">
              <string>show all stations</string>
@@ -204,12 +211,18 @@
           </item>
          </layout>
         </item>
-        <item row="0" column="0">
-         <widget class="QComboBox" name="cboGroupTitels">
-          <property name="toolTip">
-           <string>select a program group you are looking for</string>
+        <item row="2" column="0">
+         <widget class="QCheckBox" name="chkAutoPlay">
+          <property name="text">
+           <string>autoplay station when clicked</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
           </property>
          </widget>
+        </item>
+        <item row="6" column="0">
+         <widget class="VlcWidgetSeek" name="widSeek" native="true"/>
         </item>
         <item row="7" column="0">
          <layout class="QHBoxLayout" name="horizontalLayout_5">
@@ -283,13 +296,20 @@
           </item>
          </layout>
         </item>
-        <item row="2" column="0">
-         <widget class="QCheckBox" name="chkAutoPlay">
-          <property name="text">
-           <string>autoplay station when clicked</string>
+        <item row="5" column="0">
+         <widget class="QListWidget" name="lvStations">
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>70</height>
+           </size>
           </property>
-          <property name="checked">
-           <bool>true</bool>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QComboBox" name="cboGroupTitels">
+          <property name="toolTip">
+           <string>select a program group you are looking for</string>
           </property>
          </widget>
         </item>
@@ -326,19 +346,6 @@
            </property>
           </widget>
          </widget>
-        </item>
-        <item row="5" column="0">
-         <widget class="QListWidget" name="lvStations">
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>60</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-        <item row="6" column="0">
-         <widget class="VlcWidgetSeek" name="widSeek" native="true"/>
         </item>
        </layout>
       </widget>
@@ -596,7 +603,7 @@
      <x>0</x>
      <y>0</y>
      <width>776</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuVideo">
@@ -607,7 +614,14 @@
     <addaction name="actionStop"/>
     <addaction name="actionEqualizer"/>
    </widget>
+   <widget class="QMenu" name="menuSettings">
+    <property name="title">
+     <string>Settings</string>
+    </property>
+    <addaction name="actionIcon_color"/>
+   </widget>
    <addaction name="menuVideo"/>
+   <addaction name="menuSettings"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -634,6 +648,11 @@
   <action name="actionEqualizer">
    <property name="text">
     <string>Equalizer</string>
+   </property>
+  </action>
+  <action name="actionIcon_color">
+   <property name="text">
+    <string>Icon color</string>
    </property>
   </action>
  </widget>

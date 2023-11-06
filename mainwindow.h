@@ -25,6 +25,7 @@
 #include <QDir>
 #include <QListWidgetItem>
 #include <QXmlStreamReader>
+#include <QColorDialog>
 
 #include <VLCQtCore/Common.h>
 #include <VLCQtCore/Instance.h>
@@ -72,7 +73,7 @@ private:
 
     QStringList splitCommandLine(const QString &);
 
-    QTreeWidgetItem* addTreeRoot(const QString &, const QString &, const QString &);
+    QTreeWidgetItem* addTreeRoot(const QString &, const QString &, const QString &, int);
     void addTreeChild(QTreeWidgetItem *parent, const QString &, const QString &, const QString &, const QString &, const QString &, const QString &);
     void get_media_sub_items( const libvlc_media_t& media );
 
@@ -109,6 +110,8 @@ private slots:
     void loadImage();
     void ShowDownloadProgress();
 
+    void ShowContextMenu( const QPoint & );
+
     void on_cmdSavePosition_clicked();
     void on_treeWidget_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
     void on_cmdImportEpg_clicked();
@@ -125,6 +128,10 @@ private slots:
     void on_cmdMoveForward_clicked();
 
     void on_cmdMoveBackward_clicked();
+
+    void on_actionIcon_color_triggered();
+
+    void on_chkOnlyFavorites_stateChanged(int arg1);
 
 private:
     QString         curFile;

@@ -15,7 +15,7 @@ public:
 
     bool createTable();
 
-    bool addEXTINF(const QString&, const QString&, const QString&, const QString&, const QString&);
+    bool addEXTINF(const QString&, const QString&, int, const QString&, const QString&);
     bool removeAllEXTINFs();
     bool removeObsoleteEXTINFs();
     bool updateEXTINF_byRef(int, const QString&, const QString&, const QString&, int);
@@ -24,6 +24,13 @@ public:
     QSqlQuery* selectEXTINF_group_titles(int);
     QSqlQuery* selectEXTINF_byUrl(const QString&);
     QSqlQuery* countEXTINF_byState();
+
+    int addGroup(const QString&);
+    bool updateGroup(int, const QString&, int);
+    bool updateGroupFavorite(int, int);
+
+    QSqlQuery* selectGroup_byTitle(const QString&);
+    QSqlQuery* selectGroups(int favorite);
 
     bool updatePLS(int, const QString &);
     bool updatePLS_item_pls_pos(int, int);
