@@ -7,6 +7,9 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    m_AppDataPath = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
+    dir.mkpath(m_AppDataPath);
+
     m_SettingsFile = m_AppDataPath + "/settings.ini";
 
     _instance = new VlcInstance(VlcCommon::args(), this);
@@ -29,9 +32,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionEqualizer, &QAction::triggered, _equalizerDialog, &EqualizerDialog::show);
 
     connect(_player, SIGNAL(error()), this, SLOT(showVlcError()));
-
-    m_AppDataPath = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
-    dir.mkpath(m_AppDataPath);
 
     this->findAllButtons();
 
