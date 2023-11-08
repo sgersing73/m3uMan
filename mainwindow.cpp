@@ -71,11 +71,13 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(m_Process, SIGNAL(readyReadStandardOutput()),this,SLOT(readyReadStandardOutput()));
     connect(m_Process, SIGNAL(finished(int)), this, SLOT(processFinished()));
 
+#ifdef Q_OS_WIN
     taskbarButton = new QWinTaskbarButton(this);
     taskbarButton->setWindow(this->windowHandle());
     //taskbarButton->setOverlayIcon(QIcon(":/overlay"));
 
     taskbarProgress = taskbarButton->progress();
+#endif
 
     somethingchanged = false;
 }
@@ -304,9 +306,11 @@ void MainWindow::getFileData(const QString &filename)
 
         QProgressDialog progress("Task in progress...", "Cancel", 0, linecount, this);
 
+#ifdef Q_OS_WIN
         taskbarProgress->setMinimum(0);
         taskbarProgress->setMaximum(linecount);
         taskbarProgress->setVisible(true);
+#endif
 
         stream.seek(0);
 
@@ -382,13 +386,18 @@ void MainWindow::getFileData(const QString &filename)
                 QCoreApplication::processEvents();
 
                 progress.setValue(counter);
+#ifdef Q_OS_WIN
                 taskbarProgress->setValue(counter);
+#endif
             }
         }
     }
 
     file.close();
+
+#ifdef Q_OS_WIN
     taskbarProgress->setVisible(false);
+#endif
 
     QSqlQuery *test;
 
@@ -1175,9 +1184,11 @@ void MainWindow::getEPGFileData(const QString &sFileName)
 
     QProgressDialog progress("Task in progress...", "Cancel", 0, linecount, this);
 
+#ifdef Q_OS_WIN
     taskbarProgress->setMinimum(0);
     taskbarProgress->setMaximum(linecount);
     taskbarProgress->setVisible(true);
+#endif
 
     xmlReader = new QXmlStreamReader(xmlFile);
 
@@ -1222,7 +1233,10 @@ void MainWindow::getEPGFileData(const QString &sFileName)
             QCoreApplication::processEvents();
 
             progress.setValue(linecount);
+
+#ifdef Q_OS_WIN
             taskbarProgress->setValue(linecount);
+#endif
     }
 
     if(xmlReader->hasError()) {
@@ -1234,7 +1248,9 @@ void MainWindow::getEPGFileData(const QString &sFileName)
     xmlReader->clear();
     xmlFile->close();
 
+#ifdef Q_OS_WIN
     taskbarProgress->setVisible(false);
+#endif
 }
 
 void MainWindow::on_edtEPGDownload_clicked()

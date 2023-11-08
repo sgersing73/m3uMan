@@ -26,8 +26,11 @@
 #include <QListWidgetItem>
 #include <QXmlStreamReader>
 #include <QColorDialog>
+
+#ifdef Q_OS_WIN
 #include <QWinTaskbarButton>
 #include <QWinTaskbarProgress>
+#endif
 
 #include <VLCQtCore/Common.h>
 #include <VLCQtCore/Instance.h>
@@ -156,8 +159,10 @@ private:
 
     EqualizerDialog *_equalizerDialog;
 
+#ifdef Q_OS_WIN
     QWinTaskbarButton *taskbarButton;
     QWinTaskbarProgress *taskbarProgress;
+#endif
 };
 
 #endif // MAINWINDOW_H

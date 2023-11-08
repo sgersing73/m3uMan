@@ -6,18 +6,20 @@
 
 QMAKE_CXXFLAGS = -Wno-unused-parameter -Wno-attributes
 
-QT       += sql core gui network winextras
+QT       += sql core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+
+win32 {
+QT          += winextras
+LIBS        += -L../m3uMan/win32/VLC-Qt_1.1.0_win32_mingw/lib
+INCLUDEPATH += ../m3uMan/win32/VLC-Qt_1.1.0_win32_mingw/include
+}
 
 TARGET = QtM3uMan
 TEMPLATE = app
 
-win32: LIBS        += -L../m3uMan/win32/VLC-Qt_1.1.0_win32_mingw/lib
-win32: INCLUDEPATH += ../m3uMan/win32/VLC-Qt_1.1.0_win32_mingw/include
-
-Debug:   LIBS       += -lVLCQtCored -lVLCQtWidgetsd
-Release: LIBS       += -lVLCQtCore -lVLCQtWidgets
+LIBS       += -lVLCQtCore -lVLCQtWidgets
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which has been marked as deprecated (the exact warnings
