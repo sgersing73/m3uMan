@@ -532,6 +532,7 @@ void MainWindow::fillTreeWidget()
     if ( ui->radAll->isChecked() ) {
         state = "0";
     } else if ( ui->radNew->isChecked() ) {
+        group = "";
         state = "2";
     }
 
@@ -605,14 +606,9 @@ void MainWindow::fillComboGroupTitels()
     QSqlQuery *select = nullptr;
     QString title;
     QString id;
-    int state = 0; // alle laden
     int favorite = 0;
 
     ui->cboGroupTitels->clear();
-
-    if ( ui->radNew->isChecked() ) {
-        state = 2; // nur neue laden
-    }
 
     if ( ui->chkOnlyFavorites->isChecked() ) {
         favorite = 1;
