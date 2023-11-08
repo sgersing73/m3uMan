@@ -18,9 +18,9 @@ public:
     bool addEXTINF(const QString&, const QString&, int, const QString&, const QString&);
     bool removeAllEXTINFs();
     bool removeObsoleteEXTINFs();
-    bool updateEXTINF_byRef(int, const QString&, const QString&, const QString&, int);
+    bool updateEXTINF_byRef(int, const QString&, int, const QString&, int);
     bool deactivateEXTINFs();
-    QSqlQuery* selectEXTINF(const QString&, const QString&, const QString&);
+    QSqlQuery* selectEXTINF(const QString&, const QString&, const QString&, int);
     QSqlQuery* selectEXTINF_group_titles(int);
     QSqlQuery* selectEXTINF_byUrl(const QString&);
     QSqlQuery* countEXTINF_byState();

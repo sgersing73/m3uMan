@@ -71,7 +71,21 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(m_Process, SIGNAL(readyReadStandardOutput()),this,SLOT(readyReadStandardOutput()));
     connect(m_Process, SIGNAL(finished(int)), this, SLOT(processFinished()));
 
+    taskbarButton = new QWinTaskbarButton(this);
+    taskbarButton->setWindow(this->windowHandle());
+    //taskbarButton->setOverlayIcon(QIcon(":/overlay"));
+
+    taskbarProgress = taskbarButton->progress();
+
     somethingchanged = false;
+}
+
+void MainWindow::showEvent(QShowEvent *e)
+{
+#ifdef Q_OS_WIN32
+    taskbarButton->setWindow(windowHandle());
+#endif
+    e->accept();
 }
 
 void MainWindow::ShowContextMenu( const QPoint & pos )
@@ -85,6 +99,8 @@ void MainWindow::ShowContextMenu( const QPoint & pos )
     QMenu myMenu;
     myMenu.addAction("add to favorites");
     myMenu.addAction("remove from favorites");
+    myMenu.addAction("make playlists from favorites");
+    myMenu.addSeparator();
     myMenu.addAction("move all stations to selected playlist");
     // ...
 
@@ -110,6 +126,10 @@ void MainWindow::ShowContextMenu( const QPoint & pos )
         if ( selectedItem->text().contains("move all stations to selected playlist") ) {
 
             if ( item->childCount() != 0 ) { // Group Item
+
+                QProgressDialog progress("Task in progress...", "Cancel", 0, item->childCount(), this);
+                progress.setWindowModality(Qt::WindowModal);
+
                 for( int i = 0; i < item->childCount(); ++i ) {
 
                     const int pls_id = ui->cboPlaylists->itemData(ui->cboPlaylists->currentIndex()).toString().toInt();
@@ -117,7 +137,11 @@ void MainWindow::ShowContextMenu( const QPoint & pos )
                     const int pls_pos = ui->twPLS_Items->topLevelItemCount() +1;
 
                     db.insertPLS_Item( pls_id, extinf_id, pls_pos );
+
+                    progress.setValue(i);
                 }
+
+                progress.close();
             }
 
             this->fillTwPls_Item();
@@ -280,6 +304,10 @@ void MainWindow::getFileData(const QString &filename)
 
         QProgressDialog progress("Task in progress...", "Cancel", 0, linecount, this);
 
+        taskbarProgress->setMinimum(0);
+        taskbarProgress->setMaximum(linecount);
+        taskbarProgress->setVisible(true);
+
         stream.seek(0);
 
         while (!stream.atEnd() && !ende){
@@ -336,7 +364,7 @@ void MainWindow::getFileData(const QString &filename)
 
                 if ( query->isValid() ) {
                   //  qDebug() << "-U-" <<tvg_name<< tvg_id<< group_title<< tvg_logo<< url;
-                    db.updateEXTINF_byRef( query->value(0).toByteArray().toInt(), tvg_name, group_title, tvg_logo, 1 );
+                    db.updateEXTINF_byRef( query->value(0).toByteArray().toInt(), tvg_name, group_id, tvg_logo, 1 );
                 } else {
                   //  qDebug() << "-I-" <<tvg_name<< tvg_id<< group_title<< tvg_logo<< url;
                     db.addEXTINF(tvg_name, tvg_id, group_id, tvg_logo, url);
@@ -352,12 +380,15 @@ void MainWindow::getFileData(const QString &filename)
                 }
 
                 QCoreApplication::processEvents();
+
                 progress.setValue(counter);
+                taskbarProgress->setValue(counter);
             }
         }
     }
 
     file.close();
+    taskbarProgress->setVisible(false);
 
     QSqlQuery *test;
 
@@ -495,7 +526,14 @@ void MainWindow::fillTreeWidget()
         state = "2";
     }
 
-    select = db.selectEXTINF(group, ui->edtFilter->text(), state );
+    if ( ui->chkOnlyFavorites->isChecked() ) {
+        group = "";
+        favorite = "1";
+    } else {
+        favorite = "0";
+    }
+
+    select = db.selectEXTINF(group, ui->edtFilter->text(), state, favorite.toInt() );
 
     ui->treeWidget->blockSignals(true);
 
@@ -596,7 +634,9 @@ void MainWindow::on_cmdNewPlaylist_clicked()
         fillComboPlaylists();
 
         QMessageBox::information (this, "The Playlist",
-                                  QString("Playlist %1 added...").arg(text));
+                                  QString("Playlist '%1' added...").arg(text));
+
+        ui->cboPlaylists->setCurrentText(text);
     }
 }
 
@@ -1135,6 +1175,10 @@ void MainWindow::getEPGFileData(const QString &sFileName)
 
     QProgressDialog progress("Task in progress...", "Cancel", 0, linecount, this);
 
+    taskbarProgress->setMinimum(0);
+    taskbarProgress->setMaximum(linecount);
+    taskbarProgress->setVisible(true);
+
     xmlReader = new QXmlStreamReader(xmlFile);
 
     //Parse the XML until we reach end of it
@@ -1178,6 +1222,7 @@ void MainWindow::getEPGFileData(const QString &sFileName)
             QCoreApplication::processEvents();
 
             progress.setValue(linecount);
+            taskbarProgress->setValue(linecount);
     }
 
     if(xmlReader->hasError()) {
@@ -1188,6 +1233,8 @@ void MainWindow::getEPGFileData(const QString &sFileName)
     //close reader and flush file
     xmlReader->clear();
     xmlFile->close();
+
+    taskbarProgress->setVisible(false);
 }
 
 void MainWindow::on_edtEPGDownload_clicked()

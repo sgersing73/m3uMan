@@ -52,6 +52,13 @@ bool DbManager::createTable()
         success = false;
     }
 
+    query.prepare("CREATE INDEX IF NOT EXISTS idx_group_favorite ON groups(favorite);");
+
+    if (!query.exec()) {
+        qDebug() << "createIndex idx_group_favorite " <<  query.lastError();
+        success = false;
+    }
+
     query.prepare("CREATE TABLE IF NOT EXISTS "
                   "extinf (id          INTEGER PRIMARY KEY AUTOINCREMENT, "
                   "        tvg_name    TEXT, "
@@ -182,7 +189,7 @@ bool DbManager::removeObsoleteEXTINFs()
     return success;
 }
 
-QSqlQuery* DbManager::selectEXTINF(const QString& group_title, const QString& station, const QString& state)
+QSqlQuery* DbManager::selectEXTINF(const QString& group_title, const QString& station, const QString& state, int favorite)
 {
     QSqlQuery *select = new QSqlQuery();
 
@@ -191,9 +198,10 @@ QSqlQuery* DbManager::selectEXTINF(const QString& group_title, const QString& st
                            "FROM  extinf, "
                            "      groups "
                            "WHERE groups.id = extinf.group_id "
-                           "AND  (group_title LIKE '%%1%' OR '%1' = '') "
+                           "AND  (groups.favorite = %4 OR %4 = 0) "
+                           "AND  (groups.group_title LIKE '%%1%' OR '%1' = '') "
                            "AND   tvg_name LIKE '%%2%' "
-                           "AND  (state = %3 OR %3 = 0) ORDER BY group_title").arg(group_title).arg(station).arg(state.toInt());
+                           "AND  (state = %3 OR %3 = 0) ORDER BY group_title").arg(group_title).arg(station).arg(state.toInt()).arg(favorite);
 
     //qDebug() << test;
 
@@ -245,21 +253,21 @@ QSqlQuery* DbManager::countEXTINF_byState()
     return select;
 }
 
-bool DbManager::updateEXTINF_byRef(int id, const QString& tvg_name, const QString& group_title, const QString& tvg_logo,int state)
+bool DbManager::updateEXTINF_byRef(int id, const QString& tvg_name, int group_id, const QString& tvg_logo,int state)
 {
     int retCode = true;
 
     QSqlQuery *select = new QSqlQuery();
 
-    select->prepare("UPDATE extinf SET state = :state, group_title = :group_title, tvg_name = :tvg_name, tvg_logo =:tvg_logo WHERE id = :id");
+    select->prepare("UPDATE extinf SET state = :state, group_id = :group_id, tvg_name = :tvg_name, tvg_logo =:tvg_logo WHERE id = :id");
     select->bindValue(":id", id);
     select->bindValue(":tvg_name", tvg_name);
-    select->bindValue(":group_title", group_title);
+    select->bindValue(":group_id", group_id);
     select->bindValue(":tvg_logo", tvg_logo);
     select->bindValue(":state", state);
 
     if ( ! select->exec() ) {
-        qDebug() << "updateEXTINF_state_byRef" << select->lastError();
+        qDebug() << "updateEXTINF_byRef" << select->lastError();
     }
 
     return retCode;
@@ -569,7 +577,7 @@ QSqlQuery* DbManager::selectGroups(int favorite)
 {
     QSqlQuery *select = new QSqlQuery();
 
-    select->prepare("SELECT * FROM groups WHERE favorite = :favorite ORDER BY group_title");
+    select->prepare("SELECT * FROM groups WHERE (favorite = :favorite OR :favorite = 0) ORDER BY group_title");
     select->bindValue(":favorite", favorite);
 
     if ( ! select->exec() ) {

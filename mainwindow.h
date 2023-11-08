@@ -26,6 +26,8 @@
 #include <QListWidgetItem>
 #include <QXmlStreamReader>
 #include <QColorDialog>
+#include <QWinTaskbarButton>
+#include <QWinTaskbarProgress>
 
 #include <VLCQtCore/Common.h>
 #include <VLCQtCore/Instance.h>
@@ -49,6 +51,7 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow() override;
+    void showEvent(QShowEvent *e) override;
 
 protected:
     void closeEvent(QCloseEvent *event) override;
@@ -152,6 +155,9 @@ private:
     VlcWidgetSeek   *_seek;
 
     EqualizerDialog *_equalizerDialog;
+
+    QWinTaskbarButton *taskbarButton;
+    QWinTaskbarProgress *taskbarProgress;
 };
 
 #endif // MAINWINDOW_H
