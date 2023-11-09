@@ -6,7 +6,7 @@
 
 QMAKE_CXXFLAGS = -Wno-unused-parameter -Wno-attributes
 
-QT       += sql core gui network
+QT       += sql core gui network testlib
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -39,13 +39,17 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
         dbmanager.cpp \
-        filedownloader.cpp
+        filedownloader.cpp \
+        qftp.cpp \
+        qurlinfo.cpp
 
 HEADERS += \
         EqualizerDialog.h \
         mainwindow.h \
         dbmanager.h \
-        filedownloader.h
+        filedownloader.h \
+        qftp.h \
+        qurlinfo.h
 
 FORMS += \
         EqualizerDialog.ui \

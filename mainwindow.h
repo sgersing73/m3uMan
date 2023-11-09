@@ -26,6 +26,7 @@
 #include <QListWidgetItem>
 #include <QXmlStreamReader>
 #include <QColorDialog>
+#include <QTest>
 
 #ifdef Q_OS_WIN
 #include <QWinTaskbarButton>
@@ -42,6 +43,7 @@
 #include "dbmanager.h"
 #include "filedownloader.h"
 #include "EqualizerDialog.h"
+#include "qftp.h"
 
 namespace Ui {
 class MainWindow;
@@ -85,6 +87,7 @@ private:
 
     void findAllButtons();
     QPixmap changeIconColor(QIcon, QColor);
+    bool ftpUploadFile(const QString&);
 
 private slots:
     void on_edtLoad_clicked();
