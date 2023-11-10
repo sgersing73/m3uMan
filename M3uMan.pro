@@ -39,17 +39,13 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
         dbmanager.cpp \
-        filedownloader.cpp \
-        qftp.cpp \
-        qurlinfo.cpp
+        filedownloader.cpp
 
 HEADERS += \
         EqualizerDialog.h \
         mainwindow.h \
         dbmanager.h \
-        filedownloader.h \
-        qftp.h \
-        qurlinfo.h
+        filedownloader.h
 
 FORMS += \
         EqualizerDialog.ui \

@@ -589,13 +589,6 @@
          </layout>
         </item>
         <item>
-         <widget class="QLineEdit" name="edtFtpConnect">
-          <property name="toolTip">
-           <string>ftpHost, ftpUser, ftpPass, filePathRemote</string>
-          </property>
-         </widget>
-        </item>
-        <item>
          <widget class="QTextEdit" name="edtOutput"/>
         </item>
        </layout>

@@ -41,7 +41,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->splitter->restoreState(settings.value("splitter").toByteArray());
     ui->edtUrl->setText(settings.value("iptvurl").toByteArray());
     ui->edtUrlEpg->setText(settings.value("iptvepgurl").toByteArray());
-    ui->edtFtpConnect->setText(settings.value("ftpconnect").toByteArray());
 
     ui->treeWidget->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
     ui->treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -165,7 +164,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
     settings.setValue("splitter",ui->splitter->saveState());
     settings.setValue("iptvurl", ui->edtUrl->text());
     settings.setValue("iptvepgurl", ui->edtUrlEpg->text());
-    settings.setValue("ftpconnect", ui->edtFtpConnect->text());
     settings.sync();
 
     _player->stop();
@@ -873,8 +871,6 @@ void MainWindow::on_cmdMakePlaylist_clicked()
     somethingchanged = false;
 
     statusBar()->showMessage(tr("File saved"), 2000);
-
-    this->ftpUploadFile(fileName);
 }
 
 void MainWindow::on_edtFilter_returnPressed()
@@ -1370,34 +1366,4 @@ void MainWindow::on_chkOnlyFavorites_stateChanged(int arg1)
 {
     fillComboGroupTitels();
     fillTreeWidget();
-}
-
-bool MainWindow::ftpUploadFile(const QString& filePath)
-{
-    QStringList values = ui->edtFtpConnect->text().split(",");
-    if ( values.count() != 4 ) {
-        return false;
-    }
-
-    QFile file(filePath);
-
-    file.open(QIODevice::ReadOnly);
-
-    QByteArray contents = file.readAll();
-    file.close();
-
-    qDebug() << "Uploading file to" << values.at(3);
-
-    QFtp ftp;
-    ftp.connectToHost( values.at(0) );
-    ftp.login( values.at(1), values.at(2) );
-
-    ftp.put( contents, values.at(3), QFtp::Binary );
-
-    ftp.close();
-
-    while ( ftp.hasPendingCommands() )
-        QCoreApplication::instance()->processEvents();
-
-    return true;
 }
