@@ -19,7 +19,7 @@ INCLUDEPATH += ../m3uMan/win32/VLC-Qt_1.1.0_win32_mingw/include
 TARGET = QtM3uMan
 TEMPLATE = app
 
-LIBS       += -lVLCQtCore -lVLCQtWidgets
+LIBS       += -lVLCQtCored -lVLCQtWidgetsd
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which has been marked as deprecated (the exact warnings

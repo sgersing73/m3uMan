@@ -85,6 +85,8 @@ private:
     void get_media_sub_items( const libvlc_media_t& media );
 
     void findAllButtons();
+    void MakePlaylist();
+
     QPixmap changeIconColor(QIcon, QColor);
 
 private slots:
@@ -97,7 +99,6 @@ private slots:
     void on_twPLS_Items_itemDoubleClicked(QTreeWidgetItem *item, int column);
     void on_cmdMoveUp_clicked();
     void on_cmdMoveDown_clicked();
-    void on_cmdMakePlaylist_clicked();
     void on_edtFilter_returnPressed();
     void on_cboGroupTitels_currentTextChanged(const QString &arg1);
     void on_edtDownload_clicked();
@@ -129,16 +130,14 @@ private slots:
     void on_radNew_clicked();
 
     void on_cmdPlayMoveDown_clicked();
-
     void on_pushButton_clicked();
-
     void on_cmdMoveForward_clicked();
-
     void on_cmdMoveBackward_clicked();
-
     void on_actionIcon_color_triggered();
-
     void on_chkOnlyFavorites_stateChanged(int arg1);
+
+
+    void on_actionhide_show_input_fields_triggered(bool checked);
 
 private:
     QString         curFile;

@@ -16,7 +16,7 @@ MainWindow::MainWindow(QWidget *parent) :
     _player = new VlcMediaPlayer(_instance);
     _equalizerDialog = new EqualizerDialog(this);    
 
-    _player->setVideoWidget(ui->widVideo);
+    _player->setVideoWidget(ui->widVideo);    
     _equalizerDialog->setMediaPlayer(_player);
     _error = new VlcError();
 
@@ -702,7 +702,7 @@ void MainWindow::fillTwPls_Item()
 {
     QString id;
     QString extinf_id;
-    QString tvg_name;
+    QString tvg_name, tvg_id;
     QString logo;
     QString url;
     bool    added = false;
@@ -728,6 +728,7 @@ void MainWindow::fillTwPls_Item()
         extinf_id = select->value(2).toByteArray().constData();
         logo = select->value(8).toByteArray().constData();
         tvg_name = select->value(5).toByteArray().constData();
+        tvg_id = select->value(6).toByteArray().constData();
         url = select->value(9).toByteArray().constData();
 
         QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui->twPLS_Items);
@@ -751,8 +752,10 @@ void MainWindow::fillTwPls_Item()
             QListWidgetItem* item = new QListWidgetItem(buttonImage, "");
 
             item->setData(Qt::UserRole, url);
+            item->setData(Qt::UserRole+1, tvg_id);
             item->setData(Qt::DecorationRole, buttonImage.scaled(50,50,Qt::KeepAspectRatio, Qt::SmoothTransformation));      
             item->setToolTip(tvg_name);
+
             ui->lvStations->addItem(item);
 
             file.close();       
@@ -765,7 +768,6 @@ void MainWindow::fillTwPls_Item()
 
     ui->cmdMoveUp->setEnabled( added );
     ui->cmdMoveDown->setEnabled( added );
-    ui->cmdMakePlaylist->setEnabled( added );
     ui->edtStationUrl->setText("");
 
 }
@@ -812,7 +814,7 @@ void MainWindow::on_cmdMoveDown_clicked()
     }
 }
 
-void MainWindow::on_cmdMakePlaylist_clicked()
+void MainWindow::MakePlaylist()
 {
     QTreeWidgetItem *item;
     int             extinf_id;
@@ -1000,9 +1002,9 @@ void MainWindow::on_twPLS_Items_itemSelectionChanged()
             url = select->value(5).toByteArray().constData();
         }
 
-        select->clear();
-
         ui->edtStationUrl->setText(url);
+
+        select->clear();
 
         select = db.selectProgramData(tvg_id);
 
@@ -1106,7 +1108,24 @@ void MainWindow::on_edtStationUrl_textChanged(const QString &arg1)
 
 void MainWindow::on_lvStations_itemClicked(QListWidgetItem *item)
 {
-    QVariant url =  item->data(Qt::UserRole);
+    QSqlQuery *select = nullptr;
+
+    QVariant url      =  item->data(Qt::UserRole);
+    QVariant tvg_id   =  item->data(Qt::UserRole+1); // zdf.de
+    QString  title, desc;
+
+    select = db.selectProgramData(tvg_id.toString());
+
+    while ( select->next() ) {
+
+        title = select->value(4).toByteArray().constData();
+        desc = select->value(5).toByteArray().constData();
+    }
+
+    ui->edtOutput->clear();
+    ui->edtOutput->append(title);
+    ui->edtOutput->append("");
+    ui->edtOutput->append(desc);
 
     if ( ! url.toString().isEmpty() ) {
 
@@ -1128,6 +1147,8 @@ void MainWindow::on_cmdSavePosition_clicked()
     }
 
     fillTwPls_Item();
+
+    MakePlaylist();
 
     statusBar()->showMessage("positions set...", 2000);
 }
@@ -1366,4 +1387,10 @@ void MainWindow::on_chkOnlyFavorites_stateChanged(int arg1)
 {
     fillComboGroupTitels();
     fillTreeWidget();
+}
+
+
+void MainWindow::on_actionhide_show_input_fields_triggered(bool checked)
+{
+    ui->groupBox->setVisible( !checked );
 }

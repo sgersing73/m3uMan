@@ -8,7 +8,7 @@ FileDownloader::FileDownloader(QUrl imageUrl, QObject *parent) : QObject(parent)
     QNetworkReply* reply = m_WebCtrl.get(request);
 
     connect(reply, SIGNAL(downloadProgress(qint64, qint64)), SLOT(updateDownloadProgress(qint64, qint64)));
-    connect(reply, SIGNAL(errorOccurred(QNetworkReply::NetworkError)), SLOT(errorOccurred(QNetworkReply::NetworkError)));
+ //   connect(reply, SIGNAL(errorOccurred(QNetworkReply::NetworkError)), SLOT(errorOccurred(QNetworkReply::NetworkError)));
 
     m_sFilename = imageUrl.fileName();
 }

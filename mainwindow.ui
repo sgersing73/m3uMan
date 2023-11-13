@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>776</width>
-    <height>623</height>
+    <height>598</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,182 +20,183 @@
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout_3">
     <item row="0" column="0">
-     <widget class="QGroupBox" name="groupBox">
-      <property name="maximumSize">
-       <size>
-        <width>16777215</width>
-        <height>82</height>
-       </size>
-      </property>
-      <property name="title">
-       <string/>
-      </property>
-      <layout class="QGridLayout" name="gridLayout">
-       <item row="1" column="5">
-        <widget class="QPushButton" name="cmdImportEpg">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>30</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>50</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-         <property name="icon">
-          <iconset resource="m3uMan.qrc">
-           <normaloff>:/images/Ui/icons8-input-50.png</normaloff>:/images/Ui/icons8-input-50.png</iconset>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="5">
-        <widget class="QPushButton" name="edtLoad">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>30</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>50</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-         <property name="icon">
-          <iconset resource="m3uMan.qrc">
-           <normaloff>:/images/Ui/icons8-input-50.png</normaloff>:/images/Ui/icons8-input-50.png</iconset>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="3">
-        <widget class="QCheckBox" name="chkEPGImport">
-         <property name="text">
-          <string>import after download</string>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QLineEdit" name="edtUrl"/>
-       </item>
-       <item row="0" column="3">
-        <widget class="QCheckBox" name="chkImport">
-         <property name="text">
-          <string>import after download</string>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="lblUrlEpg">
-         <property name="text">
-          <string>URL for EPG:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="lblUrl">
-         <property name="text">
-          <string>URL for stations:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QLineEdit" name="edtUrlEpg"/>
-       </item>
-       <item row="0" column="4">
-        <widget class="QPushButton" name="edtDownload">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>30</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>29</height>
-          </size>
-         </property>
-         <property name="toolTip">
-          <string>download URL for stations</string>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-         <property name="icon">
-          <iconset resource="m3uMan.qrc">
-           <normaloff>:/images/Ui/icons8-download-50.png</normaloff>:/images/Ui/icons8-download-50.png</iconset>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="4">
-        <widget class="QPushButton" name="edtEPGDownload">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>30</height>
-          </size>
-         </property>
-         <property name="toolTip">
-          <string>download URL for EPG</string>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-         <property name="icon">
-          <iconset resource="m3uMan.qrc">
-           <normaloff>:/images/Ui/icons8-download-50.png</normaloff>:/images/Ui/icons8-download-50.png</iconset>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item row="1" column="0">
-     <widget class="QSplitter" name="splitter_2">
+     <widget class="QSplitter" name="splitter_3">
       <property name="orientation">
-       <enum>Qt::Horizontal</enum>
+       <enum>Qt::Vertical</enum>
       </property>
-      <widget class="QWidget" name="layoutWidget">
+      <widget class="QGroupBox" name="groupBox">
+       <property name="title">
+        <string/>
+       </property>
+       <property name="checkable">
+        <bool>false</bool>
+       </property>
        <layout class="QGridLayout" name="gridLayout_2">
-        <item row="1" column="0">
-         <widget class="QLineEdit" name="edtFilter">
+        <item row="0" column="0">
+         <widget class="QLabel" name="lblUrl">
+          <property name="text">
+           <string>URL for stations:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLineEdit" name="edtUrl"/>
+        </item>
+        <item row="0" column="2">
+         <widget class="QCheckBox" name="chkImport">
+          <property name="text">
+           <string>import after download</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="3">
+         <widget class="QPushButton" name="edtDownload">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>29</height>
+           </size>
+          </property>
           <property name="toolTip">
-           <string>enter the name of a station you are looking for</string>
+           <string>download URL for stations</string>
           </property>
           <property name="text">
            <string/>
           </property>
+          <property name="icon">
+           <iconset resource="m3uMan.qrc">
+            <normaloff>:/images/Ui/icons8-download-50.png</normaloff>:/images/Ui/icons8-download-50.png</iconset>
+          </property>
          </widget>
         </item>
-        <item row="3" column="0">
-         <layout class="QHBoxLayout" name="horizontalLayout_6">
+        <item row="0" column="4">
+         <widget class="QPushButton" name="edtLoad">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>50</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="m3uMan.qrc">
+            <normaloff>:/images/Ui/icons8-input-50.png</normaloff>:/images/Ui/icons8-input-50.png</iconset>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="lblUrlEpg">
+          <property name="text">
+           <string>URL for EPG:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="edtUrlEpg"/>
+        </item>
+        <item row="1" column="2">
+         <widget class="QCheckBox" name="chkEPGImport">
+          <property name="text">
+           <string>import after download</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="3">
+         <widget class="QPushButton" name="edtEPGDownload">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="toolTip">
+           <string>download URL for EPG</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="m3uMan.qrc">
+            <normaloff>:/images/Ui/icons8-download-50.png</normaloff>:/images/Ui/icons8-download-50.png</iconset>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="4">
+         <widget class="QPushButton" name="cmdImportEpg">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>50</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="m3uMan.qrc">
+            <normaloff>:/images/Ui/icons8-input-50.png</normaloff>:/images/Ui/icons8-input-50.png</iconset>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QSplitter" name="splitter_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <widget class="QSplitter" name="splitter">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <widget class="QWidget" name="layoutWidget">
+         <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
-           <widget class="QCheckBox" name="chkOnlyFavorites">
-            <property name="text">
-             <string>only favorites</string>
+           <widget class="QComboBox" name="cboGroupTitels">
+            <property name="toolTip">
+             <string>select a program group you are looking for</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QRadioButton" name="radAll">
+           <widget class="QLineEdit" name="edtFilter">
+            <property name="toolTip">
+             <string>enter the name of a station you are looking for</string>
+            </property>
             <property name="text">
-             <string>show all stations</string>
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="chkAutoPlay">
+            <property name="text">
+             <string>autoplay station when clicked</string>
             </property>
             <property name="checked">
              <bool>true</bool>
@@ -203,230 +204,43 @@
            </widget>
           </item>
           <item>
-           <widget class="QRadioButton" name="radNew">
-            <property name="text">
-             <string>show only new stations</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item row="2" column="0">
-         <widget class="QCheckBox" name="chkAutoPlay">
-          <property name="text">
-           <string>autoplay station when clicked</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="6" column="0">
-         <widget class="VlcWidgetSeek" name="widSeek" native="true"/>
-        </item>
-        <item row="7" column="0">
-         <layout class="QHBoxLayout" name="horizontalLayout_5">
-          <item>
-           <widget class="QPushButton" name="cmdMoveBackward">
-            <property name="maximumSize">
-             <size>
-              <width>30</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-            <property name="icon">
-             <iconset resource="m3uMan.qrc">
-              <normaloff>:/images/Ui/icons8-swipe-left-50.png</normaloff>:/images/Ui/icons8-swipe-left-50.png</iconset>
-            </property>
-           </widget>
+           <layout class="QHBoxLayout" name="horizontalLayout_6">
+            <item>
+             <widget class="QCheckBox" name="chkOnlyFavorites">
+              <property name="text">
+               <string>only favorites</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="radAll">
+              <property name="text">
+               <string>show all stations</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="radNew">
+              <property name="text">
+               <string>show only new stations</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
           <item>
-           <widget class="QPushButton" name="cmdStop">
-            <property name="text">
-             <string>stop</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="cmdPlayStream">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="text">
-             <string>play</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="cmdPause">
-            <property name="text">
-             <string>pause</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="cmdMoveForward">
-            <property name="maximumSize">
-             <size>
-              <width>30</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-            <property name="icon">
-             <iconset resource="m3uMan.qrc">
-              <normaloff>:/images/Ui/icons8-swipe-right-50.png</normaloff>:/images/Ui/icons8-swipe-right-50.png</iconset>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="VlcWidgetVolumeSlider" name="widVolume" native="true">
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>30</height>
-             </size>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item row="5" column="0">
-         <widget class="QListWidget" name="lvStations">
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>70</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0">
-         <widget class="QComboBox" name="cboGroupTitels">
-          <property name="toolTip">
-           <string>select a program group you are looking for</string>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="0">
-         <widget class="QSplitter" name="splitter">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <widget class="QTreeWidget" name="treeWidget">
-           <property name="mouseTracking">
-            <bool>true</bool>
-           </property>
-           <property name="sizeAdjustPolicy">
-            <enum>QAbstractScrollArea::AdjustToContents</enum>
-           </property>
-           <property name="selectionMode">
-            <enum>QAbstractItemView::MultiSelection</enum>
-           </property>
-           <column>
-            <property name="text">
-             <string notr="true">1</string>
-            </property>
-           </column>
-          </widget>
-          <widget class="VlcWidgetVideo" name="widVideo" native="true">
-           <property name="minimumSize">
-            <size>
-             <width>160</width>
-             <height>120</height>
-            </size>
-           </property>
-           <property name="autoFillBackground">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="layoutWidget">
-       <layout class="QVBoxLayout" name="verticalLayout_3">
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_2">
-          <item>
-           <widget class="QComboBox" name="cboPlaylists"/>
-          </item>
-          <item>
-           <widget class="QPushButton" name="cmdNewPlaylist">
-            <property name="maximumSize">
-             <size>
-              <width>30</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>add a new playlist</string>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-            <property name="icon">
-             <iconset resource="m3uMan.qrc">
-              <normaloff>:/images/Ui/icons8-add-50.png</normaloff>:/images/Ui/icons8-add-50.png</iconset>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="cmdRenamePlaylist">
-            <property name="maximumSize">
-             <size>
-              <width>30</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>rename the selected playlist</string>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-            <property name="icon">
-             <iconset resource="m3uMan.qrc">
-              <normaloff>:/images/Ui/icons8-replace-50.png</normaloff>:/images/Ui/icons8-replace-50.png</iconset>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="cmdDeletePlaylist">
-            <property name="maximumSize">
-             <size>
-              <width>30</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>remove select playliste</string>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-            <property name="icon">
-             <iconset resource="m3uMan.qrc">
-              <normaloff>:/images/Ui/icons8-trash-can-50.png</normaloff>:/images/Ui/icons8-trash-can-50.png</iconset>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_4">
-          <item>
-           <widget class="QTreeWidget" name="twPLS_Items">
+           <widget class="QTreeWidget" name="treeWidget">
             <property name="mouseTracking">
              <bool>true</bool>
             </property>
-            <property name="columnCount">
-             <number>1</number>
+            <property name="sizeAdjustPolicy">
+             <enum>QAbstractScrollArea::AdjustToContents</enum>
+            </property>
+            <property name="selectionMode">
+             <enum>QAbstractItemView::MultiSelection</enum>
             </property>
             <column>
              <property name="text">
@@ -435,163 +249,357 @@
             </column>
            </widget>
           </item>
-          <item>
-           <layout class="QVBoxLayout" name="verticalLayout">
+         </layout>
+        </widget>
+        <widget class="QWidget" name="layoutWidget">
+         <layout class="QGridLayout" name="gridPlay">
+          <item row="2" column="0">
+           <widget class="VlcWidgetSeek" name="widSeek" native="true">
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>30</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="VlcWidgetVideo" name="widVideo" native="true">
+            <property name="minimumSize">
+             <size>
+              <width>160</width>
+              <height>120</height>
+             </size>
+            </property>
+            <property name="autoFillBackground">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <layout class="QHBoxLayout" name="horizontalLayout_5">
             <item>
-             <widget class="QLabel" name="lblLogo">
+             <widget class="QPushButton" name="cmdMoveBackward">
               <property name="maximumSize">
                <size>
-                <width>140</width>
+                <width>30</width>
                 <height>16777215</height>
                </size>
               </property>
               <property name="text">
-               <string>Logo</string>
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset resource="m3uMan.qrc">
+                <normaloff>:/images/Ui/icons8-swipe-left-50.png</normaloff>:/images/Ui/icons8-swipe-left-50.png</iconset>
               </property>
              </widget>
             </item>
             <item>
-             <spacer name="verticalSpacer">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
+             <widget class="QPushButton" name="cmdStop">
+              <property name="text">
+               <string>stop</string>
               </property>
-              <property name="sizeHint" stdset="0">
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="cmdPlayStream">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="text">
+               <string>play</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="cmdPause">
+              <property name="text">
+               <string>pause</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="cmdMoveForward">
+              <property name="maximumSize">
                <size>
-                <width>20</width>
-                <height>40</height>
+                <width>30</width>
+                <height>16777215</height>
                </size>
               </property>
-             </spacer>
-            </item>
-            <item>
-             <widget class="QPushButton" name="cmdMoveUp">
-              <property name="toolTip">
-               <string>move item up in list</string>
-              </property>
               <property name="text">
                <string/>
               </property>
               <property name="icon">
                <iconset resource="m3uMan.qrc">
-                <normaloff>:/images/Ui/icons8-move-up-50.png</normaloff>:/images/Ui/icons8-move-up-50.png</iconset>
+                <normaloff>:/images/Ui/icons8-swipe-right-50.png</normaloff>:/images/Ui/icons8-swipe-right-50.png</iconset>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="cmdMoveDown">
-              <property name="toolTip">
-               <string>move item down in list</string>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="icon">
-               <iconset resource="m3uMan.qrc">
-                <normaloff>:/images/Ui/icons8-move-down-50.png</normaloff>:/images/Ui/icons8-move-down-50.png</iconset>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="cmdSavePosition">
-              <property name="toolTip">
-               <string>save positions</string>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="icon">
-               <iconset resource="m3uMan.qrc">
-                <normaloff>:/images/Ui/icons8-checkmark-50.png</normaloff>:/images/Ui/icons8-checkmark-50.png</iconset>
+             <widget class="VlcWidgetVolumeSlider" name="widVolume" native="true">
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>30</height>
+               </size>
               </property>
              </widget>
             </item>
            </layout>
           </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout">
-          <item>
-           <widget class="QPushButton" name="cmdGatherData">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="toolTip">
-             <string>stream info (needs FFPROBE in path)</string>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-            <property name="icon">
-             <iconset resource="m3uMan.qrc">
-              <normaloff>:/images/Ui/icons8-search-in-cloud-50.png</normaloff>:/images/Ui/icons8-search-in-cloud-50.png</iconset>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLineEdit" name="edtStationUrl"/>
-          </item>
-          <item>
-           <widget class="QPushButton" name="cmdPlayMoveDown">
+          <item row="1" column="0">
+           <widget class="QListWidget" name="lvStations">
             <property name="maximumSize">
              <size>
-              <width>30</width>
-              <height>16777215</height>
+              <width>16777215</width>
+              <height>70</height>
              </size>
             </property>
-            <property name="text">
-             <string/>
-            </property>
-            <property name="icon">
-             <iconset resource="m3uMan.qrc">
-              <normaloff>:/images/Ui/icons8-swipe-down-50.png</normaloff>:/images/Ui/icons8-swipe-down-50.png</iconset>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="pushButton">
-            <property name="maximumSize">
-             <size>
-              <width>30</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-            <property name="icon">
-             <iconset resource="m3uMan.qrc">
-              <normaloff>:/images/Ui/icons8-swipe-up-50.png</normaloff>:/images/Ui/icons8-swipe-up-50.png</iconset>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="chkExtern">
-            <property name="statusTip">
-             <string>use VLC as external player</string>
-            </property>
-            <property name="text">
-             <string>use extern player</string>
+            <property name="styleSheet">
+             <string notr="true">backgroud=rgb(255, 85, 0)</string>
             </property>
            </widget>
           </item>
          </layout>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_3">
-          <item>
-           <widget class="QPushButton" name="cmdMakePlaylist">
-            <property name="text">
-             <string>make m3u</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <widget class="QTextEdit" name="edtOutput"/>
-        </item>
-       </layout>
+        </widget>
+       </widget>
+       <widget class="QWidget" name="layoutWidget">
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <item>
+            <widget class="QComboBox" name="cboPlaylists"/>
+           </item>
+           <item>
+            <widget class="QPushButton" name="cmdNewPlaylist">
+             <property name="maximumSize">
+              <size>
+               <width>30</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="toolTip">
+              <string>add a new playlist</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="m3uMan.qrc">
+               <normaloff>:/images/Ui/icons8-add-50.png</normaloff>:/images/Ui/icons8-add-50.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="cmdRenamePlaylist">
+             <property name="maximumSize">
+              <size>
+               <width>30</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="toolTip">
+              <string>rename the selected playlist</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="m3uMan.qrc">
+               <normaloff>:/images/Ui/icons8-replace-50.png</normaloff>:/images/Ui/icons8-replace-50.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="cmdDeletePlaylist">
+             <property name="maximumSize">
+              <size>
+               <width>30</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="toolTip">
+              <string>remove select playliste</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="m3uMan.qrc">
+               <normaloff>:/images/Ui/icons8-trash-can-50.png</normaloff>:/images/Ui/icons8-trash-can-50.png</iconset>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_4">
+           <item>
+            <widget class="QTreeWidget" name="twPLS_Items">
+             <property name="mouseTracking">
+              <bool>true</bool>
+             </property>
+             <property name="columnCount">
+              <number>1</number>
+             </property>
+             <column>
+              <property name="text">
+               <string notr="true">1</string>
+              </property>
+             </column>
+            </widget>
+           </item>
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout">
+             <item>
+              <widget class="QLabel" name="lblLogo">
+               <property name="maximumSize">
+                <size>
+                 <width>140</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>Logo</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="verticalSpacer">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QPushButton" name="cmdMoveUp">
+               <property name="toolTip">
+                <string>move item up in list</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="m3uMan.qrc">
+                 <normaloff>:/images/Ui/icons8-move-up-50.png</normaloff>:/images/Ui/icons8-move-up-50.png</iconset>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="cmdMoveDown">
+               <property name="toolTip">
+                <string>move item down in list</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="m3uMan.qrc">
+                 <normaloff>:/images/Ui/icons8-move-down-50.png</normaloff>:/images/Ui/icons8-move-down-50.png</iconset>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="cmdSavePosition">
+               <property name="toolTip">
+                <string>save positions</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="m3uMan.qrc">
+                 <normaloff>:/images/Ui/icons8-checkmark-50.png</normaloff>:/images/Ui/icons8-checkmark-50.png</iconset>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout">
+           <item>
+            <widget class="QPushButton" name="cmdGatherData">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="toolTip">
+              <string>stream info (needs FFPROBE in path)</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="m3uMan.qrc">
+               <normaloff>:/images/Ui/icons8-search-in-cloud-50.png</normaloff>:/images/Ui/icons8-search-in-cloud-50.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="edtStationUrl"/>
+           </item>
+           <item>
+            <widget class="QPushButton" name="cmdPlayMoveDown">
+             <property name="maximumSize">
+              <size>
+               <width>30</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="m3uMan.qrc">
+               <normaloff>:/images/Ui/icons8-swipe-down-50.png</normaloff>:/images/Ui/icons8-swipe-down-50.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButton">
+             <property name="maximumSize">
+              <size>
+               <width>30</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="m3uMan.qrc">
+               <normaloff>:/images/Ui/icons8-swipe-up-50.png</normaloff>:/images/Ui/icons8-swipe-up-50.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="chkExtern">
+             <property name="statusTip">
+              <string>use VLC as external player</string>
+             </property>
+             <property name="text">
+              <string>use extern player</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_3"/>
+         </item>
+         <item>
+          <widget class="QTextEdit" name="edtOutput"/>
+         </item>
+        </layout>
+       </widget>
       </widget>
      </widget>
     </item>
@@ -619,6 +627,7 @@
      <string>Settings</string>
     </property>
     <addaction name="actionIcon_color"/>
+    <addaction name="actionhide_show_input_fields"/>
    </widget>
    <addaction name="menuVideo"/>
    <addaction name="menuSettings"/>
@@ -652,7 +661,15 @@
   </action>
   <action name="actionIcon_color">
    <property name="text">
-    <string>Icon color</string>
+    <string>select icon color</string>
+   </property>
+  </action>
+  <action name="actionhide_show_input_fields">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>hide/show input fields</string>
    </property>
   </action>
  </widget>

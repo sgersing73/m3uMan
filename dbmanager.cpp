@@ -118,6 +118,14 @@ bool DbManager::createTable()
         success = false;
     }
 
+    query.prepare("CREATE UNIQUE INDEX IF NOT EXISTS idx_extinf_id_pls_id ON pls_item(extinf_id, pls_id);");
+
+    if (!query.exec()) {
+        qDebug() << "createIndex idx_extinf_id_pls_id " <<  query.lastError();
+        success = false;
+    }
+
+
     query.prepare("CREATE TABLE IF NOT EXISTS "
                   "program (id          INTEGER PRIMARY KEY AUTOINCREMENT, "
                   "         start       TEXT, "
@@ -201,7 +209,7 @@ QSqlQuery* DbManager::selectEXTINF(const QString& group_title, const QString& st
                            "AND  (groups.favorite = %4 OR %4 = 0) "
                            "AND  (groups.group_title LIKE '%%1%' OR '%1' = '') "
                            "AND   tvg_name LIKE '%%2%' "
-                           "AND  (state = %3 OR %3 = 0) ORDER BY group_title").arg(group_title).arg(station).arg(state.toInt()).arg(favorite);
+                           "AND  (state = %3 OR %3 = 0) ORDER BY group_title, tvg_name").arg(group_title).arg(station).arg(state.toInt()).arg(favorite);
 
     //qDebug() << test;
 
