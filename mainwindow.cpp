@@ -7,6 +7,24 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    //QFile f(":qdarkstyle/dark/darkstyle.qss");
+    //QFile f(":qdarkstyle/light/lightstyle.qss");
+
+    //QFile f("E:/Documents/Entwicklung/Qt/m3uMan/stylsheets/Adaptic/Adaptic.qss");
+    //QFile f("E:/Documents/Entwicklung/Qt/m3uMan/stylsheets/Combinear/Combinear.qss");
+    //QFile f("E:/Documents/Entwicklung/Qt/m3uMan/stylsheets/DeepBox/DeepBox.qss");
+
+    /*
+    if (!f.exists())   {
+        printf("Unable to set stylesheet, file not found\n");
+    }
+    else   {
+        f.open(QFile::ReadOnly | QFile::Text);
+        QTextStream ts(&f);
+        qApp->setStyleSheet(ts.readAll());
+    }
+    */
+
     m_AppDataPath = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
     dir.mkpath(m_AppDataPath);
 
@@ -15,6 +33,8 @@ MainWindow::MainWindow(QWidget *parent) :
     _instance = new VlcInstance(VlcCommon::args(), this);
     _player = new VlcMediaPlayer(_instance);
     _equalizerDialog = new EqualizerDialog(this);    
+    _videoControl = new VlcControlVideo (_player);
+    _video = new VlcVideo(_player);
 
     _player->setVideoWidget(ui->widVideo);    
     _equalizerDialog->setMediaPlayer(_player);
@@ -39,8 +59,19 @@ MainWindow::MainWindow(QWidget *parent) :
     restoreGeometry(settings.value("geometry").toByteArray());
     restoreState(settings.value("windowState").toByteArray());
     ui->splitter->restoreState(settings.value("splitter").toByteArray());
+    ui->splitter_2->restoreState(settings.value("splitter_2").toByteArray());
+    ui->splitter_3->restoreState(settings.value("splitter_3").toByteArray());
     ui->edtUrl->setText(settings.value("iptvurl").toByteArray());
     ui->edtUrlEpg->setText(settings.value("iptvepgurl").toByteArray());
+    ui->cmdImdb->setEnabled(false);
+
+    if ( settings.value("isurlhidden").toByteArray().toInt() == 1 ) {
+        ui->actionhide_show_input_fields->setChecked( true );
+        ui->groupBox->setHidden( true );
+    } else {
+        ui->actionhide_show_input_fields->setChecked( false );
+        ui->groupBox->setHidden( false );
+    }
 
     ui->treeWidget->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
     ui->treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -162,6 +193,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
     settings.setValue("geometry", saveGeometry());
     settings.setValue("windowState", saveState());
     settings.setValue("splitter",ui->splitter->saveState());
+    settings.setValue("splitter_2",ui->splitter_2->saveState());
+    settings.setValue("splitter_3",ui->splitter_3->saveState());
     settings.setValue("iptvurl", ui->edtUrl->text());
     settings.setValue("iptvepgurl", ui->edtUrlEpg->text());
     settings.sync();
@@ -191,6 +224,17 @@ void MainWindow::about()
 
 void MainWindow::createStatusBar()
 {
+    m_progress = new QProgressBar(this);
+    m_progress->setVisible(false);
+    statusBar()->addPermanentWidget(m_progress);
+
+    m_progressCancel = new QPushButton(this);
+    m_progressCancel->setText("cancel");
+    m_progressCancel->setVisible(false);
+
+    connect(m_progressCancel, SIGNAL(clicked()), this, SLOT(progressCancel_clicked()));
+    statusBar()->addPermanentWidget(m_progressCancel);
+
     statusBar()->showMessage(tr("Ready"));
 }
 
@@ -304,7 +348,11 @@ void MainWindow::getFileData(const QString &filename)
 
         statusBar()->repaint();
 
-        QProgressDialog progress("Task in progress...", "Cancel", 0, linecount, this);
+        m_progress->setMinimum(0);
+        m_progress->setMaximum(linecount);
+        m_progress->setVisible(true);
+        m_progressCancel->setVisible(true);
+        m_ProgressWasCanceled = false;
 
 #ifdef Q_OS_WIN
         taskbarProgress->setMinimum(0);
@@ -318,13 +366,16 @@ void MainWindow::getFileData(const QString &filename)
 
             line = stream.readLine();
 
-            if (progress.wasCanceled())
+            if (m_ProgressWasCanceled)
                 ende = true;
 
             if ( line.contains("#EXTINF") ) {
+
                 tags = line.split(",").at(0);
                 station = line.split(",").at(1);
+
             } else if ( line.startsWith("http") or line.startsWith("rtp") ) {
+
                 url = line;
 
                 parser = this->splitCommandLine(tags);
@@ -358,7 +409,8 @@ void MainWindow::getFileData(const QString &filename)
                 } else {
                     group_id = db.addGroup(group_title);
                 }
-                query->clear();
+
+                delete query;
 
                 // ------------------------------------------------
                 query = db.selectEXTINF_byUrl(url);
@@ -367,14 +419,16 @@ void MainWindow::getFileData(const QString &filename)
                 query->first();
 
                 if ( query->isValid() ) {
-                  //  qDebug() << "-U-" <<tvg_name<< tvg_id<< group_title<< tvg_logo<< url;
-                    db.updateEXTINF_byRef( query->value(0).toByteArray().toInt(), tvg_name, group_id, tvg_logo, 1 );
+                    if ( ! db.updateEXTINF_byRef( query->value(0).toByteArray().toInt(), tvg_name, group_id, tvg_logo, 1 ) ) {
+                        qDebug() << "-U-" <<tvg_name<< tvg_id<< group_title<< tvg_logo<< url;
+                    }
                 } else {
                   //  qDebug() << "-I-" <<tvg_name<< tvg_id<< group_title<< tvg_logo<< url;
                     db.addEXTINF(tvg_name, tvg_id, group_id, tvg_logo, url);
                     newfiles++;
                 }
-                query->clear();
+
+                delete query;
                 // ------------------------------------------------
 
                 counter++;
@@ -385,7 +439,7 @@ void MainWindow::getFileData(const QString &filename)
 
                 QCoreApplication::processEvents();
 
-                progress.setValue(counter);
+                m_progress->setValue(counter);
 #ifdef Q_OS_WIN
                 taskbarProgress->setValue(counter);
 #endif
@@ -398,6 +452,8 @@ void MainWindow::getFileData(const QString &filename)
 #ifdef Q_OS_WIN
     taskbarProgress->setVisible(false);
 #endif
+    m_progress->setVisible(false);
+    m_progressCancel->setVisible(false);
 
     QSqlQuery *test;
 
@@ -410,6 +466,8 @@ void MainWindow::getFileData(const QString &filename)
             obsolete = test->value(1).toByteArray().toInt();
         }
     }
+
+    delete test;
 
     if ( obsolete > 0 ) {
         QMessageBox::StandardButton reply;
@@ -726,10 +784,10 @@ void MainWindow::fillTwPls_Item()
 
         id = select->value(0).toByteArray().constData();
         extinf_id = select->value(2).toByteArray().constData();
-        logo = select->value(8).toByteArray().constData();
-        tvg_name = select->value(5).toByteArray().constData();
-        tvg_id = select->value(6).toByteArray().constData();
-        url = select->value(9).toByteArray().constData();
+        logo = select->value(9).toByteArray().constData();
+        tvg_name = select->value(6).toByteArray().constData();
+        tvg_id = select->value(7).toByteArray().constData();
+        url = select->value(10).toByteArray().constData();
 
         QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui->twPLS_Items);
 
@@ -738,28 +796,33 @@ void MainWindow::fillTwPls_Item()
         treeItem->setData(1, 1, extinf_id);
         treeItem->setStatusTip(0, tr("double click to remove the station"));
 
-        file.setFileName(m_AppDataPath + "/logos/" + QUrl(logo).fileName());
-        if ( file.exists() && file.size() > 0 ) {
+        if ( QUrl(logo).fileName().trimmed().isEmpty() ) {
 
-            file.open(QIODevice::ReadOnly);
+            buttonImage = QPixmap(":/images/iptv.png");
 
-            if ( QUrl(logo).fileName().trimmed().isEmpty() ) {
-                buttonImage = QPixmap(":/images/iptv.png");
-            } else {
+        } else {
+
+            file.setFileName(m_AppDataPath + "/logos/" + QUrl(logo).fileName());
+            if ( file.exists() && file.size() > 0 ) {
+
+                file.open(QIODevice::ReadOnly);
+
                 buttonImage.loadFromData(file.readAll());
+
+                file.close();
+            } else {
+                buttonImage = QPixmap(":/images/iptv.png");
             }
-
-            QListWidgetItem* item = new QListWidgetItem(buttonImage, "");
-
-            item->setData(Qt::UserRole, url);
-            item->setData(Qt::UserRole+1, tvg_id);
-            item->setData(Qt::DecorationRole, buttonImage.scaled(50,50,Qt::KeepAspectRatio, Qt::SmoothTransformation));      
-            item->setToolTip(tvg_name);
-
-            ui->lvStations->addItem(item);
-
-            file.close();       
         }
+
+        QListWidgetItem* item = new QListWidgetItem(buttonImage, "");
+
+        item->setData(Qt::UserRole, url);
+        item->setData(Qt::UserRole+1, tvg_id);
+        item->setData(Qt::DecorationRole, buttonImage.scaled(50,50,Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        item->setToolTip(tvg_name);
+
+        ui->lvStations->addItem(item);
 
         added = true;
     }
@@ -769,7 +832,6 @@ void MainWindow::fillTwPls_Item()
     ui->cmdMoveUp->setEnabled( added );
     ui->cmdMoveDown->setEnabled( added );
     ui->edtStationUrl->setText("");
-
 }
 
 void MainWindow::on_cboPlaylists_currentTextChanged(const QString &arg1)
@@ -984,6 +1046,7 @@ void MainWindow::on_twPLS_Items_itemSelectionChanged()
     QString   logo;
     QString   url;
     QString   desc;
+    QString   tmdb_id;
 
     QList<QTreeWidgetItem*>items = ui->twPLS_Items->selectedItems();
 
@@ -1002,24 +1065,52 @@ void MainWindow::on_twPLS_Items_itemSelectionChanged()
             url = select->value(5).toByteArray().constData();
         }
 
-        ui->edtStationUrl->setText(url);
+        delete select;
 
-        select->clear();
-
-        select = db.selectProgramData(tvg_id);
-
+        select = db.selectPLS_Items_by_extinf_id(extinf_id);
         while ( select->next() ) {
 
-            title = select->value(4).toByteArray().constData();
-            desc = select->value(5).toByteArray().constData();
+            tmdb_id = select->value(4).toByteArray().constData();
         }
 
-        ui->edtOutput->clear();
-        ui->edtOutput->append(title);
-        ui->edtOutput->append("");
-        ui->edtOutput->append(desc);
+        delete select;
 
-        select->clear();
+        ui->edtStationUrl->setText(url);
+
+        m_actualTitle = title;
+
+        if ( m_actualTitle.contains("|") ) {
+            m_actualTitle = m_actualTitle.mid(4);
+        }
+
+        setWindowTitle(m_actualTitle);
+
+        if ( url.contains("mkv") || url.contains("mp4") ) {
+
+            ui->cmdImdb->setEnabled(true);
+
+            qDebug() << "getTMDBdate" << QUrl::toPercentEncoding(m_actualTitle, "-/:") << extinf_id << tmdb_id;
+
+            this->getTMDBdate(QUrl::toPercentEncoding(m_actualTitle, "-/:"), tmdb_id.toInt(), extinf_id);
+
+        } else {
+            ui->cmdImdb->setEnabled(false);
+
+            select = db.selectProgramData(tvg_id);
+
+            while ( select->next() ) {
+
+                title = select->value(4).toByteArray().constData();
+                desc = select->value(5).toByteArray().constData();
+            }
+
+            ui->edtOutput->clear();
+            ui->edtOutput->append(title);
+            ui->edtOutput->append("");
+            ui->edtOutput->append(desc);
+
+            delete select;
+        }
 
         if ( ! logo.trimmed().isEmpty() ) {
             m_pImgCtrl = new FileDownloader(logo, this);
@@ -1036,7 +1127,7 @@ void MainWindow::processStarted()
     qDebug() << "processStarted()";
 
     m_OutputString.clear();
-    ui->edtOutput->setText("mOutputString");
+    ui->edtOutput->setText(m_OutputString);
 }
 
 void MainWindow::readyReadStandardOutput()
@@ -1108,24 +1199,11 @@ void MainWindow::on_edtStationUrl_textChanged(const QString &arg1)
 
 void MainWindow::on_lvStations_itemClicked(QListWidgetItem *item)
 {
-    QSqlQuery *select = nullptr;
-
     QVariant url      =  item->data(Qt::UserRole);
     QVariant tvg_id   =  item->data(Qt::UserRole+1); // zdf.de
-    QString  title, desc;
 
-    select = db.selectProgramData(tvg_id.toString());
-
-    while ( select->next() ) {
-
-        title = select->value(4).toByteArray().constData();
-        desc = select->value(5).toByteArray().constData();
-    }
-
-    ui->edtOutput->clear();
-    ui->edtOutput->append(title);
-    ui->edtOutput->append("");
-    ui->edtOutput->append(desc);
+    ui->twPLS_Items->clearSelection();
+    ui->twPLS_Items->topLevelItem( ui->lvStations->currentRow() )->setSelected(true);
 
     if ( ! url.toString().isEmpty() ) {
 
@@ -1306,17 +1384,13 @@ void MainWindow::on_cmdPlayMoveDown_clicked()
     ui->twPLS_Items->clearSelection();
     ui->twPLS_Items->setCurrentItem(ui->twPLS_Items->itemBelow(ui->twPLS_Items->currentItem() ));
     ui->twPLS_Items->setItemSelected( ui->twPLS_Items->currentItem(), true );
-
-    on_cmdPlayStream_clicked();
 }
 
-void MainWindow::on_pushButton_clicked()
+void MainWindow::on_cmdPlayMoveUp_clicked()
 {
     ui->twPLS_Items->clearSelection();
     ui->twPLS_Items->setCurrentItem(ui->twPLS_Items->itemAbove(ui->twPLS_Items->currentItem() ));
     ui->twPLS_Items->setItemSelected( ui->twPLS_Items->currentItem(), true );
-
-    on_cmdPlayStream_clicked();
 }
 
 void MainWindow::on_cmdMoveForward_clicked()
@@ -1332,7 +1406,7 @@ void MainWindow::on_cmdMoveBackward_clicked()
 void MainWindow::findAllButtons() {
 
     QSettings settings(m_SettingsFile, QSettings::IniFormat);
-    QString iconcolor = settings.value("iconcolor", "black").toByteArray();
+    m_IconColor = settings.value("iconcolor", "black").toByteArray();
 
     QList<QPushButton *> buttons = this->findChildren<QPushButton *>();
 
@@ -1343,7 +1417,7 @@ void MainWindow::findAllButtons() {
 
           if( ! button->icon().isNull() ) {
 
-              button->setIcon( this->changeIconColor( button->icon(), QColor(iconcolor) ) );
+              button->setIcon( this->changeIconColor( button->icon(), QColor(m_IconColor) ) );
           }
     }
 }
@@ -1392,5 +1466,152 @@ void MainWindow::on_chkOnlyFavorites_stateChanged(int arg1)
 
 void MainWindow::on_actionhide_show_input_fields_triggered(bool checked)
 {
-    ui->groupBox->setVisible( !checked );
+    if ( checked ) {
+        ui->groupBox->setVisible( false );
+    } else {
+        ui->groupBox->setVisible( true );
+    }
+
+    QSettings settings(m_SettingsFile, QSettings::IniFormat);
+    settings.setValue("isurlhidden", checked ? "1" : "0" );
+    settings.sync();
+}
+
+void MainWindow::on_cmdEqualizer_clicked()
+{
+    _equalizerDialog->show();
+
+}
+
+void MainWindow::on_cmdMute_clicked()
+{
+    ui->widVolume->setMute( ! ui->widVolume->mute() );
+
+    if ( ui->widVolume->mute() ) {
+        ui->cmdMute->setIcon( this->changeIconColor( QIcon(":/images/Ui/icons8-mute-50.png"), QColor(m_IconColor) ) );
+    } else {
+        ui->cmdMute->setIcon( this->changeIconColor( QIcon(":/images/Ui/icons8-audio-50.png"), QColor(m_IconColor) ) );
+    }
+}
+
+void MainWindow::getTMDBdate(const QString &title, int tmdb_id, int extinf_id)
+{
+
+    QString filename = m_AppDataPath + "/tmdb/" + QString("%1.txt").arg(tmdb_id);
+    QFile   file(filename);
+
+    if ( tmdb_id > 0 && file.exists() && file.size() > 0 ) {
+
+        qDebug() << "use local tmdb data..." << filename;
+
+        if ( file.open(QIODevice::ReadOnly) ) {
+
+            QString strReply = file.readAll();
+
+            file.close();
+
+            this->displayMovieInfo(extinf_id, strReply, true);
+        }
+
+    } else {
+
+        m_nam = new QNetworkAccessManager(this);
+        QObject::connect(m_nam, SIGNAL(finished(QNetworkReply*)),
+                 this, SLOT(serviceRequestFinished(QNetworkReply*)));
+
+        QUrl url(QString("https://api.themoviedb.org/3/search/movie?query=%1&language=de-DE&api_key=%2").arg(title).arg("6c125ca74f059b4c88bc49e1b09e241e"));
+
+        QNetworkReply* reply = m_nam->get(QNetworkRequest(url));
+
+        reply->setProperty("extinf_id", extinf_id);
+
+        qDebug() << url;
+    }
+
+}
+
+void MainWindow::serviceRequestFinished(QNetworkReply* reply)
+{
+    if(reply->error() == QNetworkReply::NoError) {
+
+        qDebug() << reply->property("extinf_id");
+
+        QString strReply = reply->readAll();
+
+        this->displayMovieInfo(reply->property("extinf_id").toInt(), strReply, true);
+
+    } else {
+        ui->edtOutput->clear();
+        statusBar()->showMessage(tr("Netzwerk-Fehler auf themoviedb.org Zugriff..."));
+    }
+
+    delete reply;
+}
+
+void MainWindow::displayMovieInfo(int extinf_id, QString moviedata, bool storedata)
+{
+    dir.mkpath(m_AppDataPath + "/tmdb/");
+
+    QJsonDocument jsonResponse = QJsonDocument::fromJson(moviedata.toUtf8());
+
+    QJsonObject doc_obj = jsonResponse.object();
+    QJsonArray doc_array = doc_obj.value("results").toArray();
+
+    if ( ! doc_array.isEmpty() ) {
+
+        doc_obj =  doc_array.at(0).toObject();
+
+        ui->edtOutput->setText( doc_obj.value("original_title").toString() + " (" + doc_obj.value("release_date").toString() + ")" );
+        ui->edtOutput->append ( " " );
+        ui->edtOutput->append ( QString("%1 - votes: %2").arg(doc_obj.value("vote_average").toDouble()).arg(doc_obj.value("vote_count").toDouble()));
+        ui->edtOutput->append ( " " );
+        ui->edtOutput->append ( doc_obj.value("overview").toString() );
+
+        if ( storedata ) {
+
+            QString filename = m_AppDataPath + "/tmdb/" + QString("%1.txt").arg(doc_obj.value("id").toDouble());
+
+            const QString qPath(filename);
+            QFile qFile(qPath);
+            if (qFile.open(QIODevice::WriteOnly)) {
+                QTextStream out(&qFile);
+                out.setCodec("utf-8");
+                out << moviedata.toUtf8();
+                qFile.close();
+            }
+        }
+
+        db.updatePLS_item_tmdb_by_extinf_id(extinf_id, doc_obj.value("id").toDouble() );
+
+    } else {
+        statusBar()->showMessage(tr("Keine Daten auf themoviedb.org gefunden..."));
+    }
+}
+
+void MainWindow::on_cmdImdb_clicked()
+{
+    // this->getTMDBdate(QUrl::toPercentEncoding(m_actualTitle, "/:-"));
+}
+
+void MainWindow::progressCancel_clicked()
+{
+    m_ProgressWasCanceled = true;
+    qDebug() << "cancel";
+}
+
+
+void MainWindow::on_actionload_stylsheet_triggered()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, ("Open qss stylsheet File"),
+                                                     m_AppDataPath,
+                                                     ("qss stylsheet file (*.qss)"));
+    QFile f(fileName);
+    if (!f.exists())   {
+        printf("Unable to set stylesheet, file not found\n");
+    }
+    else   {
+        f.open(QFile::ReadOnly | QFile::Text);
+        QTextStream ts(&f);
+        qApp->setStyleSheet(ts.readAll());
+    }
 }

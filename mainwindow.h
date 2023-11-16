@@ -27,6 +27,11 @@
 #include <QXmlStreamReader>
 #include <QColorDialog>
 #include <QTest>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QProgressBar>
+#include <QPushButton>
 
 #ifdef Q_OS_WIN
 #include <QWinTaskbarButton>
@@ -38,7 +43,10 @@
 #include <VLCQtCore/Media.h>
 #include <VLCQtCore/MediaPlayer.h>
 #include <VLCQtCore/Error.h>
+#include <VLCQtCore/Video.h>
+
 #include <VLCQtWidgets/WidgetSeek.h>
+#include <VLCQtWidgets/ControlVideo.h>
 
 #include "dbmanager.h"
 #include "filedownloader.h"
@@ -79,6 +87,8 @@ private:
     void fillComboGroupTitels();
 
     QStringList splitCommandLine(const QString &);
+    void getTMDBdate(const QString &, int, int);
+    void displayMovieInfo(int, QString, bool);
 
     QTreeWidgetItem* addTreeRoot(const QString &, const QString &, const QString &, int);
     void addTreeChild(QTreeWidgetItem *parent, const QString &, const QString &, const QString &, const QString &, const QString &, const QString &);
@@ -117,6 +127,7 @@ private slots:
     void SaveXML();
     void loadImage();
     void ShowDownloadProgress();
+    void serviceRequestFinished(QNetworkReply*);
 
     void ShowContextMenu( const QPoint & );
 
@@ -130,14 +141,18 @@ private slots:
     void on_radNew_clicked();
 
     void on_cmdPlayMoveDown_clicked();
-    void on_pushButton_clicked();
+    void on_cmdPlayMoveUp_clicked();
     void on_cmdMoveForward_clicked();
     void on_cmdMoveBackward_clicked();
     void on_actionIcon_color_triggered();
     void on_chkOnlyFavorites_stateChanged(int arg1);
-
-
     void on_actionhide_show_input_fields_triggered(bool checked);
+    void on_cmdEqualizer_clicked();
+    void on_cmdMute_clicked();
+    void on_cmdImdb_clicked();
+    void progressCancel_clicked();
+
+    void on_actionload_stylsheet_triggered();
 
 private:
     QString         curFile;
@@ -150,14 +165,24 @@ private:
     QStandardPaths  *path;
     QString         m_AppDataPath;
     QString         m_SettingsFile;
+    bool            m_ProgressWasCanceled;
+
+    QString               m_IconColor;
+    QNetworkAccessManager *m_nam;
+    QString         m_actualTitle;
 
     VlcInstance     *_instance;
     VlcMedia        *_media;
     VlcMediaPlayer  *_player;
     VlcError        *_error;
     VlcWidgetSeek   *_seek;
+    VlcControlVideo *_videoControl;
+    VlcVideo        *_video;
 
     EqualizerDialog *_equalizerDialog;
+
+    QProgressBar    *m_progress;
+    QPushButton     *m_progressCancel;
 
 #ifdef Q_OS_WIN
     QWinTaskbarButton *taskbarButton;

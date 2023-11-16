@@ -101,7 +101,8 @@ bool DbManager::createTable()
                   "pls_item (id        INTEGER PRIMARY KEY AUTOINCREMENT, "
                   "          pls_id    INTEGER, "
                   "          extinf_id INTEGER, "
-                  "          pls_pos   INTEGER,"
+                  "          pls_pos   INTEGER, "
+                  "          tmdb_id   INTEGER DEFAULT 0, "
                   "          FOREIGN KEY(extinf_id) REFERENCES extinf(id) ON DELETE CASCADE,"
                   "          FOREIGN KEY(pls_id)    REFERENCES pls(id) ON DELETE CASCADE"
                   ");");
@@ -139,8 +140,6 @@ bool DbManager::createTable()
         success = false;
     }
 
-
-
     return success;
 }
 
@@ -161,7 +160,7 @@ bool DbManager::addEXTINF(const QString& tvg_name, const QString& tvg_id, int gr
    if ( query.exec() ) {
        success = true;
    } else {
-        qDebug() << "addEXTINF" << query.lastError() << url;
+       qDebug() << "addEXTINF" << query.lastError() << url;
    }
 
    return success;
@@ -276,7 +275,10 @@ bool DbManager::updateEXTINF_byRef(int id, const QString& tvg_name, int group_id
 
     if ( ! select->exec() ) {
         qDebug() << "updateEXTINF_byRef" << select->lastError();
+        retCode = false;
     }
+
+    delete select;
 
     return retCode;
 }
@@ -285,7 +287,11 @@ bool DbManager::deactivateEXTINFs()
 {
     QSqlQuery *select = new QSqlQuery();
 
-    return select->exec("UPDATE extinf SET state = 0");
+    select->exec("UPDATE extinf SET state = 0");
+
+    delete select;
+
+    return true;
 }
 
 QSqlQuery* DbManager::selectEXTINF_group_titles(int state)
@@ -295,7 +301,8 @@ QSqlQuery* DbManager::selectEXTINF_group_titles(int state)
     select->prepare("select distinct group_title from extinf WHERE (state = :state OR :state = 0) order by group_title");
     select->bindValue(":state", state);
 
-    if ( select->exec() ) {
+    if ( ! select->exec() ) {
+        qDebug() << "selectEXTINF_group_titles" << select->lastError();
     }
 
     return select;
@@ -368,6 +375,24 @@ bool DbManager::updatePLS_item_pls_pos(int id, int pls_pos )
     return success;
 }
 
+bool DbManager::updatePLS_item_tmdb_by_extinf_id(int extinf_id, double tmdb_id )
+{
+    bool success = false;
+
+    QSqlQuery query;
+    query.prepare("UPDATE pls_item SET tmdb_id = :tmdb_id WHERE extinf_id = :extinf_id");
+    query.bindValue(":tmdb_id", tmdb_id);
+    query.bindValue(":extinf_id", extinf_id);
+
+    if ( query.exec() ) {
+        success = true;
+    } else {
+        qDebug() << "updatePLS_item_tmdb" << query.lastError();
+    }
+
+    return success;
+}
+
 bool DbManager::insertPLS(const QString & pls_name )
 {
     bool success = false;
@@ -379,7 +404,7 @@ bool DbManager::insertPLS(const QString & pls_name )
     if ( query.exec() ) {
         success = true;
     } else {
-         qDebug() << "insertPLS" << query.lastError();
+        qDebug() << "insertPLS" << query.lastError();
     }
 
     return success;
@@ -399,7 +424,7 @@ bool DbManager::insertPLS_Item(int pls_id, int extinf_id, int pls_pos )
     if ( query.exec() ) {
         success = true;
     } else {
-         qDebug() << "insertPLS_Item" << query.lastError();
+        qDebug() << "insertPLS_Item" << query.lastError();
     }
 
     return success;
@@ -414,6 +439,20 @@ QSqlQuery* DbManager::selectPLS_Items(int pls_id)
 
     if ( ! select->exec() ) {
         qDebug() << "selectPLS_Item" << select->lastError();
+    }
+
+    return select;
+}
+
+QSqlQuery* DbManager::selectPLS_Items_by_extinf_id(int extinf_id)
+{
+    QSqlQuery *select = new QSqlQuery();
+
+    select->prepare("SELECT * FROM pls_item WHERE extinf_id = :extinf_id");
+    select->bindValue(":extinf_id", extinf_id);
+
+    if ( ! select->exec() ) {
+        qDebug() << "selectPLS_Items_by_extinf_id" << select->lastError();
     }
 
     return select;
@@ -471,7 +510,7 @@ bool DbManager::addProgram(const QString& start, const QString& stop,
    if ( query.exec() ) {
        success = true;
    } else {
-        qDebug() << "addProgram" << query.lastError();
+       qDebug() << "addProgram" << query.lastError();
    }
 
    return success;
@@ -496,8 +535,8 @@ QSqlQuery* DbManager::selectProgramData(const QString &channel)
 {
     QSqlQuery *select = new QSqlQuery();
 
-    select->prepare("SELECT * FROM program WHERE strftime('%Y%m%d%H%M%S +0000', 'now', 'localtime', '-2 hours') > start AND "
-                    "                            strftime('%Y%m%d%H%M%S +0000', 'now', 'localtime', '-2 hours') < stop AND "
+    select->prepare("SELECT * FROM program WHERE strftime('%Y%m%d%H%M%S +0000', 'now', 'localtime', '-1 hours') > start AND "
+                    "                            strftime('%Y%m%d%H%M%S +0000', 'now', 'localtime', '-1 hours') < stop AND "
                     "                            channel = :channel");
     select->bindValue(":channel", channel);
 

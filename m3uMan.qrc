@@ -17,5 +17,11 @@
         <file>images/iptv.png</file>
         <file>images/icons8-retro-tv-100.png</file>
         <file>images/app.png</file>
+        <file>images/Ui/icons8-circled-play-50.png</file>
+        <file>images/Ui/icons8-pause-button-50.png</file>
+        <file>images/Ui/icons8-stop-circled-50.png</file>
+        <file>images/Ui/icons8-adjust-50.png</file>
+        <file>images/Ui/icons8-audio-50.png</file>
+        <file>images/Ui/icons8-mute-50.png</file>
     </qresource>
 </RCC>

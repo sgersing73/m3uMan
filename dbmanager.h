@@ -34,10 +34,13 @@ public:
 
     bool updatePLS(int, const QString &);
     bool updatePLS_item_pls_pos(int, int);
+    bool updatePLS_item_tmdb_by_extinf_id(int, double);
+
     bool insertPLS(const QString &);
     bool removePLS(int);
     QSqlQuery* selectPLS();
     QSqlQuery* selectEXTINF_byRef(int);
+    QSqlQuery* selectPLS_Items_by_extinf_id(int);
 
     bool insertPLS_Item(int, int, int);
     QSqlQuery* selectPLS_Items(int);
