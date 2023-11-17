@@ -1,0 +1,189 @@
+#EXTM3U
+#EXTINF:-1 tvg-chno="1" tvg-name="DE| DAS ERSTE HD" tvg-id="ard.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="https://lo1.in/ger/dsr.png",DE| DAS ERSTE HD
+rtp://87.141.215.251@232.0.20.35:10000
+#EXTINF:-1 tvg-chno="2" tvg-name="DE| ZDF HD" tvg-id="zdf.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="https://lo1.in/ger/zdf.png",DE| ZDF HD
+rtp://87.141.215.251@232.0.20.234:10000
+#EXTINF:-1 tvg-chno="3" tvg-name="DE| BR Fernsehen Süd HD" tvg-id="" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="https://lo1.in/ger/dtch.png",DE| BR Fernsehen Süd HD
+rtp://87.141.215.251@232.0.20.26:10000
+#EXTINF:-1 tvg-chno="4" tvg-name="DE| RTL SD" tvg-id="" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="https://lo1.in/ger/rtl.png",DE| RTL SD
+rtp://87.141.215.251@232.0.10.135:10000
+#EXTINF:-1 tvg-chno="5" tvg-name="DE| SAT 1 SD" tvg-id="" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="https://lo1.in/ger/sat1.png",DE| SAT 1 SD
+rtp://87.141.215.251@232.0.10.146:10000
+#EXTINF:-1 tvg-chno="6" tvg-name="DE| PRO 7 SD" tvg-id="" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="https://lo1.in/ger/prsbn.png",DE| PRO 7 SD
+rtp://87.141.215.251@232.0.10.120:10000
+#EXTINF:-1 tvg-chno="7" tvg-name="DE| KABEL EINS SD" tvg-id="" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="https://lo1.in/ger/kabl.png",DE| KABEL EINS SD
+rtp://87.141.215.251@232.0.10.82:10000
+#EXTINF:-1 tvg-chno="8" tvg-name="DE| 3SAT HD" tvg-id="3sat.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="https://lo1.in/ger/sat.png",DE| 3SAT HD
+rtp://87.141.215.251@232.0.20.2:10000
+#EXTINF:-1 tvg-chno="9" tvg-name="DE| 3SAT SD" tvg-id="" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="https://lo1.in/ger/sat.png",DE| 3SAT SD
+rtp://87.141.215.251@232.0.10.2:10000
+#EXTINF:-1 tvg-chno="10" tvg-name="DE| ALEX Berlin SD" tvg-id="rfo.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| ALEX Berlin SD
+rtp://87.141.215.251@232.0.10.197:10000
+#EXTINF:-1 tvg-chno="11" tvg-name="DE| ARD ALPHA HD" tvg-id="" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="https://lo1.in/ger/ard.png",DE| ARD ALPHA HD
+rtp://87.141.215.251@232.0.20.9:10000
+#EXTINF:-1 tvg-chno="12" tvg-name="DE| ARTE HD" tvg-id="arte.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="https://lo1.in/ger/art.png",DE| ARTE HD
+rtp://87.141.215.251@232.0.20.10:10000
+#EXTINF:-1 tvg-chno="13" tvg-name="DE| BADEN TV SD" tvg-id="" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="https://lo1.in/ger/bdn.png",DE| BADEN TV SD
+rtp://87.141.215.251@232.0.11.35:10000
+#EXTINF:-1 tvg-chno="14" tvg-name="DE| BR Fernsehen Nord SD" tvg-id="br3n.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| BR Fernsehen Nord SD
+rtp://87.141.215.251@232.0.10.25:10000
+#EXTINF:-1 tvg-chno="15" tvg-name="DE| Chemnitz Fernsehen SD" tvg-id="rfo.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| Chemnitz Fernsehen SD
+rtp://87.141.215.251@232.0.11.33:10000
+#EXTINF:-1 tvg-chno="16" tvg-name="DE| DAS ERSTE SD" tvg-id="" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="https://lo1.in/ger/dsr.png",DE| DAS ERSTE SD
+rtp://87.141.215.251@232.0.10.35:10000
+#EXTINF:-1 tvg-chno="17" tvg-name="DE| Dresden Fernsehen SD" tvg-id="rfo.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| Dresden Fernsehen SD
+rtp://87.141.215.251@232.0.11.34:10000
+#EXTINF:-1 tvg-chno="18" tvg-name="DE| Franken Fernsehen SD" tvg-id="franken.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| Franken Fernsehen SD
+rtp://87.141.215.251@232.0.10.64:10000
+#EXTINF:-1 tvg-chno="19" tvg-name="DE| HR FERNSEHEN HD" tvg-id="hr.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="https://lo1.in/ger/hr.png",DE| HR FERNSEHEN HD
+rtp://87.141.215.251@232.0.20.71:10000
+#EXTINF:-1 tvg-chno="20" tvg-name="DE| KABEL EINS DOKU SD" tvg-id="" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="https://lo1.in/ger/kbldk.png",DE| KABEL EINS DOKU SD
+rtp://87.141.215.251@232.0.11.2:10000
+#EXTINF:-1 tvg-chno="21" tvg-name="DE| KIKA HD" tvg-id="kika.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="https://lo1.in/ger/kika.png",DE| KIKA HD
+rtp://87.141.215.251@232.0.20.85:10000
+#EXTINF:-1 tvg-chno="22" tvg-name="DE| KIKA SD" tvg-id="kika.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="https://lo1.in/ger/kika.png",DE| KIKA SD
+rtp://87.141.215.251@232.0.10.85:10000
+#EXTINF:-1 tvg-chno="23" tvg-name="DE| L-TV SD" tvg-id="ltv.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| L-TV SD
+rtp://87.141.215.251@232.0.11.8:10000
+#EXTINF:-1 tvg-chno="24" tvg-name="DE| Leipzig Fernsehen SD" tvg-id="rfo.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| Leipzig Fernsehen SD
+rtp://87.141.215.251@232.0.11.42:10000
+#EXTINF:-1 tvg-chno="25" tvg-name="DE| MDR HD" tvg-id="mdr.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="https://lo1.in/ger/mdr.png",DE| MDR HD
+rtp://87.141.215.251@232.0.20.93:10000
+#EXTINF:-1 tvg-chno="26" tvg-name="DE| MDR-Fernsehen Sachsen-Anhalt SD" tvg-id="rfo.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| MDR-Fernsehen Sachsen-Anhalt SD
+rtp://87.141.215.251@232.0.10.94:10000
+#EXTINF:-1 tvg-chno="27" tvg-name="DE| MDR-Fernsehen Thüringen SD" tvg-id="rfo.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| MDR-Fernsehen Thüringen SD
+rtp://87.141.215.251@232.0.10.95:10000
+#EXTINF:-1 tvg-chno="28" tvg-name="DE| N-TV SD" tvg-id="" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="https://lo1.in/ger/ntv.png",DE| N-TV SD
+rtp://87.141.215.251@232.0.10.111:10000
+#EXTINF:-1 tvg-chno="29" tvg-name="DE| NDR Fernsehen Hamburg SD" tvg-id="rfo.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| NDR Fernsehen Hamburg SD
+rtp://87.141.215.251@232.0.10.105:10000
+#EXTINF:-1 tvg-chno="30" tvg-name="DE| NDR Fernsehen Mecklenburg-Vorpommern SD" tvg-id="rfo.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| NDR Fernsehen Mecklenburg-Vorpommern SD
+rtp://87.141.215.251@232.0.10.106:10000
+#EXTINF:-1 tvg-chno="31" tvg-name="DE| NDR Fernsehen Schleswig-Holstein SD" tvg-id="rfo.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| NDR Fernsehen Schleswig-Holstein SD
+rtp://87.141.215.251@232.0.10.107:10000
+#EXTINF:-1 tvg-chno="32" tvg-name="DE| NIEDERBAYERN TV Deggendorf - Straubing SD" tvg-id="niederbtv.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| NIEDERBAYERN TV Deggendorf - Straubing SD
+rtp://87.141.215.251@232.0.10.47:10000
+#EXTINF:-1 tvg-chno="33" tvg-name="DE| NIEDERBAYERN TV Landshut SD" tvg-id="tvlandshut.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| NIEDERBAYERN TV Landshut SD
+rtp://87.141.215.251@232.0.10.76:10000
+#EXTINF:-1 tvg-chno="34" tvg-name="DE| NIEDERBAYERN TV Passau SD" tvg-id="rfo.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| NIEDERBAYERN TV Passau SD
+rtp://87.141.215.251@232.0.10.213:10000
+#EXTINF:-1 tvg-chno="35" tvg-name="DE| NITRO SD" tvg-id="" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="https://lo1.in/ger/nitro.png",DE| NITRO SD
+rtp://87.141.215.251@232.0.10.143:10000
+#EXTINF:-1 tvg-chno="36" tvg-name="DE| OK Weinstraße SD" tvg-id="rfo.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| OK Weinstraße SD
+rtp://87.141.215.251@232.0.11.40:10000
+#EXTINF:-1 tvg-chno="37" tvg-name="DE| OK-TV Ludwigshafen SD" tvg-id="rfo.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| OK-TV Ludwigshafen SD
+rtp://87.141.215.251@232.0.11.32:10000
+#EXTINF:-1 tvg-chno="38" tvg-name="DE| OK-TV Mainz SD" tvg-id="rfo.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| OK-TV Mainz SD
+rtp://87.141.215.251@232.0.11.39:10000
+#EXTINF:-1 tvg-chno="39" tvg-name="DE| OK4 SD" tvg-id="rfo.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| OK4 SD
+rtp://87.141.215.251@232.0.11.41:10000
+#EXTINF:-1 tvg-chno="40" tvg-name="DE| OK54 Trier SD" tvg-id="rfo.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| OK54 Trier SD
+rtp://87.141.215.251@232.0.11.31:10000
+#EXTINF:-1 tvg-chno="41" tvg-name="DE| ONE TV HD" tvg-id="one.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="https://lo1.in/ger/1tv.png",DE| ONE TV HD
+rtp://87.141.215.251@232.0.20.49:10000
+#EXTINF:-1 tvg-chno="42" tvg-name="DE| Oberpfalz TV SD" tvg-id="otv.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| Oberpfalz TV SD
+rtp://87.141.215.251@232.0.10.113:10000
+#EXTINF:-1 tvg-chno="43" tvg-name="DE| PHOENIX HD" tvg-id="phoenix.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="https://lo1.in/ger/phonx.png",DE| PHOENIX HD
+rtp://87.141.215.251@232.0.20.116:10000
+#EXTINF:-1 tvg-chno="44" tvg-name="DE| PHOENIX SD" tvg-id="" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="https://lo1.in/ger/phonx.png",DE| PHOENIX SD
+rtp://87.141.215.251@232.0.10.116:10000
+#EXTINF:-1 tvg-chno="45" tvg-name="DE| PRO 7 MAXX SD" tvg-id="" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="https://lo1.in/ger/prbnm.png",DE| PRO 7 MAXX SD
+rtp://87.141.215.251@232.0.10.122:10000
+#EXTINF:-1 tvg-chno="46" tvg-name="DE| RADIOBREMEN TV HD" tvg-id="" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| RADIOBREMEN TV HD
+rtp://87.141.215.251@232.0.20.125:10000
+#EXTINF:-1 tvg-chno="47" tvg-name="DE| RBB BERLIN HD" tvg-id="" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="https://lo1.in/ger/rberl.png",DE| RBB BERLIN HD
+rtp://87.141.215.251@232.0.20.129:10000
+#EXTINF:-1 tvg-chno="48" tvg-name="DE| RFO SD" tvg-id="rfo.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| RFO SD
+rtp://87.141.215.251@232.0.10.132:10000
+#EXTINF:-1 tvg-chno="49" tvg-name="DE| RTL Bayern SD" tvg-id="rfo.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| RTL Bayern SD
+rtp://87.141.215.251@232.0.10.39:10000
+#EXTINF:-1 tvg-chno="50" tvg-name="DE| RTL Bremen & Niedersachsen SD" tvg-id="rfo.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| RTL Bremen & Niedersachsen SD
+rtp://87.141.215.251@232.0.10.137:10000
+#EXTINF:-1 tvg-chno="51" tvg-name="DE| RTL Hamburg & Schleswig-Holstein SD" tvg-id="rfo.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| RTL Hamburg & Schleswig-Holstein SD
+rtp://87.141.215.251@232.0.10.139:10000
+#EXTINF:-1 tvg-chno="52" tvg-name="DE| RTL Hessen SD" tvg-id="rfo.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| RTL Hessen SD
+rtp://87.141.215.251@232.0.10.138:10000
+#EXTINF:-1 tvg-chno="53" tvg-name="DE| RTL Nordrhein-Westfalen SD" tvg-id="rfo.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| RTL Nordrhein-Westfalen SD
+rtp://87.141.215.251@232.0.10.142:10000
+#EXTINF:-1 tvg-chno="54" tvg-name="DE| RTL Rhein-Neckar SD" tvg-id="rtl.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| RTL Rhein-Neckar SD
+rtp://87.141.215.251@232.0.10.48:10000
+#EXTINF:-1 tvg-chno="55" tvg-name="DE| RTL UP SD" tvg-id="" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="https://lo1.in/ger/rtlup.png",DE| RTL UP SD
+rtp://87.141.215.251@232.0.10.240:10000
+#EXTINF:-1 tvg-chno="56" tvg-name="DE| Regio TV SD" tvg-id="regiotv.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| Regio TV SD
+rtp://87.141.215.251@232.0.11.10:10000
+#EXTINF:-1 tvg-chno="57" tvg-name="DE| Rhein-Main TV SD" tvg-id="rfo.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| Rhein-Main TV SD
+rtp://87.141.215.251@232.0.11.37:10000
+#EXTINF:-1 tvg-chno="58" tvg-name="DE| SAT 1 GOLD SD" tvg-id="" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="https://lo1.in/ger/satgolh.png",DE| SAT 1 GOLD SD
+rtp://87.141.215.251@232.0.10.149:10000
+#EXTINF:-1 tvg-chno="59" tvg-name="DE| SAT.1 Bayern SD" tvg-id="rfo.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| SAT.1 Bayern SD
+rtp://87.141.215.251@232.0.10.147:10000
+#EXTINF:-1 tvg-chno="60" tvg-name="DE| SAT.1 Hamburg und Schleswig-Holstein SD" tvg-id="rfo.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| SAT.1 Hamburg und Schleswig-Holstein SD
+rtp://87.141.215.251@232.0.10.151:10000
+#EXTINF:-1 tvg-chno="61" tvg-name="DE| SAT.1 Niedersachsen und Bremen SD" tvg-id="rfo.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| SAT.1 Niedersachsen und Bremen SD
+rtp://87.141.215.251@232.0.10.152:10000
+#EXTINF:-1 tvg-chno="62" tvg-name="DE| SAT.1 Nordrhein-Westfalen SD" tvg-id="rfo.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| SAT.1 Nordrhein-Westfalen SD
+rtp://87.141.215.251@232.0.10.153:10000
+#EXTINF:-1 tvg-chno="63" tvg-name="DE| SAT.1 Rheinland-Pfalz und Hessen SD" tvg-id="rfo.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| SAT.1 Rheinland-Pfalz und Hessen SD
+rtp://87.141.215.251@232.0.10.154:10000
+#EXTINF:-1 tvg-chno="64" tvg-name="DE| SIXX SD" tvg-id="sixx.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="https://lo1.in/ger/six.png",DE| SIXX SD
+rtp://87.141.215.251@232.0.10.157:10000
+#EXTINF:-1 tvg-chno="65" tvg-name="DE| SR Fernsehen HD" tvg-id="srfernsehen.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="https://lo1.in/ger/sr.png",DE| SR Fernsehen HD
+rtp://87.141.215.251@232.0.20.200:10000
+#EXTINF:-1 tvg-chno="66" tvg-name="DE| SUPER RTL SD" tvg-id="" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="https://lo1.in/ger/supr.png",DE| SUPER RTL SD
+rtp://87.141.215.251@232.0.10.201:10000
+#EXTINF:-1 tvg-chno="67" tvg-name="DE| SWR HD" tvg-id="swrsr.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="https://lo1.in/ger/swr.png",DE| SWR HD
+rtp://87.141.215.251@232.0.20.202:10000
+#EXTINF:-1 tvg-chno="68" tvg-name="DE| Studio 47 SD" tvg-id="rfo.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| Studio 47 SD
+rtp://87.141.215.251@232.0.11.36:10000
+#EXTINF:-1 tvg-chno="69" tvg-name="DE| TAGESSCHAU 24 HD" tvg-id="tagesschau24.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="https://lo1.in/ger/tag24.png",DE| TAGESSCHAU 24 HD
+rtp://87.141.215.251@232.0.20.205:10000
+#EXTINF:-1 tvg-chno="70" tvg-name="DE| TOGGO PLUS SD" tvg-id="" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="https://lo1.in/ger/togpl.png",DE| TOGGO PLUS SD
+rtp://87.141.215.251@232.0.11.7:10000
+#EXTINF:-1 tvg-chno="71" tvg-name="DE| TV Mainfranken SD" tvg-id="rfo.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| TV Mainfranken SD
+rtp://87.141.215.251@232.0.10.218:10000
+#EXTINF:-1 tvg-chno="72" tvg-name="DE| TV Oberfranken SD" tvg-id="rfo.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| TV Oberfranken SD
+rtp://87.141.215.251@232.0.10.215:10000
+#EXTINF:-1 tvg-chno="73" tvg-name="DE| TVA Ostbayern SD" tvg-id="rfo.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| TVA Ostbayern SD
+rtp://87.141.215.251@232.0.10.219:10000
+#EXTINF:-1 tvg-chno="74" tvg-name="DE| VOX SD" tvg-id="" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="https://lo1.in/ger/voxh.png",DE| VOX SD
+rtp://87.141.215.251@232.0.10.221:10000
+#EXTINF:-1 tvg-chno="75" tvg-name="DE| VOX UP SD" tvg-id="" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="https://lo1.in/ger/vox.png",DE| VOX UP SD
+rtp://87.141.215.251@232.0.10.239:10000
+#EXTINF:-1 tvg-chno="76" tvg-name="DE| WDR Fernsehen Aachen SD" tvg-id="rfo.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| WDR Fernsehen Aachen SD
+rtp://87.141.215.251@232.0.10.223:10000
+#EXTINF:-1 tvg-chno="77" tvg-name="DE| WDR Fernsehen Bielefeld SD" tvg-id="rfo.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| WDR Fernsehen Bielefeld SD
+rtp://87.141.215.251@232.0.10.224:10000
+#EXTINF:-1 tvg-chno="78" tvg-name="DE| WDR Fernsehen Bonn SD" tvg-id="rfo.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| WDR Fernsehen Bonn SD
+rtp://87.141.215.251@232.0.10.225:10000
+#EXTINF:-1 tvg-chno="79" tvg-name="DE| WDR Fernsehen Dortmund SD" tvg-id="rfo.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| WDR Fernsehen Dortmund SD
+rtp://87.141.215.251@232.0.10.226:10000
+#EXTINF:-1 tvg-chno="80" tvg-name="DE| WDR Fernsehen Duisburg SD" tvg-id="rfo.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| WDR Fernsehen Duisburg SD
+rtp://87.141.215.251@232.0.10.227:10000
+#EXTINF:-1 tvg-chno="81" tvg-name="DE| WDR Fernsehen Düsseldorf SD" tvg-id="rfo.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| WDR Fernsehen Düsseldorf SD
+rtp://87.141.215.251@232.0.10.228:10000
+#EXTINF:-1 tvg-chno="82" tvg-name="DE| WDR Fernsehen Essen SD" tvg-id="rfo.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| WDR Fernsehen Essen SD
+rtp://87.141.215.251@232.0.10.229:10000
+#EXTINF:-1 tvg-chno="83" tvg-name="DE| WDR Fernsehen Münster SD" tvg-id="rfo.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| WDR Fernsehen Münster SD
+rtp://87.141.215.251@232.0.10.230:10000
+#EXTINF:-1 tvg-chno="84" tvg-name="DE| WDR Fernsehen Siegen SD" tvg-id="rfo.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| WDR Fernsehen Siegen SD
+rtp://87.141.215.251@232.0.10.231:10000
+#EXTINF:-1 tvg-chno="85" tvg-name="DE| WDR Fernsehen Wuppertal SD" tvg-id="rfo.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| WDR Fernsehen Wuppertal SD
+rtp://87.141.215.251@232.0.10.232:10000
+#EXTINF:-1 tvg-chno="86" tvg-name="DE| ZDF NEO HD" tvg-id="zdfneo.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="https://lo1.in/ger/zdfne.png",DE| ZDF NEO HD
+rtp://87.141.215.251@232.0.20.236:10000
+#EXTINF:-1 tvg-chno="87" tvg-name="DE| ZDF NEO SD" tvg-id="" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="https://lo1.in/oly/dez1.png",DE| ZDF NEO SD
+rtp://87.141.215.251@232.0.10.236:10000
+#EXTINF:-1 tvg-chno="88" tvg-name="DE| ZDF SD" tvg-id="" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="https://lo1.in/oly/ded.png",DE| ZDF SD
+rtp://87.141.215.251@232.0.10.234:10000
+#EXTINF:-1 tvg-chno="89" tvg-name="DE| ZDFINFO HD" tvg-id="zdfinfo.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="https://lo1.in/ger/zdfinf.png",DE| ZDFINFO HD
+rtp://87.141.215.251@232.0.20.237:10000
+#EXTINF:-1 tvg-chno="90" tvg-name="DE| a.tv SD" tvg-id="atv.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| a.tv SD
+rtp://87.141.215.251@232.0.10.4:10000
+#EXTINF:-1 tvg-chno="91" tvg-name="DE| allgäu.tv SD" tvg-id="allgäutv.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| allgäu.tv SD
+rtp://87.141.215.251@232.0.10.6:10000
+#EXTINF:-1 tvg-chno="92" tvg-name="DE| münchen.tv SD" tvg-id="muenchentv.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| münchen.tv SD
+rtp://87.141.215.251@232.0.10.100:10000
+#EXTINF:-1 tvg-chno="93" tvg-name="DE| rbb fernsehen Brandenburg SD" tvg-id="rfo.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| rbb fernsehen Brandenburg SD
+rtp://87.141.215.251@232.0.10.130:10000
+#EXTINF:-1 tvg-chno="94" tvg-name="DE| tv.ingolstadt SD" tvg-id="tvingolstadt.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| tv.ingolstadt SD
+rtp://87.141.215.251@232.0.10.75:10000

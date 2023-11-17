@@ -19,6 +19,9 @@ public:
     bool removeAllEXTINFs();
     bool removeObsoleteEXTINFs();
     bool updateEXTINF_byRef(int, const QString&, int, const QString&, int);
+    bool updateEXTINF_tvg_logo_byRef(int, const QString&);
+    bool updateEXTINF_tvg_id_byRef(int, const QString&);
+
     bool deactivateEXTINFs();
     QSqlQuery* selectEXTINF(const QString&, const QString&, const QString&, int);
     QSqlQuery* selectEXTINF_group_titles(int);
@@ -50,6 +53,8 @@ public:
     bool removeAllPrograms();
     bool addProgram(const QString&, const QString&, const QString&, const QString&, const QString&);
     QSqlQuery* selectProgramData(const QString &);
+
+    QSqlQuery* selectEPGChannels(const QString&);
 
 private:
     QSqlDatabase m_db;

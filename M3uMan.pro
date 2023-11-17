@@ -19,7 +19,7 @@ INCLUDEPATH += ../m3uMan/win32/VLC-Qt_1.1.0_win32_mingw/include
 TARGET = QtM3uMan
 TEMPLATE = app
 
-LIBS       += -lVLCQtCore -lVLCQtWidgets
+LIBS       += -lVLCQtCored -lVLCQtWidgetsd
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which has been marked as deprecated (the exact warnings
@@ -36,6 +36,7 @@ CONFIG += c++11
 
 SOURCES += \
         EqualizerDialog.cpp \
+#        downloadmanager.cpp \
         main.cpp \
         mainwindow.cpp \
         dbmanager.cpp \
@@ -43,6 +44,7 @@ SOURCES += \
 
 HEADERS += \
         EqualizerDialog.h \
+ #       downloadmanager.h \
         mainwindow.h \
         dbmanager.h \
         filedownloader.h
@@ -59,7 +61,15 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 RESOURCES += \
     m3uMan.qrc
 
-RESOURCES +=
-RESOURCES +=
-
-DISTFILES +=
+DISTFILES += \
+    docs/resources.txt \
+    playlists/Radio Absolut.m3u \
+    stylsheets/Adaptic/Adaptic.png \
+    stylsheets/Adaptic/Adaptic.qss \
+    stylsheets/Adaptic/License.txt \
+    stylsheets/Combinear/Combinear.png \
+    stylsheets/Combinear/Combinear.qss \
+    stylsheets/Combinear/License.txt \
+    stylsheets/DeepBox/DeepBox.png \
+    stylsheets/DeepBox/DeepBox.qss \
+    stylsheets/DeepBox/License.txt

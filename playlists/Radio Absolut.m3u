@@ -1,0 +1,21 @@
+#EXTM3U
+#EXTINF:-1 tvg-chno="1" tvg-name="Absolut Hot AAC Stream" tvg-id="" group-title="Radio Absolut" tvg-logo="https://absolutradio.de/images/stations/logo-absolut-hot.png",Absolut Hot AAC Stream
+https://absolut-hot.live-sm.absolutradio.de/absolut-hot
+#EXTINF:-1 tvg-chno="2" tvg-name="Absolut Relax AAC Stream" tvg-id="" group-title="Radio Absolut" tvg-logo="https://absolutradio.de/images/stations/logo-absolut-relax.png",Absolut Relax AAC Stream
+https://absolut-relax.live-sm.absolutradio.de/absolut-relax
+#EXTINF:-1 tvg-chno="3" tvg-name="Absolut Germany AAC Stream" tvg-id="" group-title="Radio Absolut" tvg-logo="https://absolutradio.de/images/stations/logo-absolut-germany.png",Absolut Germany AAC Stream
+https://absolut-germany.live-sm.absolutradio.de/absolut-germany
+#EXTINF:-1 tvg-chno="4" tvg-name="Absolut Top AAC Stream" tvg-id="" group-title="Radio Absolut" tvg-logo="https://absolutradio.de/images/stations/logo-absolut-top.png",Absolut Top AAC Stream
+https://absolut-top.live-sm.absolutradio.de/absolut-top
+#EXTINF:-1 tvg-chno="5" tvg-name="Absolut Oldie Classics AAC Stream" tvg-id="" group-title="Radio Absolut" tvg-logo="https://absolutradio.de/images/stations/logo-absolut-oldies.png",Absolut Oldie Classics AAC Stream
+https://absolut-oldieclassics.live-sm.absolutradio.de/absolut-oldieclassics
+#EXTINF:-1 tvg-chno="6" tvg-name="Absolut musicXL AAC Stream" tvg-id="" group-title="Radio Absolut" tvg-logo="https://absolutradio.de/images/stations/logo-absolut-musicxl.png",Absolut musicXL AAC Stream
+https://absolut-musicxl.live-sm.absolutradio.de/absolut-musicxl
+#EXTINF:-1 tvg-chno="7" tvg-name="Absolut Lovesongs AAC Stream" tvg-id="" group-title="Radio Absolut" tvg-logo="https://absolutradio.de/images/stations/logo-absolut-lovesongs.png",Absolut Lovesongs AAC Stream
+https://absolut-lovesongs.live-sm.absolutradio.de/absolut-lovesongs
+#EXTINF:-1 tvg-chno="8" tvg-name="Absolut Coffeemusic AAC Stream" tvg-id="" group-title="Radio Absolut" tvg-logo="https://absolutradio.de/images/stations/logo-absolut-radio-coffeemusic.png",Absolut Coffeemusic AAC Stream
+https://absolut-coffeemusic.live-sm.absolutradio.de/absolut-coffeemusic
+#EXTINF:-1 tvg-chno="9" tvg-name="Absolut Bella AAC Stream" tvg-id="" group-title="Radio Absolut" tvg-logo="https://absolutradio.de/images/stations/logo-absolut-bella.png",Absolut Bella AAC Stream
+https://absolut-bella.live-sm.absolutradio.de/absolut-bella
+#EXTINF:-1 tvg-chno="10" tvg-name="Absolut 80er AAC Stream" tvg-id="" group-title="Radio Absolut" tvg-logo="https://absolutradio.de/images/stations/logo-absolut-radio-80er.png",Absolut 80er AAC Stream
+https://absolut-80er.live-sm.absolutradio.de/absolut-80er

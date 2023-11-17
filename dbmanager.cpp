@@ -238,7 +238,7 @@ QSqlQuery* DbManager::selectEXTINF_byRef(int id)
 {
     QSqlQuery *select = new QSqlQuery();
 
-    select->prepare("SELECT * FROM extinf WHERE id = :id");
+    select->prepare("SELECT * FROM extinf, groups WHERE extinf.id = :id and groups.id = extinf.group_id");
     select->bindValue(":id", id);
     if ( ! select->exec() ) {
          qDebug() << "selectEXTINF_byRef" << id << select->lastError();
@@ -275,6 +275,48 @@ bool DbManager::updateEXTINF_byRef(int id, const QString& tvg_name, int group_id
 
     if ( ! select->exec() ) {
         qDebug() << "updateEXTINF_byRef" << select->lastError();
+        retCode = false;
+    }
+
+    delete select;
+
+    return retCode;
+}
+
+
+bool DbManager::updateEXTINF_tvg_logo_byRef(int id, const QString& tvg_logo)
+{
+    int retCode = true;
+
+    QSqlQuery *select = new QSqlQuery();
+
+    select->prepare("UPDATE extinf SET tvg_logo =:tvg_logo WHERE id = :id");
+    select->bindValue(":id", id);
+    select->bindValue(":tvg_logo", tvg_logo);
+
+    if ( ! select->exec() ) {
+        qDebug() << "updateEXTINF_tvg_logo_byRef" << select->lastError();
+        retCode = false;
+    }
+
+    delete select;
+
+    return retCode;
+}
+
+
+bool DbManager::updateEXTINF_tvg_id_byRef(int id, const QString& tvg_id)
+{
+    int retCode = true;
+
+    QSqlQuery *select = new QSqlQuery();
+
+    select->prepare("UPDATE extinf SET tvg_id =:tvg_id WHERE id = :id");
+    select->bindValue(":id", id);
+    select->bindValue(":tvg_id", tvg_id);
+
+    if ( ! select->exec() ) {
+        qDebug() << "updateEXTINF_tvg_id_byRef" << select->lastError();
         retCode = false;
     }
 
@@ -633,3 +675,18 @@ QSqlQuery* DbManager::selectGroups(int favorite)
 
     return select;
 }
+
+QSqlQuery* DbManager::selectEPGChannels(const QString& region)
+{
+    QSqlQuery *select = new QSqlQuery();
+
+    select->prepare(QString("select * from program where channel like '%%1%' group by channel").arg(region));
+
+    if ( ! select->exec() ) {
+        qDebug() << "selectEPGChannels" << select->lastError();
+    }
+
+    return select;
+}
+
+

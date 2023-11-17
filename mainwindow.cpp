@@ -94,6 +94,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     fillComboPlaylists();
     fillComboGroupTitels();
+    fillComboEPGChannels();
     fillTreeWidget();
 
     m_Process = new QProcess(this);
@@ -917,11 +918,13 @@ void MainWindow::MakePlaylist()
             id = select->value(0).toByteArray().constData();
             title = select->value(1).toByteArray().constData();
             tvg_id = select->value(2).toByteArray().constData();
-            group = select->value(3).toByteArray().constData();
+            group = select->value(8).toByteArray().constData();
             logo = select->value(4).toByteArray().constData();
             url = select->value(5).toByteArray().constData();
 
-            out << QString("#EXTINF:-1 tvg-name=\"%1\" tvg-id=\"%2\" group-title=\"%3\" tvg-logo=\"%4\",%1\n%5\n").arg(title).arg(tvg_id).arg(group).arg(logo).arg(url);
+            group = ui->cboPlaylists->currentText();
+
+            out << QString("#EXTINF:-1 tvg-chno=\"%6\" tvg-name=\"%1\" tvg-id=\"%2\" group-title=\"%3\" tvg-logo=\"%4\",%1\n%5\n").arg(title).arg(tvg_id).arg(group).arg(logo).arg(url).arg(i+1);
         }
 
         delete select;
@@ -1075,6 +1078,7 @@ void MainWindow::on_twPLS_Items_itemSelectionChanged()
 
         delete select;
 
+        ui->cboEPGChannels->setCurrentText(tvg_id);
         ui->edtStationUrl->setText(url);
 
         m_actualTitle = title;
@@ -1204,18 +1208,26 @@ void MainWindow::on_lvStations_itemClicked(QListWidgetItem *item)
 
     ui->twPLS_Items->clearSelection();
     ui->twPLS_Items->topLevelItem( ui->lvStations->currentRow() )->setSelected(true);
-
+/*
     if ( ! url.toString().isEmpty() ) {
 
         _media = new VlcMedia(url.toString(), _instance);
 
         _player->open(_media);
     }
+    */
 }
 
 void MainWindow::on_cmdSavePosition_clicked()
 {
-    QTreeWidgetItem *item;
+    QTreeWidgetItem* item = ui->twPLS_Items->currentItem();
+
+    if ( item != nullptr ) {
+
+        int extinf_id = item->data(1,1).toInt();
+
+        db.updateEXTINF_tvg_id_byRef(extinf_id, ui->cboEPGChannels->currentText());
+    }
 
     for (int i = 0; i < ui->twPLS_Items->topLevelItemCount(); i++) {
 
@@ -1615,3 +1627,67 @@ void MainWindow::on_actionload_stylsheet_triggered()
         qApp->setStyleSheet(ts.readAll());
     }
 }
+
+void MainWindow::on_cmdSetPos_clicked()
+{
+    QTreeWidgetItem* item = ui->twPLS_Items->currentItem();
+    int              row  = ui->twPLS_Items->currentIndex().row();
+    bool ok;
+    int pos = 0;
+
+    QString text = QInputDialog::getText(this, tr("QInputDialog::getText()"),
+                                         tr("User name:"), QLineEdit::Normal,
+                                         QDir::home().dirName(), &ok);
+    if (ok && !text.isEmpty())
+        pos = text.toInt()-1;
+
+    if (item && row >= 0 && pos >= 0)
+    {
+        ui->twPLS_Items->takeTopLevelItem(row);
+        ui->twPLS_Items->insertTopLevelItem(pos, item);
+        ui->twPLS_Items->setCurrentItem(item);
+
+        somethingchanged = true;
+    }
+}
+
+void MainWindow::on_cmdSetLogo_clicked()
+{
+    QTreeWidgetItem* item = ui->twPLS_Items->currentItem();
+    int extinf_id = item->data(1,1).toInt();
+
+    bool ok;
+
+    QString url = QInputDialog::getText(this, tr("QInputDialog::getText()"),
+                                         tr("User name:"), QLineEdit::Normal,
+                                         QDir::home().dirName(), &ok);
+    if (ok && !url.isEmpty()) {
+
+        db.updateEXTINF_tvg_logo_byRef(extinf_id, url);
+    }
+}
+
+void MainWindow::fillComboEPGChannels()
+{
+    QSqlQuery *select = nullptr;
+    QString title;
+    QString id;
+
+    ui->cboEPGChannels->blockSignals(true);
+
+    ui->cboEPGChannels->clear();
+    ui->cboEPGChannels->addItem(" ");
+
+    select = db.selectEPGChannels(".de");
+    while ( select->next() ) {
+
+        title = select->value(3).toByteArray().constData();
+
+        ui->cboEPGChannels->addItem(title);
+    }
+
+    delete select;
+
+    ui->cboEPGChannels->blockSignals(false);
+}
+

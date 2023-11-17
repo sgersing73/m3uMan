@@ -23,5 +23,7 @@
         <file>images/Ui/icons8-adjust-50.png</file>
         <file>images/Ui/icons8-audio-50.png</file>
         <file>images/Ui/icons8-mute-50.png</file>
+        <file>images/Ui/icons8-image-not-available-50.png</file>
+        <file>images/Ui/icons8-shortlist-50.png</file>
     </qresource>
 </RCC>

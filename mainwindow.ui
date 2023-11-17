@@ -240,7 +240,7 @@
              <enum>QAbstractScrollArea::AdjustToContents</enum>
             </property>
             <property name="selectionMode">
-             <enum>QAbstractItemView::MultiSelection</enum>
+             <enum>QAbstractItemView::ExtendedSelection</enum>
             </property>
             <column>
              <property name="text">
@@ -528,6 +528,37 @@
               </spacer>
              </item>
              <item>
+              <widget class="QComboBox" name="cboEPGChannels"/>
+             </item>
+             <item>
+              <widget class="QPushButton" name="cmdSetLogo">
+               <property name="toolTip">
+                <string>enter url from station logo</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="m3uMan.qrc">
+                 <normaloff>:/images/Ui/icons8-image-not-available-50.png</normaloff>:/images/Ui/icons8-image-not-available-50.png</iconset>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="cmdSetPos">
+               <property name="toolTip">
+                <string>set station position</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="m3uMan.qrc">
+                 <normaloff>:/images/Ui/icons8-shortlist-50.png</normaloff>:/images/Ui/icons8-shortlist-50.png</iconset>
+               </property>
+              </widget>
+             </item>
+             <item>
               <widget class="QPushButton" name="cmdMoveUp">
                <property name="toolTip">
                 <string>move item up in list</string>
@@ -558,7 +589,7 @@
              <item>
               <widget class="QPushButton" name="cmdSavePosition">
                <property name="toolTip">
-                <string>save positions</string>
+                <string>save playlist</string>
                </property>
                <property name="text">
                 <string/>

@@ -98,6 +98,7 @@ private:
     void MakePlaylist();
 
     QPixmap changeIconColor(QIcon, QColor);
+    void fillComboEPGChannels();
 
 private slots:
     void on_edtLoad_clicked();
@@ -153,6 +154,10 @@ private slots:
     void progressCancel_clicked();
 
     void on_actionload_stylsheet_triggered();
+
+    void on_cmdSetPos_clicked();
+
+    void on_cmdSetLogo_clicked();
 
 private:
     QString         curFile;
