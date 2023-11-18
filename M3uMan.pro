@@ -64,6 +64,10 @@ RESOURCES += \
 DISTFILES += \
     docs/resources.txt \
     playlists/Radio Absolut.m3u \
+    playlists/Radio Absolut.m3u \
+    playlists/Radio Absolut.m3u \
+    playlists/Telekom Magenta TV.m3u \
+    playlists/Telekom Magenta TV.m3u \
     stylsheets/Adaptic/Adaptic.png \
     stylsheets/Adaptic/Adaptic.qss \
     stylsheets/Adaptic/License.txt \
@@ -72,4 +76,7 @@ DISTFILES += \
     stylsheets/Combinear/License.txt \
     stylsheets/DeepBox/DeepBox.png \
     stylsheets/DeepBox/DeepBox.qss \
-    stylsheets/DeepBox/License.txt
+    stylsheets/DeepBox/License.txt \
+    stylsheets/Irrorater/Irrorater.png \
+    stylsheets/Irrorater/Irrorater.qss \
+    stylsheets/Irrorater/License.txt

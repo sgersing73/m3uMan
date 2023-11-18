@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>786</width>
-    <height>598</height>
+    <width>897</width>
+    <height>661</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -528,7 +528,17 @@
               </spacer>
              </item>
              <item>
-              <widget class="QComboBox" name="cboEPGChannels"/>
+              <widget class="QComboBox" name="cboEPGChannels">
+               <property name="maximumSize">
+                <size>
+                 <width>150</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>select available EPG data source</string>
+               </property>
+              </widget>
              </item>
              <item>
               <widget class="QPushButton" name="cmdSetLogo">
@@ -536,7 +546,7 @@
                 <string>enter url from station logo</string>
                </property>
                <property name="text">
-                <string/>
+                <string>Logo</string>
                </property>
                <property name="icon">
                 <iconset resource="m3uMan.qrc">
@@ -550,11 +560,22 @@
                 <string>set station position</string>
                </property>
                <property name="text">
-                <string/>
+                <string>Position</string>
                </property>
                <property name="icon">
                 <iconset resource="m3uMan.qrc">
                  <normaloff>:/images/Ui/icons8-shortlist-50.png</normaloff>:/images/Ui/icons8-shortlist-50.png</iconset>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="cmdImdb">
+               <property name="text">
+                <string>Tmdb</string>
+               </property>
+               <property name="icon">
+                <iconset resource="m3uMan.qrc">
+                 <normaloff>:/images/Ui/icons8-film-reel-50.png</normaloff>:/images/Ui/icons8-film-reel-50.png</iconset>
                </property>
               </widget>
              </item>
@@ -564,7 +585,7 @@
                 <string>move item up in list</string>
                </property>
                <property name="text">
-                <string/>
+                <string>move up</string>
                </property>
                <property name="icon">
                 <iconset resource="m3uMan.qrc">
@@ -578,7 +599,7 @@
                 <string>move item down in list</string>
                </property>
                <property name="text">
-                <string/>
+                <string>move down</string>
                </property>
                <property name="icon">
                 <iconset resource="m3uMan.qrc">
@@ -592,7 +613,7 @@
                 <string>save playlist</string>
                </property>
                <property name="text">
-                <string/>
+                <string>save settings</string>
                </property>
                <property name="icon">
                 <iconset resource="m3uMan.qrc">
@@ -605,14 +626,10 @@
           </layout>
          </item>
          <item>
+          <widget class="QLineEdit" name="edtStationUrl"/>
+         </item>
+         <item>
           <layout class="QHBoxLayout" name="horizontalLayout">
-           <item>
-            <widget class="QPushButton" name="cmdImdb">
-             <property name="text">
-              <string>Imdb</string>
-             </property>
-            </widget>
-           </item>
            <item>
             <widget class="QPushButton" name="cmdGatherData">
              <property name="enabled">
@@ -622,16 +639,13 @@
               <string>stream info (needs FFPROBE in path)</string>
              </property>
              <property name="text">
-              <string/>
+              <string>stream info</string>
              </property>
              <property name="icon">
               <iconset resource="m3uMan.qrc">
                <normaloff>:/images/Ui/icons8-search-in-cloud-50.png</normaloff>:/images/Ui/icons8-search-in-cloud-50.png</iconset>
              </property>
             </widget>
-           </item>
-           <item>
-            <widget class="QLineEdit" name="edtStationUrl"/>
            </item>
            <item>
             <widget class="QPushButton" name="cmdPlayMoveDown">
@@ -697,8 +711,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>786</width>
-     <height>21</height>
+     <width>897</width>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuVideo">
@@ -715,6 +729,7 @@
     </property>
     <addaction name="actionload_stylsheet"/>
     <addaction name="actionIcon_color"/>
+    <addaction name="actionselect_application_font"/>
     <addaction name="actionhide_show_input_fields"/>
    </widget>
    <addaction name="menuVideo"/>
@@ -763,6 +778,11 @@
   <action name="actionload_stylsheet">
    <property name="text">
     <string>load stylsheet</string>
+   </property>
+  </action>
+  <action name="actionselect_application_font">
+   <property name="text">
+    <string>select application font</string>
    </property>
   </action>
  </widget>

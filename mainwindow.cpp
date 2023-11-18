@@ -1508,7 +1508,6 @@ void MainWindow::on_cmdMute_clicked()
 
 void MainWindow::getTMDBdate(const QString &title, int tmdb_id, int extinf_id)
 {
-
     QString filename = m_AppDataPath + "/tmdb/" + QString("%1.txt").arg(tmdb_id);
     QFile   file(filename);
 
@@ -1539,7 +1538,40 @@ void MainWindow::getTMDBdate(const QString &title, int tmdb_id, int extinf_id)
 
         qDebug() << url;
     }
+}
 
+void MainWindow::getTMDBdataById(int tmdb_id, int extinf_id)
+{
+    QString filename = m_AppDataPath + "/tmdb/" + QString("%1.txt").arg(tmdb_id);
+    QFile   file(filename);
+
+    if ( tmdb_id > 0 && file.exists() && file.size() > 0 ) {
+
+        qDebug() << "use local tmdb data..." << filename;
+
+        if ( file.open(QIODevice::ReadOnly) ) {
+
+            QString strReply = file.readAll();
+
+            file.close();
+
+            this->displayMovieInfo(extinf_id, strReply, true);
+        }
+
+    } else {
+
+        m_nam = new QNetworkAccessManager(this);
+        QObject::connect(m_nam, SIGNAL(finished(QNetworkReply*)),
+                 this, SLOT(serviceRequestFinished(QNetworkReply*)));
+
+        QUrl url(QString("https://api.themoviedb.org/3/movie/%1?language=de-DE&api_key=%2").arg(tmdb_id).arg("6c125ca74f059b4c88bc49e1b09e241e"));
+
+        QNetworkReply* reply = m_nam->get(QNetworkRequest(url));
+
+        reply->setProperty("extinf_id", extinf_id);
+
+        qDebug() << url;
+    }
 }
 
 void MainWindow::serviceRequestFinished(QNetworkReply* reply)
@@ -1567,42 +1599,33 @@ void MainWindow::displayMovieInfo(int extinf_id, QString moviedata, bool storeda
     QJsonDocument jsonResponse = QJsonDocument::fromJson(moviedata.toUtf8());
 
     QJsonObject doc_obj = jsonResponse.object();
+
     QJsonArray doc_array = doc_obj.value("results").toArray();
-
     if ( ! doc_array.isEmpty() ) {
-
         doc_obj =  doc_array.at(0).toObject();
-
-        ui->edtOutput->setText( doc_obj.value("original_title").toString() + " (" + doc_obj.value("release_date").toString() + ")" );
-        ui->edtOutput->append ( " " );
-        ui->edtOutput->append ( QString("%1 - votes: %2").arg(doc_obj.value("vote_average").toDouble()).arg(doc_obj.value("vote_count").toDouble()));
-        ui->edtOutput->append ( " " );
-        ui->edtOutput->append ( doc_obj.value("overview").toString() );
-
-        if ( storedata ) {
-
-            QString filename = m_AppDataPath + "/tmdb/" + QString("%1.txt").arg(doc_obj.value("id").toDouble());
-
-            const QString qPath(filename);
-            QFile qFile(qPath);
-            if (qFile.open(QIODevice::WriteOnly)) {
-                QTextStream out(&qFile);
-                out.setCodec("utf-8");
-                out << moviedata.toUtf8();
-                qFile.close();
-            }
-        }
-
-        db.updatePLS_item_tmdb_by_extinf_id(extinf_id, doc_obj.value("id").toDouble() );
-
-    } else {
-        statusBar()->showMessage(tr("Keine Daten auf themoviedb.org gefunden..."));
     }
-}
 
-void MainWindow::on_cmdImdb_clicked()
-{
-    // this->getTMDBdate(QUrl::toPercentEncoding(m_actualTitle, "/:-"));
+    ui->edtOutput->setText( doc_obj.value("original_title").toString() + " (" + doc_obj.value("release_date").toString() + ") / " + QString("ID: %1").arg(doc_obj.value("id").toDouble()) );
+    ui->edtOutput->append ( " " );
+    ui->edtOutput->append ( QString("%1 - votes: %2").arg(doc_obj.value("vote_average").toDouble()).arg(doc_obj.value("vote_count").toDouble()));
+    ui->edtOutput->append ( " " );
+    ui->edtOutput->append ( doc_obj.value("overview").toString() );
+
+    if ( storedata ) {
+
+        QString filename = m_AppDataPath + "/tmdb/" + QString("%1.txt").arg(doc_obj.value("id").toDouble());
+
+        const QString qPath(filename);
+        QFile qFile(qPath);
+        if (qFile.open(QIODevice::WriteOnly)) {
+            QTextStream out(&qFile);
+            out.setCodec("utf-8");
+            out << moviedata.toUtf8();
+            qFile.close();
+        }
+    }
+
+    db.updatePLS_item_tmdb_by_extinf_id(extinf_id, doc_obj.value("id").toDouble() );
 }
 
 void MainWindow::progressCancel_clicked()
@@ -1632,17 +1655,18 @@ void MainWindow::on_cmdSetPos_clicked()
 {
     QTreeWidgetItem* item = ui->twPLS_Items->currentItem();
     int              row  = ui->twPLS_Items->currentIndex().row();
-    bool ok;
+    bool             ok;
+
     int pos = 0;
 
-    QString text = QInputDialog::getText(this, tr("QInputDialog::getText()"),
-                                         tr("User name:"), QLineEdit::Normal,
-                                         QDir::home().dirName(), &ok);
+    QString text = QInputDialog::getText(this, tr("Set channel position"),
+                                         tr("Please enter the position in the playlist"), QLineEdit::Normal,
+                                         "", &ok);
     if (ok && !text.isEmpty())
         pos = text.toInt()-1;
 
-    if (item && row >= 0 && pos >= 0)
-    {
+    if (item && row >= 0 && pos >= 0) {
+
         ui->twPLS_Items->takeTopLevelItem(row);
         ui->twPLS_Items->insertTopLevelItem(pos, item);
         ui->twPLS_Items->setCurrentItem(item);
@@ -1653,17 +1677,21 @@ void MainWindow::on_cmdSetPos_clicked()
 
 void MainWindow::on_cmdSetLogo_clicked()
 {
-    QTreeWidgetItem* item = ui->twPLS_Items->currentItem();
-    int extinf_id = item->data(1,1).toInt();
-
     bool ok;
 
-    QString url = QInputDialog::getText(this, tr("QInputDialog::getText()"),
-                                         tr("User name:"), QLineEdit::Normal,
-                                         QDir::home().dirName(), &ok);
-    if (ok && !url.isEmpty()) {
+    QTreeWidgetItem* item = ui->twPLS_Items->currentItem();
 
-        db.updateEXTINF_tvg_logo_byRef(extinf_id, url);
+    if ( item != nullptr ) {
+
+        int extinf_id = item->data(1,1).toInt();
+
+        QString url = QInputDialog::getText(this, tr("Set channel logo"),
+                                             tr("Please enter URL from station logo:"), QLineEdit::Normal,
+                                             "", &ok);
+        if (ok && !url.isEmpty()) {
+
+            db.updateEXTINF_tvg_logo_byRef(extinf_id, url);
+        }
     }
 }
 
@@ -1691,3 +1719,36 @@ void MainWindow::fillComboEPGChannels()
     ui->cboEPGChannels->blockSignals(false);
 }
 
+void MainWindow::on_actionselect_application_font_triggered()
+{
+    bool ok;
+    QFont font = QFontDialog::getFont(
+                    &ok,
+                    QFont( "Arial", 18 ),
+                    this,
+                    tr("Pick a font") );
+    if( ok ) {
+
+        QApplication::setFont(font);
+    }
+}
+
+void MainWindow::on_cmdImdb_clicked()
+{
+    bool ok = false;
+
+    QTreeWidgetItem* item = ui->twPLS_Items->currentItem();
+
+    if ( item != nullptr ) {
+
+        int extinf_id = item->data(1,1).toInt();
+
+        QString tmdb_id = QInputDialog::getText(this, tr("Set tmdb id"),
+                                             tr("Please enter a valid id from Themoviedb.org"), QLineEdit::Normal,
+                                             "", &ok);
+        if (ok && !tmdb_id.isEmpty()) {
+
+            this->getTMDBdataById(tmdb_id.toInt(), extinf_id);
+        }
+    }
+}

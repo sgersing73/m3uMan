@@ -32,6 +32,7 @@
 #include <QJsonArray>
 #include <QProgressBar>
 #include <QPushButton>
+#include <QFontDialog>
 
 #ifdef Q_OS_WIN
 #include <QWinTaskbarButton>
@@ -88,6 +89,8 @@ private:
 
     QStringList splitCommandLine(const QString &);
     void getTMDBdate(const QString &, int, int);
+    void getTMDBdataById(int, int);
+
     void displayMovieInfo(int, QString, bool);
 
     QTreeWidgetItem* addTreeRoot(const QString &, const QString &, const QString &, int);
@@ -158,6 +161,8 @@ private slots:
     void on_cmdSetPos_clicked();
 
     void on_cmdSetLogo_clicked();
+
+    void on_actionselect_application_font_triggered();
 
 private:
     QString         curFile;
