@@ -20,7 +20,7 @@
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout_3">
     <item row="0" column="0">
-     <widget class="QSplitter" name="splitter_3">
+     <widget class="QSplitter" name="splitter_4">
       <property name="orientation">
        <enum>Qt::Vertical</enum>
       </property>
@@ -166,11 +166,11 @@
         </item>
        </layout>
       </widget>
-      <widget class="QSplitter" name="splitter_2">
+      <widget class="QSplitter" name="splitter_3">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
-       <widget class="QSplitter" name="splitter">
+       <widget class="QSplitter" name="splitter_2">
         <property name="orientation">
          <enum>Qt::Vertical</enum>
         </property>
@@ -251,166 +251,169 @@
           </item>
          </layout>
         </widget>
-        <widget class="QWidget" name="layoutWidget">
-         <layout class="QGridLayout" name="gridPlay">
-          <item row="2" column="0">
-           <widget class="VlcWidgetSeek" name="widSeek" native="true">
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>35</height>
-             </size>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0">
-           <widget class="VlcWidgetVideo" name="widVideo" native="true">
-            <property name="minimumSize">
-             <size>
-              <width>160</width>
-              <height>120</height>
-             </size>
-            </property>
-            <property name="autoFillBackground">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0">
-           <layout class="QHBoxLayout" name="horizontalLayout_5">
-            <item>
-             <widget class="QPushButton" name="cmdMoveBackward">
-              <property name="maximumSize">
-               <size>
-                <width>30</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="icon">
-               <iconset resource="m3uMan.qrc">
-                <normaloff>:/images/Ui/icons8-swipe-left-50.png</normaloff>:/images/Ui/icons8-swipe-left-50.png</iconset>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="cmdStop">
-              <property name="text">
-               <string>stop</string>
-              </property>
-              <property name="icon">
-               <iconset resource="m3uMan.qrc">
-                <normaloff>:/images/Ui/icons8-stop-circled-50.png</normaloff>:/images/Ui/icons8-stop-circled-50.png</iconset>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="cmdPlayStream">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="text">
-               <string>play</string>
-              </property>
-              <property name="icon">
-               <iconset resource="m3uMan.qrc">
-                <normaloff>:/images/Ui/icons8-circled-play-50.png</normaloff>:/images/Ui/icons8-circled-play-50.png</iconset>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="cmdPause">
-              <property name="text">
-               <string>pause</string>
-              </property>
-              <property name="icon">
-               <iconset resource="m3uMan.qrc">
-                <normaloff>:/images/Ui/icons8-pause-button-50.png</normaloff>:/images/Ui/icons8-pause-button-50.png</iconset>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="cmdMoveForward">
-              <property name="maximumSize">
-               <size>
-                <width>30</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="icon">
-               <iconset resource="m3uMan.qrc">
-                <normaloff>:/images/Ui/icons8-swipe-right-50.png</normaloff>:/images/Ui/icons8-swipe-right-50.png</iconset>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="cmdEqualizer">
-              <property name="maximumSize">
-               <size>
-                <width>30</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="icon">
-               <iconset resource="m3uMan.qrc">
-                <normaloff>:/images/Ui/icons8-adjust-50.png</normaloff>:/images/Ui/icons8-adjust-50.png</iconset>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="cmdMute">
-              <property name="maximumSize">
-               <size>
-                <width>50</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="icon">
-               <iconset resource="m3uMan.qrc">
-                <normaloff>:/images/Ui/icons8-audio-50.png</normaloff>:/images/Ui/icons8-audio-50.png</iconset>
-              </property>
-              <property name="autoDefault">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="VlcWidgetVolumeSlider" name="widVolume" native="true">
-              <property name="maximumSize">
-               <size>
-                <width>16777215</width>
-                <height>30</height>
-               </size>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="1" column="0">
-           <widget class="QListWidget" name="lvStations">
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>70</height>
-             </size>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">backgroud=rgb(255, 85, 0)</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
+        <widget class="QSplitter" name="splitter">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <widget class="VlcWidgetVideo" name="widVideo" native="true">
+          <property name="minimumSize">
+           <size>
+            <width>160</width>
+            <height>120</height>
+           </size>
+          </property>
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
+         </widget>
+         <widget class="QWidget" name="layoutWidget">
+          <layout class="QGridLayout" name="gridLayout">
+           <item row="0" column="0">
+            <widget class="QListWidget" name="lvStations">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>70</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">backgroud=rgb(255, 85, 0)</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="VlcWidgetSeek" name="widSeek" native="true">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>35</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <layout class="QHBoxLayout" name="horizontalLayout_5">
+             <item>
+              <widget class="QPushButton" name="cmdMoveBackward">
+               <property name="maximumSize">
+                <size>
+                 <width>30</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="m3uMan.qrc">
+                 <normaloff>:/images/Ui/icons8-swipe-left-50.png</normaloff>:/images/Ui/icons8-swipe-left-50.png</iconset>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="cmdStop">
+               <property name="text">
+                <string>stop</string>
+               </property>
+               <property name="icon">
+                <iconset resource="m3uMan.qrc">
+                 <normaloff>:/images/Ui/icons8-stop-circled-50.png</normaloff>:/images/Ui/icons8-stop-circled-50.png</iconset>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="cmdPlayStream">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="text">
+                <string>play</string>
+               </property>
+               <property name="icon">
+                <iconset resource="m3uMan.qrc">
+                 <normaloff>:/images/Ui/icons8-circled-play-50.png</normaloff>:/images/Ui/icons8-circled-play-50.png</iconset>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="cmdPause">
+               <property name="text">
+                <string>pause</string>
+               </property>
+               <property name="icon">
+                <iconset resource="m3uMan.qrc">
+                 <normaloff>:/images/Ui/icons8-pause-button-50.png</normaloff>:/images/Ui/icons8-pause-button-50.png</iconset>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="cmdMoveForward">
+               <property name="maximumSize">
+                <size>
+                 <width>30</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="m3uMan.qrc">
+                 <normaloff>:/images/Ui/icons8-swipe-right-50.png</normaloff>:/images/Ui/icons8-swipe-right-50.png</iconset>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="cmdEqualizer">
+               <property name="maximumSize">
+                <size>
+                 <width>30</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="m3uMan.qrc">
+                 <normaloff>:/images/Ui/icons8-adjust-50.png</normaloff>:/images/Ui/icons8-adjust-50.png</iconset>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="cmdMute">
+               <property name="maximumSize">
+                <size>
+                 <width>50</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="m3uMan.qrc">
+                 <normaloff>:/images/Ui/icons8-audio-50.png</normaloff>:/images/Ui/icons8-audio-50.png</iconset>
+               </property>
+               <property name="autoDefault">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="VlcWidgetVolumeSlider" name="widVolume" native="true">
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>30</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
         </widget>
        </widget>
        <widget class="QWidget" name="layoutWidget">
@@ -712,17 +715,9 @@
      <x>0</x>
      <y>0</y>
      <width>897</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuVideo">
-    <property name="title">
-     <string>Video</string>
-    </property>
-    <addaction name="actionPause"/>
-    <addaction name="actionStop"/>
-    <addaction name="actionEqualizer"/>
-   </widget>
    <widget class="QMenu" name="menuSettings">
     <property name="title">
      <string>Settings</string>
@@ -732,7 +727,13 @@
     <addaction name="actionselect_application_font"/>
     <addaction name="actionhide_show_input_fields"/>
    </widget>
-   <addaction name="menuVideo"/>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionExit"/>
+   </widget>
+   <addaction name="menuFile"/>
    <addaction name="menuSettings"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
@@ -777,12 +778,17 @@
   </action>
   <action name="actionload_stylsheet">
    <property name="text">
-    <string>load stylsheet</string>
+    <string>load and set stylsheet</string>
    </property>
   </action>
   <action name="actionselect_application_font">
    <property name="text">
     <string>select application font</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
    </property>
   </action>
  </widget>
@@ -810,5 +816,22 @@
  <resources>
   <include location="m3uMan.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>actionExit</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>448</x>
+     <y>330</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

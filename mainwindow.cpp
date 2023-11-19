@@ -7,24 +7,6 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    //QFile f(":qdarkstyle/dark/darkstyle.qss");
-    //QFile f(":qdarkstyle/light/lightstyle.qss");
-
-    //QFile f("E:/Documents/Entwicklung/Qt/m3uMan/stylsheets/Adaptic/Adaptic.qss");
-    //QFile f("E:/Documents/Entwicklung/Qt/m3uMan/stylsheets/Combinear/Combinear.qss");
-    //QFile f("E:/Documents/Entwicklung/Qt/m3uMan/stylsheets/DeepBox/DeepBox.qss");
-
-    /*
-    if (!f.exists())   {
-        printf("Unable to set stylesheet, file not found\n");
-    }
-    else   {
-        f.open(QFile::ReadOnly | QFile::Text);
-        QTextStream ts(&f);
-        qApp->setStyleSheet(ts.readAll());
-    }
-    */
-
     m_AppDataPath = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
     dir.mkpath(m_AppDataPath);
 
@@ -45,12 +27,12 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->widVolume->setVolume(50);
     ui->widVideo->setMediaPlayer(_player);
 
-    connect(ui->actionPause, &QAction::toggled, _player, &VlcMediaPlayer::togglePause);
-    connect(ui->actionStop, &QAction::triggered, _player, &VlcMediaPlayer::stop);
     connect(ui->cmdPause, &QPushButton::clicked, _player, &VlcMediaPlayer::togglePause);
-    connect(ui->cmdStop, &QPushButton::clicked, _player, &VlcMediaPlayer::stop);    
-    connect(ui->actionEqualizer, &QAction::triggered, _equalizerDialog, &EqualizerDialog::show);
+    connect(ui->cmdStop, &QPushButton::clicked, _player, &VlcMediaPlayer::stop);
 
+    connect(_player, SIGNAL(playing()), this, SLOT(isPlaying()));
+    connect(_player, SIGNAL(stopped()), this, SLOT(isStopped()));
+    connect(_player, SIGNAL(buffering(int)), this, SLOT(isBuffering(int)));
     connect(_player, SIGNAL(error()), this, SLOT(showVlcError()));
 
     this->findAllButtons();
@@ -61,6 +43,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->splitter->restoreState(settings.value("splitter").toByteArray());
     ui->splitter_2->restoreState(settings.value("splitter_2").toByteArray());
     ui->splitter_3->restoreState(settings.value("splitter_3").toByteArray());
+    ui->splitter_4->restoreState(settings.value("splitter_4").toByteArray());
     ui->edtUrl->setText(settings.value("iptvurl").toByteArray());
     ui->edtUrlEpg->setText(settings.value("iptvepgurl").toByteArray());
     ui->cmdImdb->setEnabled(false);
@@ -71,6 +54,27 @@ MainWindow::MainWindow(QWidget *parent) :
     } else {
         ui->actionhide_show_input_fields->setChecked( false );
         ui->groupBox->setHidden( false );
+    }
+
+    if ( ! settings.value("stylsheet").toByteArray().isEmpty() ) {
+
+        QFile f ( settings.value("stylsheet").toByteArray() );
+        f.open(QFile::ReadOnly | QFile::Text);
+        QTextStream ts(&f);
+
+        qApp->setStyleSheet(ts.readAll());
+        f.close();
+    }
+
+    if ( ! settings.value("fontname").toByteArray().isEmpty() ) {
+
+        QFont font(settings.value("fontname").toByteArray());
+
+        font.setPointSize( settings.value("fontsize").toByteArray().toInt() );
+        font.setBold( settings.value("fontbold").toBool() );
+        font.setItalic( settings.value("fontitalic").toBool() );
+
+        QApplication::setFont(font);
     }
 
     ui->treeWidget->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
@@ -106,7 +110,6 @@ MainWindow::MainWindow(QWidget *parent) :
 #ifdef Q_OS_WIN
     taskbarButton = new QWinTaskbarButton(this);
     taskbarButton->setWindow(this->windowHandle());
-    //taskbarButton->setOverlayIcon(QIcon(":/overlay"));
 
     taskbarProgress = taskbarButton->progress();
 #endif
@@ -120,6 +123,22 @@ void MainWindow::showEvent(QShowEvent *e)
     taskbarButton->setWindow(windowHandle());
 #endif
     e->accept();
+}
+
+void MainWindow::isPlaying() {
+
+    qDebug() << "VLC is playing...";
+    qDebug() << _player->video()->subtitles();
+}
+
+void MainWindow::isStopped() {
+
+    qDebug() << "VLC is stopped...";
+}
+
+void MainWindow::isBuffering(int buffer) {
+
+    qDebug() << "VLC is buffering..." << buffer;
 }
 
 void MainWindow::ShowContextMenu( const QPoint & pos )
@@ -196,6 +215,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     settings.setValue("splitter",ui->splitter->saveState());
     settings.setValue("splitter_2",ui->splitter_2->saveState());
     settings.setValue("splitter_3",ui->splitter_3->saveState());
+    settings.setValue("splitter_4",ui->splitter_4->saveState());
     settings.setValue("iptvurl", ui->edtUrl->text());
     settings.setValue("iptvepgurl", ui->edtUrlEpg->text());
     settings.sync();
@@ -240,17 +260,6 @@ void MainWindow::createStatusBar()
 }
 
 void MainWindow::createActions() {
-
-     QToolBar *fileToolBar = addToolBar(tr("File"));
-
-     QMenu *fileMenu = menuBar()->addMenu(tr("&File"));
-
-     const QIcon exitIcon = QIcon::fromTheme("application-exit");
-     QAction *exitAct = fileMenu->addAction(exitIcon, tr("E&xit"), this, &QWidget::close);
-     exitAct->setShortcuts(QKeySequence::Quit);
-     exitAct->setStatusTip(tr("Exit the application"));
-     fileToolBar->addAction(exitAct);
-     fileToolBar->setObjectName("toolbarFile");
 
      QMenu *helpMenu = menuBar()->addMenu(tr("&Help"));
 
@@ -1050,6 +1059,7 @@ void MainWindow::on_twPLS_Items_itemSelectionChanged()
     QString   url;
     QString   desc;
     QString   tmdb_id;
+    QPixmap   buttonImage;
 
     QList<QTreeWidgetItem*>items = ui->twPLS_Items->selectedItems();
 
@@ -1098,6 +1108,7 @@ void MainWindow::on_twPLS_Items_itemSelectionChanged()
             this->getTMDBdate(QUrl::toPercentEncoding(m_actualTitle, "-/:"), tmdb_id.toInt(), extinf_id);
 
         } else {
+
             ui->cmdImdb->setEnabled(false);
 
             select = db.selectProgramData(tvg_id);
@@ -1117,8 +1128,24 @@ void MainWindow::on_twPLS_Items_itemSelectionChanged()
         }
 
         if ( ! logo.trimmed().isEmpty() ) {
-            m_pImgCtrl = new FileDownloader(logo, this);
-            connect(m_pImgCtrl, SIGNAL(downloaded()), SLOT(loadImage()));
+
+            QFile file(logo.trimmed());
+
+            if ( ( ! file.exists() ) || ( file.size() == 0 ) ) {
+                m_pImgCtrl = new FileDownloader(logo, this);
+                connect(m_pImgCtrl, SIGNAL(downloaded()), SLOT(loadImage()));
+                qDebug() << "requesting logo...";
+            }
+
+            if ( file.exists() && file.size() > 0 ) {
+
+                file.open(QIODevice::ReadOnly);
+                buttonImage.loadFromData(file.readAll());
+
+                ui->lblLogo->setPixmap(buttonImage.scaledToWidth(ui->lblLogo->maximumWidth()));
+            } else {
+                ui->lblLogo->setText("no data!");
+            }
         } else {
             const QPixmap buttonImage (":/images/iptv.png");
             ui->lblLogo->setPixmap(buttonImage.scaledToWidth(ui->lblLogo->maximumWidth()));
@@ -1208,14 +1235,6 @@ void MainWindow::on_lvStations_itemClicked(QListWidgetItem *item)
 
     ui->twPLS_Items->clearSelection();
     ui->twPLS_Items->topLevelItem( ui->lvStations->currentRow() )->setSelected(true);
-/*
-    if ( ! url.toString().isEmpty() ) {
-
-        _media = new VlcMedia(url.toString(), _instance);
-
-        _player->open(_media);
-    }
-    */
 }
 
 void MainWindow::on_cmdSavePosition_clicked()
@@ -1637,17 +1656,29 @@ void MainWindow::progressCancel_clicked()
 
 void MainWindow::on_actionload_stylsheet_triggered()
 {
+
+    QSettings settings(m_SettingsFile, QSettings::IniFormat);
+    QString path = settings.value("stylsheetpath").toByteArray();
+
     QString fileName = QFileDialog::getOpenFileName(this, ("Open qss stylsheet File"),
-                                                     m_AppDataPath,
+                                                     path,
                                                      ("qss stylsheet file (*.qss)"));
     QFile f(fileName);
     if (!f.exists())   {
         printf("Unable to set stylesheet, file not found\n");
-    }
-    else   {
+    } else {
+
+        QFileInfo fi(fileName);
+
         f.open(QFile::ReadOnly | QFile::Text);
         QTextStream ts(&f);
+
         qApp->setStyleSheet(ts.readAll());
+
+        QSettings settings(m_SettingsFile, QSettings::IniFormat);
+        settings.setValue("stylsheet", fileName);
+        settings.setValue("stylsheetpath", fi.path());
+        settings.sync();
     }
 }
 
@@ -1722,14 +1753,20 @@ void MainWindow::fillComboEPGChannels()
 void MainWindow::on_actionselect_application_font_triggered()
 {
     bool ok;
-    QFont font = QFontDialog::getFont(
-                    &ok,
-                    QFont( "Arial", 18 ),
-                    this,
-                    tr("Pick a font") );
+
+    QFont font = QFontDialog::getFont( &ok, QApplication::font(), this, tr("Pick a font") );
+
     if( ok ) {
 
         QApplication::setFont(font);
+
+        QSettings settings(m_SettingsFile, QSettings::IniFormat);
+        settings.setValue("fontname", font.toString());
+        settings.setValue("fontsize", font.pointSize());
+        settings.setValue("fontbold", font.bold());
+        settings.setValue("fontitalic", font.italic());
+        settings.sync();
+
     }
 }
 

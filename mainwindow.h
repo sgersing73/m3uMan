@@ -164,6 +164,10 @@ private slots:
 
     void on_actionselect_application_font_triggered();
 
+    void isPlaying();
+    void isStopped();
+    void isBuffering(int);
+
 private:
     QString         curFile;
     QDir            dir;
