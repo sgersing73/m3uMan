@@ -1127,14 +1127,18 @@ void MainWindow::on_twPLS_Items_itemSelectionChanged()
             delete select;
         }
 
-        if ( ! logo.trimmed().isEmpty() ) {
+        if ( ! logo.trimmed().isEmpty() ) { // z.B.: https://lo1.in/ger/dsr.png
 
-            QFile file(logo.trimmed());
+            QFileInfo fi(logo.trimmed());
+
+            QFile file(m_AppDataPath + "/logos/" + fi.fileName());
 
             if ( ( ! file.exists() ) || ( file.size() == 0 ) ) {
+
                 m_pImgCtrl = new FileDownloader(logo, this);
                 connect(m_pImgCtrl, SIGNAL(downloaded()), SLOT(loadImage()));
-                qDebug() << "requesting logo...";
+
+                qDebug() << "requesting logo..." << file.fileName();
             }
 
             if ( file.exists() && file.size() > 0 ) {
