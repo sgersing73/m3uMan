@@ -134,11 +134,14 @@ void MainWindow::isPlaying() {
 void MainWindow::isStopped() {
 
     qDebug() << "VLC is stopped...";
+    ui->pgbBuffer->setValue(0);
 }
 
 void MainWindow::isBuffering(int buffer) {
 
-    qDebug() << "VLC is buffering..." << buffer;
+    //qDebug() << "VLC is buffering..." << buffer;
+
+    ui->pgbBuffer->setValue(buffer);
 }
 
 void MainWindow::ShowContextMenu( const QPoint & pos )
@@ -846,6 +849,9 @@ void MainWindow::fillTwPls_Item()
 
 void MainWindow::on_cboPlaylists_currentTextChanged(const QString &arg1)
 {
+    ui->lblLogo->clear();
+    ui->cboEPGChannels->setCurrentText(" ");
+
     fillTwPls_Item();
 }
 
@@ -1138,18 +1144,18 @@ void MainWindow::on_twPLS_Items_itemSelectionChanged()
                 m_pImgCtrl = new FileDownloader(logo, this);
                 connect(m_pImgCtrl, SIGNAL(downloaded()), SLOT(loadImage()));
 
-                qDebug() << "requesting logo..." << file.fileName();
-            }
+                qDebug() << "requesting logo..." << file.fileName() << id << logo;
 
-            if ( file.exists() && file.size() > 0 ) {
+            } else {
 
                 file.open(QIODevice::ReadOnly);
+                QTextStream in(&file);
                 buttonImage.loadFromData(file.readAll());
+                file.close();
 
                 ui->lblLogo->setPixmap(buttonImage.scaledToWidth(ui->lblLogo->maximumWidth()));
-            } else {
-                ui->lblLogo->setText("no data!");
             }
+
         } else {
             const QPixmap buttonImage (":/images/iptv.png");
             ui->lblLogo->setPixmap(buttonImage.scaledToWidth(ui->lblLogo->maximumWidth()));
@@ -1185,18 +1191,24 @@ void MainWindow::loadImage()
 
     QFile file(filename);
 
-    if ( ( ! file.exists() ) or ( file.size() == 0 ) ) {
+    if ( ( ! file.exists() ) || ( file.size() == 0 ) ) {
+
         file.open(QIODevice::WriteOnly);
+        QTextStream out(&file);
         file.write(m_pImgCtrl->downloadedData());
         file.close();
     }
 
-    if ( file.exists() ) {
+    if ( file.exists() && file.size() > 0 ) {
 
         file.open(QIODevice::ReadOnly);
+        QTextStream in(&file);
         buttonImage.loadFromData(file.readAll());
+        file.close();
 
         ui->lblLogo->setPixmap(buttonImage.scaledToWidth(ui->lblLogo->maximumWidth()));
+
+        fillTwPls_Item();
     } else {
         ui->lblLogo->setText("no data!");
     }
@@ -1250,6 +1262,8 @@ void MainWindow::on_cmdSavePosition_clicked()
         int extinf_id = item->data(1,1).toInt();
 
         db.updateEXTINF_tvg_id_byRef(extinf_id, ui->cboEPGChannels->currentText());
+
+        qDebug() << "updateEXTINF_tvg_id_byRef" << extinf_id << ui->cboEPGChannels->currentText();
     }
 
     for (int i = 0; i < ui->twPLS_Items->topLevelItemCount(); i++) {
