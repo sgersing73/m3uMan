@@ -21,6 +21,7 @@ public:
     bool updateEXTINF_byRef(int, const QString&, int, const QString&, int);
     bool updateEXTINF_tvg_logo_byRef(int, const QString&);
     bool updateEXTINF_tvg_id_byRef(int, const QString&);
+    bool updateEXTINF_url_byRef(int, const QString&);
 
     bool deactivateEXTINFs();
     QSqlQuery* selectEXTINF(const QString&, const QString&, const QString&, int);

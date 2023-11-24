@@ -1,0 +1,105 @@
+#EXTM3U
+#EXTINF:-1 tvg-chno="1" tvg-name="2000er Hits" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/7320/streamlogo_2000er_aby-v1.jpg/8edecf6f19e062ee0e833425bd6a0ddf.webp",2000er Hits
+https://stream.antenne.de/2000er-hits/stream/aacp
+#EXTINF:-1 tvg-chno="2" tvg-name="2010er Hits" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/7326/streamlogo_2010er_aby-v1.jpg/4dedc482580b8c8a13c810d4cb09a697.webp",2010er Hits
+https://stream.antenne.de/2010er-hits/stream/aacp
+#EXTINF:-1 tvg-chno="3" tvg-name="70er Hits" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/7306/streamlogo_70er_aby-v1.jpg/6b8d0de0503604e4084f84721f0ce9e8.webp",70er Hits
+https://stream.antenne.de/70er-hits/stream/aacp
+#EXTINF:-1 tvg-chno="4" tvg-name="70er Rock" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/13897/streamlogo_70er_rock_aby_neu_2000x2000-v1.jpg/fbeac1388c16ab8ac46d5b97af46dad1.webp",70er Rock
+https://stream.antenne.de/antenne-bayern-70er-rock/stream/aacp
+#EXTINF:-1 tvg-chno="5" tvg-name="80er Disco Hits" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/13898/streamlogo_80er_disco_hits_aby_neu_2000x2000-v1.jpg/1df5154e3b5f87d4f207b5a4f46351e0.webp",80er Disco Hits
+https://stream.antenne.de/antenne-bayern-80er-disco-hits/stream/aacp
+#EXTINF:-1 tvg-chno="6" tvg-name="80er Hits" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/7/streamlogo_80er_aby-v1.jpg/fae29647681965fcdb24eac8d89dba7c.webp",80er Hits
+https://stream.antenne.de/80er-kulthits/stream/aacp
+#EXTINF:-1 tvg-chno="7" tvg-name="80er New Wave" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/13899/streamlogo_80er_new_wave_aby_neu_2000x2000-v1.jpg/9dba7583c02da3d8c71b0b685bf1744a.webp",80er New Wave
+https://stream.antenne.de/antenne-bayern-80er-new-wave/stream/aacp
+#EXTINF:-1 tvg-chno="8" tvg-name="80er Party" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/13900/streamlogo_80er_party_aby_neu_2000x2000-v1.jpg/d008f6ac66672a44794d885f6b8cfb3e.webp",80er Party
+https://stream.antenne.de/antenne-bayern-80er-party/stream/aacp
+#EXTINF:-1 tvg-chno="9" tvg-name="80er Rock" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/13901/streamlogo_80er_rock_aby_neu_2000x2000-v1.jpg/de7b7f773923cf4ae879acb7c4e0fe91.webp",80er Rock
+https://stream.antenne.de/antenne-bayern-80er-rock/stream/aacp
+#EXTINF:-1 tvg-chno="10" tvg-name="90er Eurodance" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/13904/streamlogo_90er_eurodance_aby_neu_2000x2000-v1.jpg/68681a290e74c783126fb50123d44168.webp",90er Eurodance
+https://stream.antenne.de/antenne-bayern-90er-eurodance/stream/aacp
+#EXTINF:-1 tvg-chno="11" tvg-name="90er Hits" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/7311/streamlogo_90er_aby-v1.jpg/be661ab883d5dc56436b88e412ecede5.webp",90er Hits
+https://stream.antenne.de/90er-hits/stream/aacp
+#EXTINF:-1 tvg-chno="12" tvg-name="90er Party" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/13907/streamlogo_90er_party_aby_neu_2000x2000-v1.jpg/4ce80d257bf27b08d8949ad7b9e305f5.webp",90er Party
+https://stream.antenne.de/antenne-bayern-90er-party/stream/aacp
+#EXTINF:-1 tvg-chno="13" tvg-name="90er Rock" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/13908/streamlogo_90er_rock_aby_neu_2000x2000-v1.jpg/0e88f6330e4a3e2d2e853e805913609a.webp",90er Rock
+https://stream.antenne.de/antenne-bayern-90er-rock/stream/aacp
+#EXTINF:-1 tvg-chno="14" tvg-name="ANTENNE NRW" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/15523/nrw_streamlogo_webradio_hd_large_simulcast_digitallogo-v1.jpg/a710d13fcac0ea5875d391f12aa9edcd.webp",ANTENNE NRW
+https://stream.antenne.de/antenne-nrw/stream/aacp
+#EXTINF:-1 tvg-chno="15" tvg-name="Antenne Bayern Live" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/18696/streamlogo_simulcast_live_aby_neu_2000x2000-v1.jpg/dcd859a880fc64dce25b0a189b0e1545.webp",Antenne Bayern Live
+https://stream.antenne.de/antenne/stream/aacp
+#EXTINF:-1 tvg-chno="16" tvg-name="Apres Ski" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/7351/streamlogo_apres_ski_aby-v1.jpg/3a91050fd354d6e55a3d5672daadac91.webp",Apres Ski
+https://stream.antenne.de/apres-ski/stream/aacp
+#EXTINF:-1 tvg-chno="17" tvg-name="Bayerische Weihnacht" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/16643/streamlogo_bayerische_weihnacht_aby_neu_2000x2000-v1.jpg/c7a71e67201b8201149e570e521ce91d.webp",Bayerische Weihnacht
+https://stream.antenne.de/bayerische-weihnacht/stream/aacp
+#EXTINF:-1 tvg-chno="18" tvg-name="Bayern Sound" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/7380/streamlogo_bayern_sound_aby-v1.jpg/3450be15fe3d2426f9e3e0da9305ef3d.webp",Bayern Sound
+https://stream.antenne.de/bayern-sound/stream/aacp
+#EXTINF:-1 tvg-chno="19" tvg-name="Black Music" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/7386/streamlogo_black_music_aby-v1.jpg/6ff0e84736d5afee99865a9af4855363.webp",Black Music
+https://stream.antenne.de/black-beatz/stream/aacp
+#EXTINF:-1 tvg-chno="20" tvg-name="COUNTRY ANTENNE" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/12593/streamlogo_webradio_hd_large_country_antenne-v1.png/0b6930dc90d902f9046b55c0f2325c13.webp",COUNTRY ANTENNE
+https://stream.antenne.de/country-antenne/stream/aacp
+#EXTINF:-1 tvg-chno="21" tvg-name="Chillout" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/8/streamlogo_chill_out_aby-v1.jpg/9c5b904e5137f9c5a8273a7bcfaf6a7a.webp",Chillout
+https://stream.antenne.de/chillout/stream/aacp
+#EXTINF:-1 tvg-chno="22" tvg-name="Classic Rock" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/7270/streamlogo_classic_rock_aby-v1.jpg/29e5cbbc7074c6ec17be7ec8f06413fe.webp",Classic Rock
+https://stream.antenne.de/classic-rock-live/stream/aacp
+#EXTINF:-1 tvg-chno="23" tvg-name="Coffe Music" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/7265/streamlogo_coffee_music_aby-v1.jpg/b17b7e7bfdf5c87d274fd4dacbf40c06.webp",Coffe Music
+https://stream.antenne.de/coffee/stream/aacp
+#EXTINF:-1 tvg-chno="24" tvg-name="Dance XXL" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/7375/streamlogo_dance_xxl_aby-v1.jpg/b0576ba4ada249b974c06f3503fbab89.webp",Dance XXL
+https://stream.antenne.de/dance-xxl/stream/aacp
+#EXTINF:-1 tvg-chno="25" tvg-name="Deutsch Pop" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/7379/streamlogo_deutsch_pop_aby-v1.jpg/c316b8bda6a96694fb44bf9124076ea3.webp",Deutsch Pop
+https://stream.antenne.de/deutsch-pop/stream/aacp
+#EXTINF:-1 tvg-chno="26" tvg-name="Fasching Hits" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/7370/streamlogo_faschings_hits_aby-v1.jpg/f70a297edc349cde578930a57e32cb8e.webp",Fasching Hits
+https://stream.antenne.de/faschings-hits/stream/aacp
+#EXTINF:-1 tvg-chno="27" tvg-name="Fresh" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/7348/streamlogo_fresh_hits_aby-v1.jpg/2d0663a3e45e4fa2fe3822c271f21718.webp",Fresh
+https://stream.antenne.de/fresh/stream/aacp
+#EXTINF:-1 tvg-chno="28" tvg-name="Frühlings Hits" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/7287/streamlogo_fruehlings_hits_aby-v1.jpg/77e4901d11d4dd7330b31fa6cda5ef54.webp",Frühlings Hits
+https://stream.antenne.de/fruehlings-hits/stream/aacp
+#EXTINF:-1 tvg-chno="29" tvg-name="Greatest Hits" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/7301/streamlogo_greatest_hits_aby-v1.jpg/91aad77bb2fcc33578a20b4736e5ca7c.webp",Greatest Hits
+https://stream.antenne.de/greatest-hits/stream/aacp
+#EXTINF:-1 tvg-chno="30" tvg-name="Grill Hits" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/20778/streamlogo_grill_hits_aby_mueckenfrei_v3-1-v1.jpg/0f48d67575f8aec2cb7b73392f6ddcb0.webp",Grill Hits
+https://stream.antenne.de/event/stream/aacp
+#EXTINF:-1 tvg-chno="31" tvg-name="Halli Galli Gaudi" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/7365/streamlogo_halligalligaudi_aby-v1.jpg/fbaf80b1b0671b732f069ae443575e85.webp",Halli Galli Gaudi
+https://stream.antenne.de/halli-galli-gaudi/stream/aacp
+#EXTINF:-1 tvg-chno="32" tvg-name="Happy Hits" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/7290/streamlogo_happy_hits_aby-v1.jpg/b6b5b9c444929bb6bfee8f83c41e2ae2.webp",Happy Hits
+https://stream.antenne.de/happy-hits/stream/aacp
+#EXTINF:-1 tvg-chno="33" tvg-name="Herbst Hits" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/7273/streamlogo_herbsthits_aby-v1.jpg/54584c0ed1d0bab4f801dab2bdaa20d7.webp",Herbst Hits
+https://stream.antenne.de/herbst-hits/stream/aacp
+#EXTINF:-1 tvg-chno="34" tvg-name="In the mix" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/6/streamlogo_in_the_mix_aby-v1.jpg/494534ab864c5f04c7ea90014148021a.webp",In the mix
+https://stream.antenne.de/in-the-mix/stream/aacp
+#EXTINF:-1 tvg-chno="35" tvg-name="Italo Hits" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/13909/streamlogo_italo_hits_aby_neu_2000x2000-v1.jpg/cbcb1a301125274b0b7e10a54a7b6010.webp",Italo Hits
+https://stream.antenne.de/antenne-bayern-italo-hits/stream/aacp
+#EXTINF:-1 tvg-chno="36" tvg-name="Lovesongs" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/5275/streamlogo_love_songs_aby-v1.jpg/c7c3f39f6397fac164aa99087f3e6e07.webp",Lovesongs
+https://stream.antenne.de/lovesongs/stream/aacp
+#EXTINF:-1 tvg-chno="37" tvg-name="Mallorca Party" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/7367/streamlogo_mallorca_party_aby-v1.jpg/df647cfcd15c9a0d2cc9f5be5baac9c5.webp",Mallorca Party
+https://stream.antenne.de/mallorca-party/stream/aacp
+#EXTINF:-1 tvg-chno="38" tvg-name="NDW" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/13910/streamlogo_ndw_aby_neu_2000x2000-v1.jpg/f31cd17fb6b24dc2c63e8fab26736d3d.webp",NDW
+https://stream.antenne.de/antenne-bayern-ndw/stream/aacp
+#EXTINF:-1 tvg-chno="39" tvg-name="Nur die Musik" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/7279/streamlogo_nur_die_musik_aby-v1.jpg/399e4c48f9870daca63fe1e7f2fba7a9.webp",Nur die Musik
+https://stream.antenne.de/nur-die-musik/stream/aacp
+#EXTINF:-1 tvg-chno="40" tvg-name="OLDIE ANTENNE" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/15521/aby_streamlogo_webradio_hd_large_oldie_antenne-v1.jpg/31ec3593f2d642616131778428f8cba4.webp",OLDIE ANTENNE
+https://stream.antenne.de/oldie-antenne/stream/aacp
+#EXTINF:-1 tvg-chno="41" tvg-name="Oktoberfest Hits" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/7368/streamlogo_oktoberfest_hits_aby-v1.jpg/df0cdccbaefc65fbbb3a7ed811390455.webp",Oktoberfest Hits
+https://stream.antenne.de/oktoberfest-hits/stream/aacp
+#EXTINF:-1 tvg-chno="42" tvg-name="Party Hits" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/7352/streamlogo_party_hits_aby-v1.jpg/997e55613c92b1c7f975e6ba716aab92.webp",Party Hits
+https://stream.antenne.de/party-hits/stream/aacp
+#EXTINF:-1 tvg-chno="43" tvg-name="Pop XXL" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/7377/streamlogo_pop_xxl_aby-v1.jpg/27e094f4fd040a723839518f766c9641.webp",Pop XXL
+https://stream.antenne.de/pop-xxl/stream/aacp
+#EXTINF:-1 tvg-chno="44" tvg-name="ROCK ANTENNE Bayern" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/16/raby-v1.jpg/7399b95e23ee9e3c163672ca2c2eda9b.webp",ROCK ANTENNE Bayern
+https://stream.antenne.de/rockantenne-bayern/stream/aacp
+#EXTINF:-1 tvg-chno="45" tvg-name="Relax" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/7392/streamlogo_sommer_hits_aby-v1.jpg/6432262572eb4a8eb49e5d835a472ae5.webp",Relax
+https://stream.antenne.de/sommer-hits/stream/aacp
+#EXTINF:-1 tvg-chno="46" tvg-name="Top 1000" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/7347/streamlogo_top_1000_aby-v1.jpg/c59bd1bf9d21878effb9a6ae1105170c.webp",Top 1000
+https://stream.antenne.de/top-1000/stream/aacp
+#EXTINF:-1 tvg-chno="47" tvg-name="Top 40" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/7264/streamlogo_top_40_aby-v1.jpg/571bc11a6b2b0d3a889710bcfbc91807.webp",Top 40
+https://stream.antenne.de/top-40/stream/aacp
+#EXTINF:-1 tvg-chno="48" tvg-name="Weihnachtshits" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/9/streamlogo_weihnachtst_hits_aby-v1.jpg/a171263e271c7a1480a048407272d214.webp",Weihnachtshits
+https://stream.antenne.de/weihnachts-hits/stream/aacp
+#EXTINF:-1 tvg-chno="49" tvg-name="Weihnachtshits für Kids" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/42095/streamlogo_weihnachtshits_fuer_kids_aby_neu-v1.jpg/b3e410e5dce8dba5cd331a617c29d13e.webp",Weihnachtshits für Kids
+https://stream.antenne.de/hits-fuer-kids/stream/aacp
+#EXTINF:-1 tvg-chno="50" tvg-name="Weihnachtslouge" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/42093/streamlogo_weihnachts_lounge_aby_neu-v1.jpg/e756744157655e0bb6498848a4316970.webp",Weihnachtslouge
+https://stream.antenne.de/lounge/stream/aacp
+#EXTINF:-1 tvg-chno="51" tvg-name="Workout Hits" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/7297/streamlogo_workout_hits_aby-v1.jpg/210edc9c895943075ac366e4485e1f7b.webp",Workout Hits
+https://stream.antenne.de/workout-hits/stream/aacp
+#EXTINF:-1 tvg-chno="52" tvg-name="Xmas Rock" tvg-id="" group-title="Radio Antenne Bayern" tvg-logo="https://www.antenne.de/media/cache/3/version/11681/streamlogo_xmas_songs_ra-v1.jpg/2fcbeb4123fc871941901fba636e4dfe.webp",Xmas Rock
+https://stream.antenne.de/xmas-rock/stream/aacp

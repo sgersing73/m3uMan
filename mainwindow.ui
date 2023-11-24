@@ -25,6 +25,12 @@
        <enum>Qt::Vertical</enum>
       </property>
       <widget class="QGroupBox" name="groupBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="title">
         <string/>
        </property>
@@ -256,6 +262,12 @@
           <enum>Qt::Vertical</enum>
          </property>
          <widget class="VlcWidgetVideo" name="widVideo" native="true">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="minimumSize">
            <size>
             <width>160</width>
@@ -268,29 +280,9 @@
          </widget>
          <widget class="QWidget" name="layoutWidget">
           <layout class="QGridLayout" name="gridLayout">
-           <item row="0" column="0">
-            <widget class="QListWidget" name="lvStations">
-             <property name="maximumSize">
-              <size>
-               <width>16777215</width>
-               <height>70</height>
-              </size>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">backgroud=rgb(255, 85, 0)</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="VlcWidgetSeek" name="widSeek" native="true">
-             <property name="maximumSize">
-              <size>
-               <width>16777215</width>
-               <height>35</height>
-              </size>
-             </property>
-            </widget>
-           </item>
+           <property name="sizeConstraint">
+            <enum>QLayout::SetDefaultConstraint</enum>
+           </property>
            <item row="2" column="0">
             <layout class="QHBoxLayout" name="horizontalLayout_5">
              <item>
@@ -424,6 +416,29 @@
               </widget>
              </item>
             </layout>
+           </item>
+           <item row="1" column="0">
+            <widget class="VlcWidgetSeek" name="widSeek" native="true">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>35</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QListWidget" name="lvStations">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>70</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">backgroud=rgb(255, 85, 0)</string>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>
@@ -571,20 +586,6 @@
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="cmdSetPos">
-               <property name="toolTip">
-                <string>set station position</string>
-               </property>
-               <property name="text">
-                <string>Position</string>
-               </property>
-               <property name="icon">
-                <iconset resource="m3uMan.qrc">
-                 <normaloff>:/images/Ui/icons8-shortlist-50.png</normaloff>:/images/Ui/icons8-shortlist-50.png</iconset>
-               </property>
-              </widget>
-             </item>
-             <item>
               <widget class="QPushButton" name="cmdImdb">
                <property name="text">
                 <string>Tmdb</string>
@@ -592,6 +593,33 @@
                <property name="icon">
                 <iconset resource="m3uMan.qrc">
                  <normaloff>:/images/Ui/icons8-film-reel-50.png</normaloff>:/images/Ui/icons8-film-reel-50.png</iconset>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="verticalSpacer_2">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QPushButton" name="cmdSetPos">
+               <property name="toolTip">
+                <string>set station position</string>
+               </property>
+               <property name="text">
+                <string>set position</string>
+               </property>
+               <property name="icon">
+                <iconset resource="m3uMan.qrc">
+                 <normaloff>:/images/Ui/icons8-shortlist-50.png</normaloff>:/images/Ui/icons8-shortlist-50.png</iconset>
                </property>
               </widget>
              </item>
@@ -629,7 +657,7 @@
                 <string>save playlist</string>
                </property>
                <property name="text">
-                <string>save settings</string>
+                <string>save positions</string>
                </property>
                <property name="icon">
                 <iconset resource="m3uMan.qrc">
@@ -640,6 +668,9 @@
             </layout>
            </item>
           </layout>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="edtStationName"/>
          </item>
          <item>
           <widget class="QLineEdit" name="edtStationUrl"/>
@@ -728,7 +759,7 @@
      <x>0</x>
      <y>0</y>
      <width>897</width>
-     <height>23</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuSettings">
@@ -738,7 +769,6 @@
     <addaction name="actionload_stylsheet"/>
     <addaction name="actionIcon_color"/>
     <addaction name="actionselect_application_font"/>
-    <addaction name="actionhide_show_input_fields"/>
    </widget>
    <widget class="QMenu" name="menuFile">
     <property name="title">

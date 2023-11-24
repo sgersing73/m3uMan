@@ -65,6 +65,8 @@ DISTFILES += \
     docs/resources.txt \
     "playlists/Radio Absolut.m3u" \
     "playlists/Telekom Magenta TV.m3u" \
+    "playlists/Planet Plus.m3u" \
+    "playlists/Radio Antenne Bayern.m3u" \
     stylsheets/Adaptic/Adaptic.png \
     stylsheets/Adaptic/Adaptic.qss \
     stylsheets/Adaptic/License.txt \

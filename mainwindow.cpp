@@ -1096,6 +1096,7 @@ void MainWindow::on_twPLS_Items_itemSelectionChanged()
 
         ui->cboEPGChannels->setCurrentText(tvg_id);
         ui->edtStationUrl->setText(url);
+        ui->edtStationName->setText(title);
 
         m_actualTitle = title;
 
@@ -1160,6 +1161,8 @@ void MainWindow::on_twPLS_Items_itemSelectionChanged()
             const QPixmap buttonImage (":/images/iptv.png");
             ui->lblLogo->setPixmap(buttonImage.scaledToWidth(ui->lblLogo->maximumWidth()));
         }
+
+        ui->lvStations->setCurrentRow( ui->twPLS_Items->currentIndex().row() );
     }
 }
 
@@ -1232,8 +1235,10 @@ void MainWindow::on_cmdPlayStream_clicked()
             return;
 
         _media = new VlcMedia(ui->edtStationUrl->text(), _instance);
+        //_mediaManager = new VlcMetaManager(_media);
+        //_meta = new VlcMetaManager(_media);
 
-        _player->open(_media);
+        _player->open(_media);        
     }
 }
 
@@ -1262,8 +1267,7 @@ void MainWindow::on_cmdSavePosition_clicked()
         int extinf_id = item->data(1,1).toInt();
 
         db.updateEXTINF_tvg_id_byRef(extinf_id, ui->cboEPGChannels->currentText());
-
-        qDebug() << "updateEXTINF_tvg_id_byRef" << extinf_id << ui->cboEPGChannels->currentText();
+        db.updateEXTINF_url_byRef(extinf_id, ui->edtStationUrl->text());
     }
 
     for (int i = 0; i < ui->twPLS_Items->topLevelItemCount(); i++) {
@@ -1277,7 +1281,7 @@ void MainWindow::on_cmdSavePosition_clicked()
 
     MakePlaylist();
 
-    statusBar()->showMessage("positions set...", 2000);
+    statusBar()->showMessage("positions set...");
 }
 
 void MainWindow::on_treeWidget_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
@@ -1318,7 +1322,22 @@ void MainWindow::getEPGFileData(const QString &sFileName)
 
     QString start, stop, channel, title, desc;
 
+    db.removeAllPrograms();
+
+    m_progress->setMinimum(0);
+    m_progress->setMaximum(0);
+    m_progress->setVisible(false);
+    m_progressCancel->setVisible(true);
+    m_ProgressWasCanceled = false;
+
+#ifdef Q_OS_WIN
+    taskbarProgress->setMinimum(0);
+    taskbarProgress->setMaximum(0);
+    taskbarProgress->setVisible(true);
+#endif
+
     xmlFile = new QFile(sFileName);
+
     if (!xmlFile->open(QIODevice::ReadOnly | QIODevice::Text)) {
             QMessageBox::critical(this,"Load XML File Problem",
             tr("Couldn't open %1 to load settings for download").arg(sFileName),
@@ -1326,23 +1345,14 @@ void MainWindow::getEPGFileData(const QString &sFileName)
             return;
     }
 
-    db.removeAllPrograms();
-
-    QProgressDialog progress("Task in progress...", "Cancel", 0, linecount, this);
-
-#ifdef Q_OS_WIN
-    taskbarProgress->setMinimum(0);
-    taskbarProgress->setMaximum(linecount);
-    taskbarProgress->setVisible(true);
-#endif
-
     xmlReader = new QXmlStreamReader(xmlFile);
+
 
     //Parse the XML until we reach end of it
     while ( !xmlReader->atEnd() && !xmlReader->hasError() && !ende ) {
 
-            if (progress.wasCanceled())
-                ende = true;
+            if (m_ProgressWasCanceled)
+               ende = true;
 
             // Read next element
             QXmlStreamReader::TokenType token = xmlReader->readNext();
@@ -1377,12 +1387,6 @@ void MainWindow::getEPGFileData(const QString &sFileName)
             }
 
             QCoreApplication::processEvents();
-
-            progress.setValue(linecount);
-
-#ifdef Q_OS_WIN
-            taskbarProgress->setValue(linecount);
-#endif
     }
 
     if(xmlReader->hasError()) {
@@ -1397,6 +1401,8 @@ void MainWindow::getEPGFileData(const QString &sFileName)
 #ifdef Q_OS_WIN
     taskbarProgress->setVisible(false);
 #endif
+    m_progress->setVisible(false);
+    m_progressCancel->setVisible(false);
 }
 
 void MainWindow::on_edtEPGDownload_clicked()
@@ -1805,5 +1811,19 @@ void MainWindow::on_cmdImdb_clicked()
 
             this->getTMDBdataById(tmdb_id.toInt(), extinf_id);
         }
+    }
+}
+
+void MainWindow::on_cmdSetSubtitleFile_clicked()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, ("Open srt subtitle File"),
+                                                     "",
+                                                     ("srt subtitle file (*.srt)"));
+    QFile f(fileName);
+    if (!f.exists())   {
+        printf("Unable to set subtitle, file not found\n");
+    } else {
+
+        _video->setSubtitleFile(fileName);
     }
 }

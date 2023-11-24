@@ -325,6 +325,27 @@ bool DbManager::updateEXTINF_tvg_id_byRef(int id, const QString& tvg_id)
     return retCode;
 }
 
+bool DbManager::updateEXTINF_url_byRef(int id, const QString& url)
+{
+    int retCode = true;
+
+    QSqlQuery *select = new QSqlQuery();
+
+    select->prepare("UPDATE extinf SET url =:url WHERE id = :id");
+    select->bindValue(":id", id);
+    select->bindValue(":url", url);
+
+    if ( ! select->exec() ) {
+        qDebug() << "updateEXTINF_url_byRef" << select->lastError();
+        retCode = false;
+    }
+
+    delete select;
+
+    return retCode;
+}
+
+
 bool DbManager::deactivateEXTINFs()
 {
     QSqlQuery *select = new QSqlQuery();

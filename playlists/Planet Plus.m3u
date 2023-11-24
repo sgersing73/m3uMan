@@ -1,0 +1,15 @@
+#EXTM3U
+#EXTINF:-1 tvg-chno="1" tvg-name="planet radio" tvg-id="" group-title="Planet Radio" tvg-logo="https://static.planetradio.de/fileadmin/_processed_/7/0/csm_planet_simulcast_1x1_6362baa9c1.jpg",planet radio AAC
+http://streams.planetradio.de/planetradio/aac/hqlivestream.m3u
+#EXTINF:-1 tvg-chno="2" tvg-name="planet plus xmas" tvg-id="" group-title="Planet Radio" tvg-logo="https://static.planetradio.de/fileadmin/_processed_/3/d/csm_planet_xmas_1400x1400_dadf20537f.jpg",planet plus xmas AAC
+http://streams.planetradio.de/plrplus/aac/hqxmas.m3u
+#EXTINF:-1 tvg-chno="3" tvg-name="planet plus fun" tvg-id="" group-title="Planet Radio" tvg-logo="https://static.planetradio.de/fileadmin/_processed_/6/5/csm_planet__fun_1400x1400_4d7ecc12c5.jpg",planet plus fun AAC
+http://streams.planetradio.de/plrplus/mp3/hqfun.m3u
+#EXTINF:-1 tvg-chno="4" tvg-name="planet plus power" tvg-id="" group-title="Planet Radio" tvg-logo="https://static.planetradio.de/fileadmin/_processed_/c/4/csm_planet__power_600x600_dc59890621.jpg",planet plus power AAC
+http://streams.planetradio.de/plrplus/aac/hqpower.m3u
+#EXTINF:-1 tvg-chno="5" tvg-name="planet plus liebe" tvg-id="" group-title="Planet Radio" tvg-logo="https://static.planetradio.de/fileadmin/_processed_/8/f/csm_planet__liebe_1400x1400_a776b830d0.jpg",planet plus liebe AAC
+http://streams.planetradio.de/plrplus/aac/hqliebe.m3u
+#EXTINF:-1 tvg-chno="6" tvg-name="planet plus heartbreak" tvg-id="" group-title="Planet Radio" tvg-logo="https://static.planetradio.de/fileadmin/_processed_/d/4/csm_planet__heartbreak_1400x1400_97257c8c06.jpg",planet plus heartbreak AAC
+http://streams.planetradio.de/plrplus/aac/hqheartbreak.m3u
+#EXTINF:-1 tvg-chno="7" tvg-name="planet livecharts" tvg-id="" group-title="Planet Radio" tvg-logo="https://static.planetradio.de/fileadmin/_processed_/6/6/csm_planet_livecharts_1400x1400_20cdfdd531.jpg",planet livecharts AAC
+http://streams.planetradio.de/plrchannels/aac/hqitunes.m3u

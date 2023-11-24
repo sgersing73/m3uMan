@@ -45,6 +45,7 @@
 #include <VLCQtCore/MediaPlayer.h>
 #include <VLCQtCore/Error.h>
 #include <VLCQtCore/Video.h>
+#include <VLCQtCore/MetaManager.h>
 
 #include <VLCQtWidgets/WidgetSeek.h>
 #include <VLCQtWidgets/ControlVideo.h>
@@ -168,6 +169,8 @@ private slots:
     void isStopped();
     void isBuffering(int);
 
+    void on_cmdSetSubtitleFile_clicked();
+
 private:
     QString         curFile;
     QDir            dir;
@@ -192,6 +195,9 @@ private:
     VlcWidgetSeek   *_seek;
     VlcControlVideo *_videoControl;
     VlcVideo        *_video;
+    VlcMetaManager  *_mediaManager;
+    VlcStats        *_stats;
+    VlcMetaManager  *_meta;
 
     EqualizerDialog *_equalizerDialog;
 
