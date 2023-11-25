@@ -1049,7 +1049,7 @@ void MainWindow::SaveXML()
 
 void MainWindow::on_cmdGatherData_clicked()
 {
-    QString program = "ffprobe";
+    QString program = "./win32/ffmpeg/bin/ffprobe";
     QStringList arguments;
 
     arguments << "-hide_banner" << ui->edtStationUrl->text();
@@ -1234,6 +1234,7 @@ void MainWindow::on_cmdPlayStream_clicked()
 void MainWindow::on_edtStationUrl_textChanged(const QString &arg1)
 {
      ui->cmdGatherData->setEnabled(arg1.trimmed().length() > 0);
+     ui->cmdPlayExtern->setEnabled(arg1.trimmed().length() > 0);
      ui->cmdPlayStream->setEnabled(arg1.trimmed().length() > 0);
 }
 
@@ -1800,4 +1801,15 @@ void MainWindow::on_cmdImdb_clicked()
             this->getTMDBdataById(tmdb_id.toInt(), extinf_id);
         }
     }
+}
+
+void MainWindow::on_cmdPlayExtern_clicked()
+{
+    QString program = "./win32/ffmpeg/bin/ffplay";
+    QStringList arguments;
+
+    arguments << "-x" << "640" << "-y" << "480" << "-loglevel" << "warning" << "-nostats" << ui->edtStationUrl->text();
+
+    m_Process->setProcessChannelMode(QProcess::MergedChannels);
+    m_Process->start(program, arguments);
 }

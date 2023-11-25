@@ -689,6 +689,20 @@
             </widget>
            </item>
            <item>
+            <widget class="QPushButton" name="cmdPlayExtern">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="text">
+              <string>play extern</string>
+             </property>
+             <property name="icon">
+              <iconset resource="m3uMan.qrc">
+               <normaloff>:/images/Ui/icons8-movie-projector-50.png</normaloff>:/images/Ui/icons8-movie-projector-50.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item>
             <spacer name="horizontalSpacer">
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
