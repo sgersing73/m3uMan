@@ -12,7 +12,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     m_SettingsFile = m_AppDataPath + "/settings.ini";
 
+
+    VlcCommon::setPluginPath("C:/PortableApps/PortableApps/VLCPortable/App/vlc/plugins");
+
     _instance = new VlcInstance(VlcCommon::args(), this);
+
     _player = new VlcMediaPlayer(_instance);
     _equalizerDialog = new EqualizerDialog(this);    
     _videoControl = new VlcControlVideo (_player);
@@ -128,7 +132,7 @@ void MainWindow::showEvent(QShowEvent *e)
 void MainWindow::isPlaying() {
 
     qDebug() << "VLC is playing...";
-    qDebug() << _player->video()->subtitles();
+    _media->setOptions(QStringList() << "--audio-visual" << "visual" << "--effect-list" << "spectrum");
 }
 
 void MainWindow::isStopped() {
@@ -1219,27 +1223,12 @@ void MainWindow::loadImage()
 
 void MainWindow::on_cmdPlayStream_clicked()
 {
-    if ( ui->chkExtern->isChecked() ) {
+    if (ui->edtStationUrl->text().isEmpty())
+        return;
 
-        QString program = "vlc";
-        QStringList arguments;
+    _media = new VlcMedia(ui->edtStationUrl->text(), _instance);
 
-        arguments << ui->edtStationUrl->text();
-
-        m_Process->setProcessChannelMode(QProcess::MergedChannels);
-        m_Process->start(program, arguments);
-
-    } else {
-
-        if (ui->edtStationUrl->text().isEmpty())
-            return;
-
-        _media = new VlcMedia(ui->edtStationUrl->text(), _instance);
-        //_mediaManager = new VlcMetaManager(_media);
-        //_meta = new VlcMetaManager(_media);
-
-        _player->open(_media);        
-    }
+    _player->open(_media);
 }
 
 void MainWindow::on_edtStationUrl_textChanged(const QString &arg1)
@@ -1247,7 +1236,6 @@ void MainWindow::on_edtStationUrl_textChanged(const QString &arg1)
      ui->cmdGatherData->setEnabled(arg1.trimmed().length() > 0);
      ui->cmdPlayStream->setEnabled(arg1.trimmed().length() > 0);
 }
-
 
 void MainWindow::on_lvStations_itemClicked(QListWidgetItem *item)
 {
@@ -1811,19 +1799,5 @@ void MainWindow::on_cmdImdb_clicked()
 
             this->getTMDBdataById(tmdb_id.toInt(), extinf_id);
         }
-    }
-}
-
-void MainWindow::on_cmdSetSubtitleFile_clicked()
-{
-    QString fileName = QFileDialog::getOpenFileName(this, ("Open srt subtitle File"),
-                                                     "",
-                                                     ("srt subtitle file (*.srt)"));
-    QFile f(fileName);
-    if (!f.exists())   {
-        printf("Unable to set subtitle, file not found\n");
-    } else {
-
-        _video->setSubtitleFile(fileName);
     }
 }

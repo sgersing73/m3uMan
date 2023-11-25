@@ -169,8 +169,6 @@ private slots:
     void isStopped();
     void isBuffering(int);
 
-    void on_cmdSetSubtitleFile_clicked();
-
 private:
     QString         curFile;
     QDir            dir;
