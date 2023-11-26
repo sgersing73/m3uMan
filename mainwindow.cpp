@@ -132,7 +132,6 @@ void MainWindow::showEvent(QShowEvent *e)
 void MainWindow::isPlaying() {
 
     qDebug() << "VLC is playing...";
-    _media->setOptions(QStringList() << "--audio-visual" << "visual" << "--effect-list" << "spectrum");
 }
 
 void MainWindow::isStopped() {
@@ -777,7 +776,7 @@ void MainWindow::fillTwPls_Item()
 {
     QString id;
     QString extinf_id;
-    QString tvg_name, tvg_id;
+    QString tvg_name, tvg_id, pls_pos;
     QString logo;
     QString url;
     bool    added = false;
@@ -790,8 +789,8 @@ void MainWindow::fillTwPls_Item()
     QSqlQuery *select = nullptr;
 
     ui->twPLS_Items->clear();
-    ui->twPLS_Items->setColumnCount(1);
-    ui->twPLS_Items->setHeaderLabels(QStringList() << "Stations");
+    ui->twPLS_Items->setColumnCount(3);
+    ui->twPLS_Items->setHeaderLabels(QStringList() << "Stations" << "Place" << "TMDB");
 
     ui->lvStations->clear();
     ui->lvStations->setFlow(QListView::Flow::LeftToRight);
@@ -801,6 +800,7 @@ void MainWindow::fillTwPls_Item()
 
         id = select->value(0).toByteArray().constData();
         extinf_id = select->value(2).toByteArray().constData();
+        pls_pos = select->value(3).toByteArray().constData();
         logo = select->value(9).toByteArray().constData();
         tvg_name = select->value(6).toByteArray().constData();
         tvg_id = select->value(7).toByteArray().constData();
@@ -809,6 +809,9 @@ void MainWindow::fillTwPls_Item()
         QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui->twPLS_Items);
 
         treeItem->setText(0, tvg_name);
+        treeItem->setText(1, QString("%1").arg(pls_pos.toInt() + 1) );
+        treeItem->setText(2, tvg_id);
+
         treeItem->setData(0, 1, id);
         treeItem->setData(1, 1, extinf_id);
         treeItem->setStatusTip(0, tr("double click to remove the station"));
@@ -1049,7 +1052,7 @@ void MainWindow::SaveXML()
 
 void MainWindow::on_cmdGatherData_clicked()
 {
-    QString program = "./win32/ffmpeg/bin/ffprobe";
+    QString program = "ffprobe";
     QStringList arguments;
 
     arguments << "-hide_banner" << ui->edtStationUrl->text();
@@ -1805,7 +1808,7 @@ void MainWindow::on_cmdImdb_clicked()
 
 void MainWindow::on_cmdPlayExtern_clicked()
 {
-    QString program = "./win32/ffmpeg/bin/ffplay";
+    QString program = "ffplay";
     QStringList arguments;
 
     arguments << "-x" << "640" << "-y" << "480" << "-loglevel" << "warning" << "-nostats" << ui->edtStationUrl->text();
