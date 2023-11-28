@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <qstyle.h>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -7,13 +8,12 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    qDebug() << QSslSocket::supportsSsl() << QSslSocket::sslLibraryBuildVersionString() << QSslSocket::sslLibraryVersionString();
+
     m_AppDataPath = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
     dir.mkpath(m_AppDataPath);
 
     m_SettingsFile = m_AppDataPath + "/settings.ini";
-
-
-    VlcCommon::setPluginPath("C:/PortableApps/PortableApps/VLCPortable/App/vlc/plugins");
 
     _instance = new VlcInstance(VlcCommon::args(), this);
 
@@ -269,12 +269,12 @@ void MainWindow::createActions() {
 
      QMenu *helpMenu = menuBar()->addMenu(tr("&Help"));
 
-     const QIcon helpIcon = QIcon::fromTheme("help-contents");
-     QAction *aboutAct = helpMenu->addAction(helpIcon, tr("&About"), this, &MainWindow::about);
+     //const QIcon helpIcon = QIcon::fromTheme("document-new");
+     QAction *aboutAct = helpMenu->addAction(this->style()->standardIcon(QStyle::SP_TitleBarMenuButton), tr("&About"), this, &MainWindow::about);
      aboutAct->setStatusTip(tr("Show the application's About box"));
 
-     const QIcon aboutIcon = QIcon::fromTheme("help-about");
-     QAction *aboutQtAct = helpMenu->addAction(aboutIcon, tr("About &Qt"), qApp, &QApplication::aboutQt);
+     //const QIcon aboutIcon = QIcon::fromTheme("help-about");
+     QAction *aboutQtAct = helpMenu->addAction(this->style()->standardIcon(QStyle::SP_TitleBarMenuButton), tr("About &Qt"), qApp, &QApplication::aboutQt);
      aboutQtAct->setStatusTip(tr("Show the Qt library's About box"));
 
      menuBar()->addSeparator();
@@ -547,7 +547,7 @@ QTreeWidgetItem* MainWindow::addTreeRoot(const QString& name, const QString& des
     return treeItem;
 }
 
-void MainWindow::addTreeChild(QTreeWidgetItem *parent, const QString& name, const QString& description, const QString& id, const QString& used, const QString& state, const QString& url)
+void MainWindow::addTreeChild(QTreeWidgetItem *parent, const QString& name, const QString& description, const QString& id, const QString& used, const QString& state, const QString& url, const QString& logo)
 {
     QTreeWidgetItem *treeItem = new QTreeWidgetItem();
 
@@ -562,6 +562,8 @@ void MainWindow::addTreeChild(QTreeWidgetItem *parent, const QString& name, cons
 
     treeItem->setText(2, id);
     treeItem->setData(Qt::UserRole, 0, url);
+
+    treeItem->setText(3, logo);
 
     treeItem->setStatusTip(0, tr("double click to add the station to the selected playlist"));
 
@@ -578,7 +580,7 @@ void MainWindow::fillTreeWidget()
     QString group, lastgroup;
     QString title;
     QString id;
-    QString tvg_id;
+    QString tvg_id, tvg_logo;
     QString used;
     QString state;
     QString url;
@@ -590,8 +592,8 @@ void MainWindow::fillTreeWidget()
     QSqlQuery *select = nullptr;
 
     ui->treeWidget->clear();
-    ui->treeWidget->setColumnCount(3);
-    ui->treeWidget->setHeaderLabels(QStringList() << "Group" << "Station" << "ID");
+    ui->treeWidget->setColumnCount(4);
+    ui->treeWidget->setHeaderLabels(QStringList() << "Group" << "Station" << "ID" << "Logo");
 
     if ( ui->cboGroupTitels->currentText().isEmpty() ) {
         group = "EU |";
@@ -631,6 +633,7 @@ void MainWindow::fillTreeWidget()
 
         title = select->value(1).toByteArray().constData();
         tvg_id = select->value(2).toByteArray().constData();
+        tvg_logo = select->value(4).toByteArray().constData();
         id = select->value(0).toByteArray().constData();
         group_id = select->value(3).toByteArray().constData();
         url = select->value(5).toByteArray().constData();
@@ -643,7 +646,7 @@ void MainWindow::fillTreeWidget()
             lastgroup = group;
         }
 
-        addTreeChild(item, title, tvg_id, id, used, state, url);
+        addTreeChild(item, title, tvg_id, id, used, state, url, tvg_logo);
     }
 
     ui->treeWidget->blockSignals(false);
@@ -741,7 +744,7 @@ void MainWindow::on_cmdRenamePlaylist_clicked()
 
     QString text = QInputDialog::getText(this, "The Playlist",
                                          "What's the name of the playlist?", QLineEdit::Normal,
-                                         "", &ok);
+                                         ui->cboPlaylists->currentText(), &ok);
     if (ok && !text.isEmpty()) {
 
         id = ui->cboPlaylists->itemData(ui->cboPlaylists->currentIndex()).toString().toInt();
@@ -791,6 +794,9 @@ void MainWindow::fillTwPls_Item()
     ui->twPLS_Items->clear();
     ui->twPLS_Items->setColumnCount(3);
     ui->twPLS_Items->setHeaderLabels(QStringList() << "Stations" << "Place" << "TMDB");
+
+    for(int i = 0; i < 3; i++)
+        ui->twPLS_Items->header()->setSectionResizeMode(i, QHeaderView::ResizeToContents);
 
     ui->lvStations->clear();
     ui->lvStations->setFlow(QListView::Flow::LeftToRight);
@@ -1169,7 +1175,8 @@ void MainWindow::on_twPLS_Items_itemSelectionChanged()
             ui->lblLogo->setPixmap(buttonImage.scaledToWidth(ui->lblLogo->maximumWidth()));
         }
 
-        ui->lvStations->setCurrentRow( ui->twPLS_Items->currentIndex().row() );
+        ui->lvStations->setCurrentRow( ui->twPLS_Items->indexOfTopLevelItem( mitem ) );
+        //ui->lvStations->setCurrentRow( ui->twPLS_Items->currentIndex().row() );
     }
 }
 
@@ -1815,4 +1822,9 @@ void MainWindow::on_cmdPlayExtern_clicked()
 
     m_Process->setProcessChannelMode(QProcess::MergedChannels);
     m_Process->start(program, arguments);
+}
+
+void MainWindow::on_actionimport_m3u_file_triggered()
+{
+    this->on_edtLoad_clicked();
 }

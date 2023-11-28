@@ -6,8 +6,8 @@ QWidget#StyleWidget
 
 QLabel, QAbstractButton 
 {
-	font: bold;
-	color: beige;
+	font: normal;
+	color: black;
 }
 
 QAbstractButton 
@@ -15,8 +15,8 @@ QAbstractButton
 	background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(173,216,230,60%), stop:1 rgba(0,0,139,60%) );
 	border-color: black;
 	border-style: solid;
-	border-width: 3px;
-	border-radius: 6px;
+	border-width: 2px;
+	border-radius: 3px;
 }
 
 QAbstractButton:pressed, QAbstractButton:checked

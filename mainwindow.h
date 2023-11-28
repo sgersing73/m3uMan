@@ -95,7 +95,7 @@ private:
     void displayMovieInfo(int, QString, bool);
 
     QTreeWidgetItem* addTreeRoot(const QString &, const QString &, const QString &, int);
-    void addTreeChild(QTreeWidgetItem *parent, const QString &, const QString &, const QString &, const QString &, const QString &, const QString &);
+    void addTreeChild(QTreeWidgetItem *parent, const QString &, const QString &, const QString &, const QString &, const QString &, const QString &, const QString& logo);
     void get_media_sub_items( const libvlc_media_t& media );
 
     void findAllButtons();
@@ -170,6 +170,8 @@ private slots:
     void isBuffering(int);
 
     void on_cmdPlayExtern_clicked();
+
+    void on_actionimport_m3u_file_triggered();
 
 private:
     QString         curFile;

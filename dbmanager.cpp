@@ -200,19 +200,17 @@ QSqlQuery* DbManager::selectEXTINF(const QString& group_title, const QString& st
 {
     QSqlQuery *select = new QSqlQuery();
 
-    QString test = QString("SELECT *, "
-                           "( select count(*) from pls_item where pls_item.extinf_id = extinf.id ) "
-                           "FROM  extinf, "
-                           "      groups "
-                           "WHERE groups.id = extinf.group_id "
-                           "AND  (groups.favorite = %4 OR %4 = 0) "
-                           "AND  (groups.group_title LIKE '%%1%' OR '%1' = '') "
-                           "AND   tvg_name LIKE '%%2%' "
-                           "AND  (state = %3 OR %3 = 0) ORDER BY group_title, tvg_name").arg(group_title).arg(station).arg(state.toInt()).arg(favorite);
+    QString query = QString("SELECT *, "
+                            "( select count(*) from pls_item where pls_item.extinf_id = extinf.id ) "
+                            "FROM  extinf, "
+                            "      groups "
+                            "WHERE groups.id = extinf.group_id "
+                            "AND  (groups.favorite = %4 OR %4 = 0) "
+                            "AND  (groups.group_title LIKE '%%1%' OR '%1' = '') "
+                            "AND   tvg_name LIKE '%%2%' "
+                            "AND  (state = %3 OR %3 = 0)").arg(group_title).arg(station).arg(state.toInt()).arg(favorite);
 
-    //qDebug() << test;
-
-    select->prepare( test );
+    select->prepare( query );
     if ( ! select->exec() ) {
         qDebug() << "selectEXTINF" << select->lastError();
     }

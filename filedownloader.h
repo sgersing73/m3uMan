@@ -24,7 +24,7 @@ signals:
 private slots:
     void fileDownloaded(QNetworkReply* pReply);
     void updateDownloadProgress(qint64,qint64);
-    void errorOccurred(QNetworkReply::NetworkError);
+ //   void errorOccurred(QString);
 
 private:
     QNetworkAccessManager m_WebCtrl;

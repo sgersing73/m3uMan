@@ -245,6 +245,9 @@
             <property name="sizeAdjustPolicy">
              <enum>QAbstractScrollArea::AdjustToContents</enum>
             </property>
+            <property name="dragDropMode">
+             <enum>QAbstractItemView::DragOnly</enum>
+            </property>
             <property name="selectionMode">
              <enum>QAbstractItemView::ExtendedSelection</enum>
             </property>
@@ -275,7 +278,7 @@
          <widget class="QWidget" name="layoutWidget">
           <layout class="QGridLayout" name="gridLayout">
            <property name="sizeConstraint">
-            <enum>QLayout::SetDefaultConstraint</enum>
+            <enum>QLayout::SetMinimumSize</enum>
            </property>
            <item row="2" column="0">
             <layout class="QHBoxLayout" name="horizontalLayout_5">
@@ -513,6 +516,12 @@
             <widget class="QTreeWidget" name="twPLS_Items">
              <property name="mouseTracking">
               <bool>true</bool>
+             </property>
+             <property name="sizeAdjustPolicy">
+              <enum>QAbstractScrollArea::AdjustToContents</enum>
+             </property>
+             <property name="dragDropMode">
+              <enum>QAbstractItemView::DropOnly</enum>
              </property>
              <property name="columnCount">
               <number>1</number>
@@ -780,6 +789,8 @@
     <addaction name="actionload_stylsheet"/>
     <addaction name="actionIcon_color"/>
     <addaction name="actionselect_application_font"/>
+    <addaction name="separator"/>
+    <addaction name="actionimport_m3u_file"/>
    </widget>
    <widget class="QMenu" name="menuFile">
     <property name="title">
@@ -851,6 +862,11 @@
    </property>
    <property name="text">
     <string>use external media player</string>
+   </property>
+  </action>
+  <action name="actionimport_m3u_file">
+   <property name="text">
+    <string>import m3u file</string>
    </property>
   </action>
  </widget>
