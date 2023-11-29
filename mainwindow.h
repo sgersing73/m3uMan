@@ -173,6 +173,10 @@ private slots:
 
     void on_actionimport_m3u_file_triggered();
 
+    void on_cmdAddToFavorits_clicked();
+
+    void on_chkPlaylistOnlyFavorits_stateChanged(int arg1);
+
 private:
     QString         curFile;
     QDir            dir;

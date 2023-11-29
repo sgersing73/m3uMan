@@ -15,7 +15,7 @@ public:
 
     bool createTable();
 
-    bool addEXTINF(const QString&, const QString&, int, const QString&, const QString&);
+    int  insertEXTINF(const QString&, const QString&, int, const QString&, const QString&);
     bool removeAllEXTINFs();
     bool removeObsoleteEXTINFs();
     bool updateEXTINF_byRef(int, const QString&, int, const QString&, int);
@@ -37,16 +37,21 @@ public:
     QSqlQuery* selectGroups(int favorite);
 
     bool updatePLS(int, const QString &);
+    bool updatePLS_favorite(int, int);
+
     bool updatePLS_item_pls_pos(int, int);
     bool updatePLS_item_tmdb_by_extinf_id(int, double);
 
-    bool insertPLS(const QString &);
+
+    int insertPLS(const QString &);
     bool removePLS(int);
-    QSqlQuery* selectPLS();
+    QSqlQuery* selectPLS(int);
+    QSqlQuery* selectPLS_by_pls_name(const QString& );
+
     QSqlQuery* selectEXTINF_byRef(int);
     QSqlQuery* selectPLS_Items_by_extinf_id(int);
 
-    bool insertPLS_Item(int, int, int);
+    int insertPLS_Item(int, int, int);
     QSqlQuery* selectPLS_Items(int);
     bool removePLS_Item(int);
     bool removePLS_Items(int);

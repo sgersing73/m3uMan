@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <qstyle.h>
+#include <qpainter.h>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -51,14 +52,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->edtUrl->setText(settings.value("iptvurl").toByteArray());
     ui->edtUrlEpg->setText(settings.value("iptvepgurl").toByteArray());
     ui->cmdImdb->setEnabled(false);
-
-    if ( settings.value("isurlhidden").toByteArray().toInt() == 1 ) {
-        ui->actionhide_show_input_fields->setChecked( true );
-        ui->groupBox->setHidden( true );
-    } else {
-        ui->actionhide_show_input_fields->setChecked( false );
-        ui->groupBox->setHidden( false );
-    }
 
     if ( ! settings.value("stylsheet").toByteArray().isEmpty() ) {
 
@@ -328,8 +321,9 @@ void MainWindow::getFileData(const QString &filename)
 
     QString tvg_name;
     QString tvg_id;
-    QString group_title;
-    int     group_id;
+    QString tvg_chno;
+    QString group_title, last_group_title;
+    int     group_id, pls_id, extinf_id;
     QString tvg_logo;
 
     QSqlQuery *query = nullptr;
@@ -399,6 +393,7 @@ void MainWindow::getFileData(const QString &filename)
                 tvg_name = station;
                 group_title = "NoGroup";
                 tvg_logo = " ";
+                tvg_chno = "0";
 
                 foreach(QString item, parser) {
 
@@ -413,6 +408,9 @@ void MainWindow::getFileData(const QString &filename)
                     }
                     else if ( item.contains("tvg-logo") ) {
                         tvg_logo = item.split("=").at(1);
+                    }
+                    else if ( item.contains("tvg-chno") ) {
+                        tvg_chno = item.split("=").at(1);
                     }
                 }
 
@@ -436,11 +434,17 @@ void MainWindow::getFileData(const QString &filename)
                 query->first();
 
                 if ( query->isValid() ) {
-                    if ( ! db.updateEXTINF_byRef( query->value(0).toByteArray().toInt(), tvg_name, group_id, tvg_logo, 1 ) ) {
+
+                    extinf_id = query->value(0).toByteArray().toInt();
+
+                    if ( ! db.updateEXTINF_byRef(extinf_id, tvg_name, group_id, tvg_logo, 1 ) ) {
                         qDebug() << "-E-" << "updateEXTINF_byRef" <<tvg_name<< tvg_id<< group_title<< tvg_logo<< url;
                     }
-                } else {                    
-                    if ( ! db.addEXTINF(tvg_name, tvg_id, group_id, tvg_logo, url) ) {
+                } else {
+
+                    extinf_id = db.insertEXTINF(tvg_name, tvg_id, group_id, tvg_logo, url)                    ;
+
+                    if ( extinf_id == 0 ) {
                         qDebug() << "-E-" << "addEXTINF" << tvg_name<< tvg_id<< group_title<< tvg_logo<< url;
                     }
                     newfiles++;
@@ -448,6 +452,32 @@ void MainWindow::getFileData(const QString &filename)
 
                 delete query;
                 // ------------------------------------------------
+
+                // ------------------------------------------------
+                // Playlist anlegen
+                // ------------------------------------------------
+                query = db.selectPLS_by_pls_name(group_title);
+
+                query->last();
+                query->first();
+
+                if ( query->isValid() ) {
+                    pls_id = query->value(0).toByteArray().toInt();
+                } else {
+                    pls_id = db.insertPLS(group_title);
+                }
+
+                delete query;
+                // ------------------------------------------------
+
+                // ------------------------------------------------
+                // Playlist Item anlegen
+                // ------------------------------------------------
+
+                db.insertPLS_Item( pls_id, extinf_id, tvg_chno.toInt() );
+
+                // ------------------------------------------------
+
 
                 counter++;
 
@@ -503,6 +533,7 @@ void MainWindow::getFileData(const QString &filename)
 
     fillComboGroupTitels();
     fillTreeWidget();
+    fillComboPlaylists();
 }
 
 QStringList MainWindow::splitCommandLine(const QString & cmdLine)
@@ -661,10 +692,15 @@ void MainWindow::fillComboPlaylists()
     QSqlQuery *select = nullptr;
     QString title;
     QString id;
+    int      favorite = 0;
 
     ui->cboPlaylists->clear();
 
-    select = db.selectPLS();
+    if ( ui->chkPlaylistOnlyFavorits->isChecked() ) {
+        favorite = 1;
+    }
+
+    select = db.selectPLS(favorite);
     while ( select->next() ) {
 
         id = select->value(0).toByteArray().constData();
@@ -786,7 +822,7 @@ void MainWindow::fillTwPls_Item()
     QString url;
     bool    added = false;
     QFile   file;
-    QPixmap buttonImage;
+    QPixmap buttonImage, topImage;
 
     int pls_id = ui->cboPlaylists->itemData(ui->cboPlaylists->currentIndex()).toString().toInt();
 
@@ -826,7 +862,13 @@ void MainWindow::fillTwPls_Item()
 
         if ( QUrl(logo).fileName().trimmed().isEmpty() ) {
 
-            buttonImage = QPixmap(":/images/iptv.png");
+            buttonImage = QPixmap(":/images/template.png");
+         //   topImage = QPixmap(":/images/app.png");
+
+         //   QPainter painter(&buttonImage);
+         //   painter.drawPixmap(0,100,topImage);
+
+         //   buttonImage.from
 
         } else {
 
@@ -1829,4 +1871,28 @@ void MainWindow::on_cmdPlayExtern_clicked()
 void MainWindow::on_actionimport_m3u_file_triggered()
 {
     this->on_edtLoad_clicked();
+}
+
+void MainWindow::on_cmdAddToFavorits_clicked()
+{
+
+    const int pls_id = ui->cboPlaylists->itemData(ui->cboPlaylists->currentIndex()).toString().toInt();
+
+    QMessageBox msgBox;
+    msgBox.setWindowTitle("title");
+    msgBox.setText("Add actual Playliste to favorites?");
+    msgBox.setStandardButtons(QMessageBox::Yes);
+    msgBox.addButton(QMessageBox::No);
+    msgBox.setDefaultButton(QMessageBox::No);
+
+    if(msgBox.exec() == QMessageBox::Yes){
+        db.updatePLS_favorite(pls_id, 1 );
+    } else {
+        db.updatePLS_favorite(pls_id, 0 );
+    }
+}
+
+void MainWindow::on_chkPlaylistOnlyFavorits_stateChanged(int arg1)
+{
+    this->fillComboPlaylists();
 }

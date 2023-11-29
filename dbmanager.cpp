@@ -88,24 +88,36 @@ bool DbManager::createTable()
         success = false;
     }
 
+    // Tabelle pls (Playlists)
+
     query.prepare("CREATE TABLE IF NOT EXISTS "
                   "pls (id       INTEGER PRIMARY KEY AUTOINCREMENT, "
-                  "     pls_name TEXT);");
+                  "     pls_name TEXT,"
+                  "     favorite INTEGER DEFAULT 0)");
 
     if (!query.exec()) {
         qDebug() << "createTable" <<  query.lastError();
         success = false;
     }
 
+    query.prepare("CREATE INDEX IF NOT EXISTS idx_pls_pls_name ON pls(pls_name);");
+
+    if (!query.exec()) {
+        qDebug() << "createIndex idx_pls_pls_name" <<  query.lastError();
+        success = false;
+    }
+
+    // Tabelle pls_item (Playlist Einträge)
+
     query.prepare("CREATE TABLE IF NOT EXISTS "
                   "pls_item (id        INTEGER PRIMARY KEY AUTOINCREMENT, "
                   "          pls_id    INTEGER, "
                   "          extinf_id INTEGER, "
-                  "          pls_pos   INTEGER, "
+                  "          pls_pos   INTEGER DEFAULT 0, "
                   "          tmdb_id   INTEGER DEFAULT 0, "
                   "          FOREIGN KEY(extinf_id) REFERENCES extinf(id) ON DELETE CASCADE,"
                   "          FOREIGN KEY(pls_id)    REFERENCES pls(id) ON DELETE CASCADE"
-                  ");");
+                  ")");
 
     if (!query.exec()) {
         qDebug() << "createTable" <<  query.lastError();
@@ -126,6 +138,7 @@ bool DbManager::createTable()
         success = false;
     }
 
+    // Tabelle program (EPG Daten)
 
     query.prepare("CREATE TABLE IF NOT EXISTS "
                   "program (id          INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -143,9 +156,9 @@ bool DbManager::createTable()
     return success;
 }
 
-bool DbManager::addEXTINF(const QString& tvg_name, const QString& tvg_id, int group_id, const QString& tvg_logo, const QString& url)
+int DbManager::insertEXTINF(const QString& tvg_name, const QString& tvg_id, int group_id, const QString& tvg_logo, const QString& url)
 {
-   bool success = false;
+   int id = 0;
 
    QSqlQuery query;
 
@@ -158,12 +171,12 @@ bool DbManager::addEXTINF(const QString& tvg_name, const QString& tvg_id, int gr
    query.bindValue(":state", 2);
 
    if ( query.exec() ) {
-       success = true;
+       id = query.lastInsertId().toInt();
    } else {
        qDebug() << "addEXTINF" << query.lastError() << url;
    }
 
-   return success;
+   return id;
 }
 
 bool DbManager::removeAllEXTINFs()
@@ -369,12 +382,27 @@ QSqlQuery* DbManager::selectEXTINF_group_titles(int state)
     return select;
 }
 
-
-QSqlQuery* DbManager::selectPLS()
+QSqlQuery* DbManager::selectPLS_by_pls_name(const QString& pls_name)
 {
     QSqlQuery *select = new QSqlQuery();
 
-    select->prepare("SELECT * FROM pls ORDER BY pls_name");
+    select->prepare("SELECT * FROM pls WHERE pls_name = :pls_name");
+    select->bindValue(":pls_name", pls_name);
+
+    if ( ! select->exec() ) {
+        qDebug() << "selectPLS_by_pls_name" << select->lastError();
+    }
+
+    return select;
+}
+
+QSqlQuery* DbManager::selectPLS(int favorite)
+{
+    QSqlQuery *select = new QSqlQuery();
+
+    select->prepare("SELECT * FROM pls WHERE (favorite = :favorite OR :favorite = 0) ORDER BY pls_name");
+    select->bindValue(":favorite", favorite);
+
     if ( ! select->exec() ) {
         qDebug() << "selectPLS" << select->lastError();
     }
@@ -436,6 +464,25 @@ bool DbManager::updatePLS_item_pls_pos(int id, int pls_pos )
     return success;
 }
 
+
+bool DbManager::updatePLS_favorite(int id, int favorite )
+{
+    bool success = false;
+
+    QSqlQuery query;
+    query.prepare("UPDATE pls SET favorite = :favorite WHERE id = :id");
+    query.bindValue(":favorite", favorite);
+    query.bindValue(":id", id);
+
+    if ( query.exec() ) {
+        success = true;
+    } else {
+        qDebug() << "updatePLS_favorite" << query.lastError();
+    }
+
+    return success;
+}
+
 bool DbManager::updatePLS_item_tmdb_by_extinf_id(int extinf_id, double tmdb_id )
 {
     bool success = false;
@@ -454,27 +501,27 @@ bool DbManager::updatePLS_item_tmdb_by_extinf_id(int extinf_id, double tmdb_id )
     return success;
 }
 
-bool DbManager::insertPLS(const QString & pls_name )
+int DbManager::insertPLS(const QString & pls_name )
 {
-    bool success = false;
+    int id = 0;
 
     QSqlQuery query;
     query.prepare("INSERT INTO pls (pls_name) VALUES (:pls_name)");
     query.bindValue(":pls_name", pls_name);
 
     if ( query.exec() ) {
-        success = true;
+        id = query.lastInsertId().toInt();
     } else {
         qDebug() << "insertPLS" << query.lastError();
     }
 
-    return success;
+    return id;
 }
 
 
-bool DbManager::insertPLS_Item(int pls_id, int extinf_id, int pls_pos )
+int DbManager::insertPLS_Item(int pls_id, int extinf_id, int pls_pos )
 {
-    bool success = false;
+    int id = 0;
 
     QSqlQuery query;
     query.prepare("INSERT INTO pls_item (pls_id, extinf_id, pls_pos) VALUES (:pls_id, :extinf_id, :pls_pos )");
@@ -483,12 +530,12 @@ bool DbManager::insertPLS_Item(int pls_id, int extinf_id, int pls_pos )
     query.bindValue(":pls_pos", pls_pos);
 
     if ( query.exec() ) {
-        success = true;
+        id = query.lastInsertId().toInt();
     } else {
         qDebug() << "insertPLS_Item" << query.lastError();
     }
 
-    return success;
+    return id;
 }
 
 QSqlQuery* DbManager::selectPLS_Items(int pls_id)

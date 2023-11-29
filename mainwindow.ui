@@ -282,6 +282,9 @@
            </property>
            <item row="2" column="0">
             <layout class="QHBoxLayout" name="horizontalLayout_5">
+             <property name="sizeConstraint">
+              <enum>QLayout::SetMinimumSize</enum>
+             </property>
              <item>
               <widget class="QProgressBar" name="pgbBuffer">
                <property name="maximumSize">
@@ -416,6 +419,12 @@
            </item>
            <item row="1" column="0">
             <widget class="VlcWidgetSeek" name="widSeek" native="true">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="maximumSize">
               <size>
                <width>16777215</width>
@@ -446,7 +455,40 @@
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_2">
            <item>
+            <widget class="QCheckBox" name="chkPlaylistOnlyFavorits">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>favorites</string>
+             </property>
+            </widget>
+           </item>
+           <item>
             <widget class="QComboBox" name="cboPlaylists"/>
+           </item>
+           <item>
+            <widget class="QPushButton" name="cmdAddToFavorits">
+             <property name="maximumSize">
+              <size>
+               <width>30</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="toolTip">
+              <string>toggle favorite flag</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="m3uMan.qrc">
+               <normaloff>:/images/Ui/icons8-add-to-favorites-50.png</normaloff>:/images/Ui/icons8-add-to-favorites-50.png</iconset>
+             </property>
+            </widget>
            </item>
            <item>
             <widget class="QPushButton" name="cmdNewPlaylist">
@@ -457,7 +499,7 @@
               </size>
              </property>
              <property name="toolTip">
-              <string>add a new playlist</string>
+              <string>generate a new playlist</string>
              </property>
              <property name="text">
               <string/>
@@ -497,7 +539,7 @@
               </size>
              </property>
              <property name="toolTip">
-              <string>remove select playliste</string>
+              <string>remove the select playliste</string>
              </property>
              <property name="text">
               <string/>
@@ -810,35 +852,9 @@
    </attribute>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
-  <action name="actionPause">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Pause</string>
-   </property>
-  </action>
-  <action name="actionStop">
-   <property name="text">
-    <string>Stop</string>
-   </property>
-  </action>
-  <action name="actionEqualizer">
-   <property name="text">
-    <string>Equalizer</string>
-   </property>
-  </action>
   <action name="actionIcon_color">
    <property name="text">
     <string>select icon color</string>
-   </property>
-  </action>
-  <action name="actionhide_show_input_fields">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>hide/show input fields</string>
    </property>
   </action>
   <action name="actionload_stylsheet">
@@ -855,13 +871,8 @@
    <property name="text">
     <string>Exit</string>
    </property>
-  </action>
-  <action name="actionuse_external_media_player">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>use external media player</string>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
    </property>
   </action>
   <action name="actionimport_m3u_file">
