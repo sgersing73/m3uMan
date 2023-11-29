@@ -208,7 +208,7 @@ QSqlQuery* DbManager::selectEXTINF(const QString& group_title, const QString& st
                             "AND  (groups.favorite = %4 OR %4 = 0) "
                             "AND  (groups.group_title LIKE '%%1%' OR '%1' = '') "
                             "AND   tvg_name LIKE '%%2%' "
-                            "AND  (state = %3 OR %3 = 0)").arg(group_title).arg(station).arg(state.toInt()).arg(favorite);
+                            "AND  (state = %3 OR %3 = 0) ORDER BY groups.group_title").arg(group_title).arg(station).arg(state.toInt()).arg(favorite);
 
     select->prepare( query );
     if ( ! select->exec() ) {

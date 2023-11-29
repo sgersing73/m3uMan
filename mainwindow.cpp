@@ -355,7 +355,7 @@ void MainWindow::getFileData(const QString &filename)
 
             line = stream.readLine();
 
-            if ( line.startsWith("http") ) {
+            if ( line.startsWith("http") or line.startsWith("rtp") ) {
               linecount++;
             }
         }
@@ -416,6 +416,7 @@ void MainWindow::getFileData(const QString &filename)
                     }
                 }
 
+                // ------------------------------------------------
                 query = db.selectGroup_byTitle(group_title);
                 query->last();
                 query->first();
@@ -436,11 +437,12 @@ void MainWindow::getFileData(const QString &filename)
 
                 if ( query->isValid() ) {
                     if ( ! db.updateEXTINF_byRef( query->value(0).toByteArray().toInt(), tvg_name, group_id, tvg_logo, 1 ) ) {
-                        qDebug() << "-U-" <<tvg_name<< tvg_id<< group_title<< tvg_logo<< url;
+                        qDebug() << "-E-" << "updateEXTINF_byRef" <<tvg_name<< tvg_id<< group_title<< tvg_logo<< url;
                     }
-                } else {
-                  //  qDebug() << "-I-" <<tvg_name<< tvg_id<< group_title<< tvg_logo<< url;
-                    db.addEXTINF(tvg_name, tvg_id, group_id, tvg_logo, url);
+                } else {                    
+                    if ( ! db.addEXTINF(tvg_name, tvg_id, group_id, tvg_logo, url) ) {
+                        qDebug() << "-E-" << "addEXTINF" << tvg_name<< tvg_id<< group_title<< tvg_logo<< url;
+                    }
                     newfiles++;
                 }
 
@@ -793,7 +795,7 @@ void MainWindow::fillTwPls_Item()
 
     ui->twPLS_Items->clear();
     ui->twPLS_Items->setColumnCount(3);
-    ui->twPLS_Items->setHeaderLabels(QStringList() << "Stations" << "Place" << "TMDB");
+    ui->twPLS_Items->setHeaderLabels(QStringList() << "Place" << "Stations"  << "EPG");
 
     for(int i = 0; i < 3; i++)
         ui->twPLS_Items->header()->setSectionResizeMode(i, QHeaderView::ResizeToContents);
@@ -814,8 +816,8 @@ void MainWindow::fillTwPls_Item()
 
         QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui->twPLS_Items);
 
-        treeItem->setText(0, tvg_name);
-        treeItem->setText(1, QString("%1").arg(pls_pos.toInt() + 1) );
+        treeItem->setText(0, QString("%1").arg(pls_pos.toInt() + 1) );
+        treeItem->setText(1, tvg_name);
         treeItem->setText(2, tvg_id);
 
         treeItem->setData(0, 1, id);

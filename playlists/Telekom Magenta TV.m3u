@@ -187,3 +187,5 @@ rtp://87.141.215.251@232.0.10.100:10000
 rtp://87.141.215.251@232.0.10.130:10000
 #EXTINF:-1 tvg-chno="94" tvg-name="DE| tv.ingolstadt SD" tvg-id="tvingolstadt.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="",DE| tv.ingolstadt SD
 rtp://87.141.215.251@232.0.10.75:10000
+#EXTINF:-1 tvg-chno="95" tvg-name="DE| RTLZWEI SD" tvg-id="rtl2.de" group-title="EU | TELEKOM MAGENTA TV" tvg-logo="https://lo1.in/ger/rtl2.png",DE| RTLZWEI SD
+rtp://87.141.215.251@232.0.10.140:10000
