@@ -1223,12 +1223,15 @@ void MainWindow::on_twPLS_Items_itemSelectionChanged()
 
             } else {
 
-                file.open(QIODevice::ReadOnly);
-                QTextStream in(&file);
-                buttonImage.loadFromData(file.readAll());
-                file.close();
+                if ( file.exists() && file.size() > 0 ) {
 
-                ui->lblLogo->setPixmap(buttonImage.scaledToWidth(ui->lblLogo->maximumWidth()));
+                    file.open(QIODevice::ReadOnly);
+                    QTextStream in(&file);
+                    buttonImage.loadFromData(file.readAll());
+                    file.close();
+
+                    ui->lblLogo->setPixmap(buttonImage.scaledToWidth(ui->lblLogo->maximumWidth()));
+                }
             }
 
         } else {
@@ -1236,8 +1239,7 @@ void MainWindow::on_twPLS_Items_itemSelectionChanged()
             ui->lblLogo->setPixmap(buttonImage.scaledToWidth(ui->lblLogo->maximumWidth()));
         }
 
-        ui->lvStations->setCurrentRow( ui->twPLS_Items->indexOfTopLevelItem( mitem ) );
-        //ui->lvStations->setCurrentRow( ui->twPLS_Items->currentIndex().row() );
+        ui->lvStations->setCurrentRow( ui->twPLS_Items->indexOfTopLevelItem( mitem ) );        
     }
 }
 
