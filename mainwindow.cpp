@@ -1471,6 +1471,8 @@ void MainWindow::getEPGFileData(const QString &sFileName)
 #endif
     m_progress->setVisible(false);
     m_progressCancel->setVisible(false);
+
+    this->fillComboEPGChannels();
 }
 
 void MainWindow::on_edtEPGDownload_clicked()
