@@ -262,11 +262,9 @@ void MainWindow::createActions() {
 
      QMenu *helpMenu = menuBar()->addMenu(tr("&Help"));
 
-     //const QIcon helpIcon = QIcon::fromTheme("document-new");
      QAction *aboutAct = helpMenu->addAction(this->style()->standardIcon(QStyle::SP_TitleBarMenuButton), tr("&About"), this, &MainWindow::about);
      aboutAct->setStatusTip(tr("Show the application's About box"));
 
-     //const QIcon aboutIcon = QIcon::fromTheme("help-about");
      QAction *aboutQtAct = helpMenu->addAction(this->style()->standardIcon(QStyle::SP_TitleBarMenuButton), tr("About &Qt"), qApp, &QApplication::aboutQt);
      aboutQtAct->setStatusTip(tr("Show the Qt library's About box"));
 
@@ -323,7 +321,7 @@ void MainWindow::getFileData(const QString &filename)
     QString tvg_id;
     QString tvg_chno;
     QString group_title, last_group_title;
-    int     group_id, pls_id, extinf_id;
+    int     group_id, pls_id, plsi_id, extinf_id;
     QString tvg_logo;
 
     QSqlQuery *query = nullptr;
@@ -451,7 +449,6 @@ void MainWindow::getFileData(const QString &filename)
                 }
 
                 delete query;
-                // ------------------------------------------------
 
                 // ------------------------------------------------
                 // Playlist anlegen
@@ -468,16 +465,26 @@ void MainWindow::getFileData(const QString &filename)
                 }
 
                 delete query;
-                // ------------------------------------------------
 
                 // ------------------------------------------------
                 // Playlist Item anlegen
                 // ------------------------------------------------
+                query = db.selectPLS_Items_by_key(pls_id, extinf_id);
 
-                db.insertPLS_Item( pls_id, extinf_id, tvg_chno.toInt() );
+                query->last();
+                query->first();
 
+                if ( ! query->isValid() ) {
+
+                    plsi_id = db.insertPLS_Item( pls_id, extinf_id, tvg_chno.toInt() );
+
+                    if ( plsi_id == 0 ) {
+                        qDebug() << "-E-" << "insertPLS_Item" << pls_id<< extinf_id<< tvg_chno.toInt();
+                    }
+                }
+
+                delete query;
                 // ------------------------------------------------
-
 
                 counter++;
 
@@ -506,6 +513,7 @@ void MainWindow::getFileData(const QString &filename)
     QSqlQuery *test;
 
     test = db.countEXTINF_byState();
+
     while ( test->next() ) {
 
         qDebug() << "obsolete" << test->value(0).toByteArray().constData() << test->value(1).toByteArray().constData();
@@ -518,9 +526,11 @@ void MainWindow::getFileData(const QString &filename)
     delete test;
 
     if ( obsolete > 0 ) {
+
         QMessageBox::StandardButton reply;
         reply = QMessageBox::question(this, "m3uMan", QString("Remove %1 obsolete stations?").arg(obsolete),
                                       QMessageBox::Yes|QMessageBox::No);
+
         if (reply == QMessageBox::Yes) {
 
             db.removeObsoleteEXTINFs();
@@ -540,8 +550,10 @@ QStringList MainWindow::splitCommandLine(const QString & cmdLine)
 {
     QStringList list;
     QString arg;
+
     bool escape = false;
     enum { Idle, Arg, QuotedArg } state = Idle;
+
     foreach (QChar const c, cmdLine) {
         if (!escape && c == '\\') { escape = true; continue; }
         switch (state) {
@@ -713,6 +725,7 @@ void MainWindow::fillComboPlaylists()
 
     ui->cmdDeletePlaylist->setEnabled( ui->cboPlaylists->count() != 0 );
     ui->cmdRenamePlaylist->setEnabled( ui->cboPlaylists->count() != 0 );   
+    ui->cmdAddToFavorits->setEnabled( ui->cboPlaylists->count() != 0 );
 }
 
 
@@ -862,13 +875,7 @@ void MainWindow::fillTwPls_Item()
 
         if ( QUrl(logo).fileName().trimmed().isEmpty() ) {
 
-            buttonImage = QPixmap(":/images/template.png");
-         //   topImage = QPixmap(":/images/app.png");
-
-         //   QPainter painter(&buttonImage);
-         //   painter.drawPixmap(0,100,topImage);
-
-         //   buttonImage.from
+            buttonImage = QPixmap(":/images/iptv.png");
 
         } else {
 
@@ -902,6 +909,16 @@ void MainWindow::fillTwPls_Item()
     ui->cmdMoveUp->setEnabled( added );
     ui->cmdMoveDown->setEnabled( added );
     ui->edtStationUrl->setText("");
+
+/*
+    buttonImage = QPixmap(":/images/template.png");
+
+    topImage = QPixmap("C:/Users/Developer/Downloads/62fb8958ce481.svg");
+    QPainter painter(&buttonImage);
+    painter.drawPixmap(10, 10, buttonImage.width()-20, buttonImage.height()-20, topImage);
+
+    ui->lblLogo->setPixmap(buttonImage.scaled(100,100,Qt::KeepAspectRatio, Qt::SmoothTransformation));
+*/
 }
 
 void MainWindow::on_cboPlaylists_currentTextChanged(const QString &arg1)
@@ -1245,6 +1262,8 @@ void MainWindow::processFinished()
 
 void MainWindow::loadImage()
 {
+    QListWidgetItem *item;
+
     QPixmap buttonImage;
     dir.mkpath(m_AppDataPath + "/logos/");
 
@@ -1269,7 +1288,9 @@ void MainWindow::loadImage()
 
         ui->lblLogo->setPixmap(buttonImage.scaledToWidth(ui->lblLogo->maximumWidth()));
 
-        fillTwPls_Item();
+        item = ui->lvStations->currentItem();
+        item->setData(Qt::DecorationRole, buttonImage.scaled(50,50,Qt::KeepAspectRatio, Qt::SmoothTransformation));
+
     } else {
         ui->lblLogo->setText("no data!");
     }
@@ -1299,6 +1320,8 @@ void MainWindow::on_lvStations_itemClicked(QListWidgetItem *item)
 
     ui->twPLS_Items->clearSelection();
     ui->twPLS_Items->topLevelItem( ui->lvStations->currentRow() )->setSelected(true);
+
+    ui->twPLS_Items->scrollToItem( ui->twPLS_Items->selectedItems().at(0) );
 }
 
 void MainWindow::on_cmdSavePosition_clicked()
@@ -1559,20 +1582,6 @@ void MainWindow::on_chkOnlyFavorites_stateChanged(int arg1)
 {
     fillComboGroupTitels();
     fillTreeWidget();
-}
-
-
-void MainWindow::on_actionhide_show_input_fields_triggered(bool checked)
-{
-    if ( checked ) {
-        ui->groupBox->setVisible( false );
-    } else {
-        ui->groupBox->setVisible( true );
-    }
-
-    QSettings settings(m_SettingsFile, QSettings::IniFormat);
-    settings.setValue("isurlhidden", checked ? "1" : "0" );
-    settings.sync();
 }
 
 void MainWindow::on_cmdEqualizer_clicked()

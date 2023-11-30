@@ -151,18 +151,13 @@ private slots:
     void on_cmdMoveBackward_clicked();
     void on_actionIcon_color_triggered();
     void on_chkOnlyFavorites_stateChanged(int arg1);
-    void on_actionhide_show_input_fields_triggered(bool checked);
     void on_cmdEqualizer_clicked();
     void on_cmdMute_clicked();
     void on_cmdImdb_clicked();
     void progressCancel_clicked();
-
     void on_actionload_stylsheet_triggered();
-
     void on_cmdSetPos_clicked();
-
     void on_cmdSetLogo_clicked();
-
     void on_actionselect_application_font_triggered();
 
     void isPlaying();
@@ -170,11 +165,8 @@ private slots:
     void isBuffering(int);
 
     void on_cmdPlayExtern_clicked();
-
     void on_actionimport_m3u_file_triggered();
-
     void on_cmdAddToFavorits_clicked();
-
     void on_chkPlaylistOnlyFavorits_stateChanged(int arg1);
 
 private:

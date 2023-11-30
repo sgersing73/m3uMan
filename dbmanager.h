@@ -50,6 +50,7 @@ public:
 
     QSqlQuery* selectEXTINF_byRef(int);
     QSqlQuery* selectPLS_Items_by_extinf_id(int);
+    QSqlQuery* selectPLS_Items_by_key(int, int);
 
     int insertPLS_Item(int, int, int);
     QSqlQuery* selectPLS_Items(int);

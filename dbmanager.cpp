@@ -39,7 +39,15 @@ bool DbManager::createTable()
     QSqlQuery query;
 
     if (!query.exec("PRAGMA foreign_keys = ON")) {
-        qDebug() << "set PRAGME fails!" <<  query.lastError();
+        qDebug() << "set PRAGME foreign_keys fails!" <<  query.lastError();
+    }
+
+    if (!query.exec("PRAGMA synchronous = OFF")) {
+        qDebug() << "set PRAGME synchronous fails!" <<  query.lastError();
+    }
+
+    if (!query.exec("PRAGMA journal_mode = MEMORY")) {
+        qDebug() << "set PRAGME journal_mode fails!" <<  query.lastError();
     }
 
     query.prepare("CREATE TABLE IF NOT EXISTS "
@@ -93,7 +101,8 @@ bool DbManager::createTable()
     query.prepare("CREATE TABLE IF NOT EXISTS "
                   "pls (id       INTEGER PRIMARY KEY AUTOINCREMENT, "
                   "     pls_name TEXT,"
-                  "     favorite INTEGER DEFAULT 0)");
+                  "     favorite INTEGER DEFAULT 0,"
+                  "     kind     INTEGER DEFAULT 0)");
 
     if (!query.exec()) {
         qDebug() << "createTable" <<  query.lastError();
@@ -565,6 +574,22 @@ QSqlQuery* DbManager::selectPLS_Items_by_extinf_id(int extinf_id)
 
     return select;
 }
+
+QSqlQuery* DbManager::selectPLS_Items_by_key(int pls_id, int extinf_id)
+{
+    QSqlQuery *select = new QSqlQuery();
+
+    select->prepare("SELECT * FROM pls_item WHERE pls_id = :pls_id and extinf_id = :extinf_id");
+    select->bindValue(":extinf_id", extinf_id);
+    select->bindValue(":pls_id", pls_id);
+
+    if ( ! select->exec() ) {
+        qDebug() << "selectPLS_Items_by_key" << select->lastError();
+    }
+
+    return select;
+}
+
 
 bool DbManager::removePLS_Item(int id)
 {

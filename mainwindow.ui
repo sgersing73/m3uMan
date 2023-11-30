@@ -468,9 +468,6 @@
             </widget>
            </item>
            <item>
-            <widget class="QComboBox" name="cboPlaylists"/>
-           </item>
-           <item>
             <widget class="QPushButton" name="cmdAddToFavorits">
              <property name="maximumSize">
               <size>
@@ -489,6 +486,9 @@
                <normaloff>:/images/Ui/icons8-add-to-favorites-50.png</normaloff>:/images/Ui/icons8-add-to-favorites-50.png</iconset>
              </property>
             </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="cboPlaylists"/>
            </item>
            <item>
             <widget class="QPushButton" name="cmdNewPlaylist">
@@ -832,12 +832,13 @@
     <addaction name="actionIcon_color"/>
     <addaction name="actionselect_application_font"/>
     <addaction name="separator"/>
-    <addaction name="actionimport_m3u_file"/>
    </widget>
    <widget class="QMenu" name="menuFile">
     <property name="title">
      <string>File</string>
     </property>
+    <addaction name="actionimport_m3u_file"/>
+    <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
    <addaction name="menuFile"/>
