@@ -821,7 +821,7 @@
      <x>0</x>
      <y>0</y>
      <width>897</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuSettings">
@@ -841,8 +841,19 @@
     <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <addaction name="actionDB_Browser"/>
+    <addaction name="actionFTP_Client"/>
+    <addaction name="actionEdit_settings_ini"/>
+    <addaction name="actionExplore_application_folder"/>
+    <addaction name="actionExplorer_storage_folder"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuSettings"/>
+   <addaction name="menuTools"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -855,17 +866,17 @@
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionIcon_color">
    <property name="text">
-    <string>select icon color</string>
+    <string>Select icon color</string>
    </property>
   </action>
   <action name="actionload_stylsheet">
    <property name="text">
-    <string>load and set stylsheet</string>
+    <string>Load and set stylsheet</string>
    </property>
   </action>
   <action name="actionselect_application_font">
    <property name="text">
-    <string>select application font</string>
+    <string>Select application font</string>
    </property>
   </action>
   <action name="actionExit">
@@ -878,7 +889,32 @@
   </action>
   <action name="actionimport_m3u_file">
    <property name="text">
-    <string>import m3u file</string>
+    <string>Import M3U file</string>
+   </property>
+  </action>
+  <action name="actionDB_Browser">
+   <property name="text">
+    <string>SQLite DB browser</string>
+   </property>
+  </action>
+  <action name="actionFTP_Client">
+   <property name="text">
+    <string>FTP upload client</string>
+   </property>
+  </action>
+  <action name="actionEdit_settings_ini">
+   <property name="text">
+    <string>Edit settings.ini</string>
+   </property>
+  </action>
+  <action name="actionExplore_application_folder">
+   <property name="text">
+    <string>Explore application folder</string>
+   </property>
+  </action>
+  <action name="actionExplorer_storage_folder">
+   <property name="text">
+    <string>Explore storage folder</string>
    </property>
   </action>
  </widget>

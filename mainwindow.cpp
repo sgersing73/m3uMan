@@ -16,6 +16,16 @@ MainWindow::MainWindow(QWidget *parent) :
 
     m_SettingsFile = m_AppDataPath + "/settings.ini";
 
+    db.open(m_AppDataPath + "/m3uMan.sqlite");
+
+    if (db.isOpen()) {
+        if ( ! db.createTable() ) {
+            qApp->exit();
+        }
+    } else {
+        qDebug() << "Database is not open!";
+    }
+
     _instance = new VlcInstance(VlcCommon::args(), this);
 
     _player = new VlcMediaPlayer(_instance);
@@ -40,7 +50,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(_player, SIGNAL(buffering(int)), this, SLOT(isBuffering(int)));
     connect(_player, SIGNAL(error()), this, SLOT(showVlcError()));
 
-    this->findAllButtons();
+    this->FindAndColorAllButtons();
 
     QSettings settings(m_SettingsFile, QSettings::IniFormat);
     restoreGeometry(settings.value("geometry").toByteArray());
@@ -51,6 +61,19 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->splitter_4->restoreState(settings.value("splitter_4").toByteArray());
     ui->edtUrl->setText(settings.value("iptvurl").toByteArray());
     ui->edtUrlEpg->setText(settings.value("iptvepgurl").toByteArray());
+
+    if ( settings.value("PlaylistOnlyFavorits").toInt() == Qt::Checked ) {
+        ui->chkPlaylistOnlyFavorits->setCheckState( Qt::Checked );
+    } else {
+        ui->chkPlaylistOnlyFavorits->setCheckState( Qt::Unchecked );
+    }
+
+    if ( settings.value("AutoPlay").toInt() == Qt::Checked ) {
+        ui->chkAutoPlay->setCheckState( Qt::Checked );
+    } else {
+        ui->chkAutoPlay->setCheckState( Qt::Unchecked );
+    }
+
     ui->cmdImdb->setEnabled(false);
 
     if ( ! settings.value("stylsheet").toByteArray().isEmpty() ) {
@@ -83,17 +106,6 @@ MainWindow::MainWindow(QWidget *parent) :
     createActions();
     createStatusBar();
 
-    db.open(m_AppDataPath + "/m3uMan.sqlite");
-
-    if (db.isOpen()) {
-        if ( ! db.createTable() ) {
-             qApp->exit();
-        }
-     } else {
-        qDebug() << "Database is not open!";
-     }
-
-    fillComboPlaylists();
     fillComboGroupTitels();
     fillComboEPGChannels();
     fillTreeWidget();
@@ -124,18 +136,17 @@ void MainWindow::showEvent(QShowEvent *e)
 
 void MainWindow::isPlaying() {
 
+    ui->cmdPlayStream->setEnabled( false );
     qDebug() << "VLC is playing...";
 }
 
 void MainWindow::isStopped() {
 
-    qDebug() << "VLC is stopped...";
+    ui->cmdPlayStream->setEnabled( true );
     ui->pgbBuffer->setValue(0);
 }
 
 void MainWindow::isBuffering(int buffer) {
-
-    //qDebug() << "VLC is buffering..." << buffer;
 
     ui->pgbBuffer->setValue(buffer);
 }
@@ -1526,7 +1537,7 @@ void MainWindow::on_cmdMoveBackward_clicked()
     _player->setTime( _player->time() - 60 * 1000 );
 }
 
-void MainWindow::findAllButtons() {
+void MainWindow::FindAndColorAllButtons() {
 
     QSettings settings(m_SettingsFile, QSettings::IniFormat);
     m_IconColor = settings.value("iconcolor", "black").toByteArray();
@@ -1570,13 +1581,11 @@ void MainWindow::on_actionIcon_color_triggered()
 
     if ( color.isValid() ) {
 
-        qDebug() << m_SettingsFile;
-
         QSettings settings(m_SettingsFile, QSettings::IniFormat);
         settings.setValue("iconcolor", color.name());
         settings.sync();
 
-        this->findAllButtons();
+        FindAndColorAllButtons();
     }
 }
 
@@ -1589,7 +1598,6 @@ void MainWindow::on_chkOnlyFavorites_stateChanged(int arg1)
 void MainWindow::on_cmdEqualizer_clicked()
 {
     _equalizerDialog->show();
-
 }
 
 void MainWindow::on_cmdMute_clicked()
@@ -1905,5 +1913,197 @@ void MainWindow::on_cmdAddToFavorits_clicked()
 
 void MainWindow::on_chkPlaylistOnlyFavorits_stateChanged(int arg1)
 {
+    QSettings settings(m_SettingsFile, QSettings::IniFormat);
+    settings.setValue("PlaylistOnlyFavorits", arg1);
+    settings.sync();
+
     this->fillComboPlaylists();
 }
+
+void MainWindow::on_chkAutoPlay_stateChanged(int arg1)
+{
+    QSettings settings(m_SettingsFile, QSettings::IniFormat);
+    settings.setValue("AutoPlay", arg1);
+    settings.sync();
+}
+
+void MainWindow::on_actionDB_Browser_triggered()
+{
+    QString program = "DBBrowser";
+    QStringList arguments;
+
+    QSettings settings(m_SettingsFile, QSettings::IniFormat);
+    program = settings.value(program).toByteArray();
+
+    QFile exe(program);
+
+    if ( exe.exists() ) {
+
+        arguments << m_AppDataPath + "/m3uMan.sqlite";
+
+        m_Process->setProcessChannelMode(QProcess::MergedChannels);
+        m_Process->start(program, arguments);
+        qDebug() << program << arguments;
+
+    } else {
+
+        program = QFileDialog::getOpenFileName(this, ("Select ftpclient program file"),
+                                               m_AppDataPath,
+                                               ("exe program file (*.exe)"));
+
+        if ( ! program.isNull() ) {
+
+            settings.setValue("DBBrowser", program);
+            settings.sync();
+
+            QMessageBox::information(this, "m3uMan", QString("%1 set as sqlite client...").arg(program) );
+        }
+    }
+}
+
+
+void MainWindow::on_actionFTP_Client_triggered()
+{
+    QString program = "FTPClient";
+    QStringList arguments;
+
+    QSettings settings(m_SettingsFile, QSettings::IniFormat);
+    program = settings.value(program).toByteArray();
+
+    QFile exe(program);
+
+    if ( exe.exists() ) {
+
+        arguments << dir.homePath();
+
+        m_Process->setProcessChannelMode(QProcess::MergedChannels);
+        m_Process->start(program, arguments);
+        qDebug() << program << arguments;
+
+    } else {
+
+        program = QFileDialog::getOpenFileName(this, ("Select ftpclient program file"),
+                                                      m_AppDataPath,
+                                                      ("exe program file (*.exe)"));
+
+        if ( ! program.isNull() ) {
+
+            settings.setValue("FTPClient", program);
+            settings.sync();
+
+            QMessageBox::information(this, "m3uMan", QString("%1 set as ftp client...").arg(program) );
+        }
+    }
+}
+
+
+void MainWindow::on_actionEdit_settings_ini_triggered()
+{
+    QString program = "Editor";
+    QStringList arguments;
+
+    QSettings settings(m_SettingsFile, QSettings::IniFormat);
+    program = settings.value(program).toByteArray();
+
+    QFile exe(program);
+
+    if ( exe.exists() ) {
+
+        arguments << m_SettingsFile;
+
+        m_Process->setProcessChannelMode(QProcess::MergedChannels);
+        m_Process->start(program, arguments);
+        qDebug() << program << arguments;
+
+    } else {
+
+        program = QFileDialog::getOpenFileName(this, ("Select editor program file"),
+                                               m_AppDataPath,
+                                               ("exe program file (*.exe)"));
+
+        if ( ! program.isNull() ) {
+
+            settings.setValue("Editor", program);
+            settings.sync();
+
+            QMessageBox::information(this, "m3uMan", QString("%1 set as editor...").arg(program) );
+        }
+    }
+}
+
+void MainWindow::on_actionExplore_application_folder_triggered()
+{
+    QString program = "Explorer";
+    QStringList arguments;
+
+    QSettings settings(m_SettingsFile, QSettings::IniFormat);
+    program = settings.value(program).toByteArray();
+
+    QFile exe(program);
+
+    if ( exe.exists() ) {
+
+#ifdef Q_OS_WIN
+        arguments <<  dir.homePath().replace("/","\\");
+#else
+        arguments <<  dir.homePath();
+#endif
+
+        m_Process->setProcessChannelMode(QProcess::MergedChannels);
+        m_Process->start(program, arguments);
+
+        qDebug() << program << arguments;
+
+    } else {
+
+        program = QFileDialog::getOpenFileName(this, ("Select explorer program file"),
+                                               m_AppDataPath,
+                                               ("exe program file (*.exe)"));
+
+        if ( ! program.isNull() ) {
+
+            settings.setValue("Explorer", program);
+            settings.sync();
+
+            QMessageBox::information(this, "m3uMan", QString("%1 set as explorer...").arg(program) );
+        }
+    }
+}
+
+void MainWindow::on_actionExplorer_storage_folder_triggered()
+{
+    QString program = "Explorer";
+    QStringList arguments;
+
+    QSettings settings(m_SettingsFile, QSettings::IniFormat);
+    program = settings.value(program).toByteArray();
+
+    QFile exe(program);
+
+    if ( exe.exists() ) {
+
+#ifdef Q_OS_WIN
+        arguments <<  m_AppDataPath.replace("/","\\");
+#else
+        arguments <<  m_AppDataPath;
+#endif
+        m_Process->setProcessChannelMode(QProcess::MergedChannels);
+        m_Process->start(program, arguments);
+        qDebug() << program << arguments;
+
+    } else {
+
+        program = QFileDialog::getOpenFileName(this, ("Select explorer program file"),
+                                               m_AppDataPath,
+                                               ("exe program file (*.exe)"));
+
+        if ( ! program.isNull() ) {
+
+            settings.setValue("Explorer", program);
+            settings.sync();
+
+            QMessageBox::information(this, "m3uMan", QString("%1 set as explorer...").arg(program) );
+        }
+    }
+}
+

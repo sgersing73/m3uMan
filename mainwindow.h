@@ -98,7 +98,7 @@ private:
     void addTreeChild(QTreeWidgetItem *parent, const QString &, const QString &, const QString &, const QString &, const QString &, const QString &, const QString& logo);
     void get_media_sub_items( const libvlc_media_t& media );
 
-    void findAllButtons();
+    void FindAndColorAllButtons();
     void MakePlaylist();
 
     QPixmap changeIconColor(QIcon, QColor);
@@ -168,6 +168,18 @@ private slots:
     void on_actionimport_m3u_file_triggered();
     void on_cmdAddToFavorits_clicked();
     void on_chkPlaylistOnlyFavorits_stateChanged(int arg1);
+
+    void on_chkAutoPlay_stateChanged(int arg1);
+
+    void on_actionDB_Browser_triggered();
+
+    void on_actionFTP_Client_triggered();
+
+    void on_actionEdit_settings_ini_triggered();
+
+    void on_actionExplore_application_folder_triggered();
+
+    void on_actionExplorer_storage_folder_triggered();
 
 private:
     QString         curFile;
