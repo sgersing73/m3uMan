@@ -15,7 +15,6 @@ FileDownloader::FileDownloader(QUrl imageUrl, QObject *parent) : QObject(parent)
 }
 
 FileDownloader::~FileDownloader() {
-
 }
 
 void FileDownloader::updateDownloadProgress(qint64 bytesRead, qint64 totalBytes)

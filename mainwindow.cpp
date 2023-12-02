@@ -1696,7 +1696,7 @@ void MainWindow::serviceRequestFinished(QNetworkReply* reply)
         statusBar()->showMessage(tr("Netzwerk-Fehler auf themoviedb.org Zugriff..."));
     }
 
-    delete reply;
+   // delete reply;
 }
 
 void MainWindow::displayMovieInfo(int extinf_id, QString moviedata, bool storedata)
@@ -1927,6 +1927,8 @@ void MainWindow::on_chkAutoPlay_stateChanged(int arg1)
     QSettings settings(m_SettingsFile, QSettings::IniFormat);
     settings.setValue("AutoPlay", arg1);
     settings.sync();
+
+    this->fillComboPlaylists();
 }
 
 void MainWindow::on_actionDB_Browser_triggered()
