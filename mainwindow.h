@@ -181,6 +181,8 @@ private slots:
 
     void on_actionExplorer_storage_folder_triggered();
 
+    void on_cboEPGChannels_currentTextChanged(const QString &arg1);
+
 private:
     QString         curFile;
     QDir            dir;

@@ -66,6 +66,7 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->chkPlaylistOnlyFavorits->setCheckState( Qt::Checked );
     } else {
         ui->chkPlaylistOnlyFavorits->setCheckState( Qt::Unchecked );
+        this->fillComboPlaylists();
     }
 
     if ( settings.value("AutoPlay").toInt() == Qt::Checked ) {
@@ -1179,7 +1180,12 @@ void MainWindow::on_twPLS_Items_itemSelectionChanged()
 
         delete select;
 
-        ui->cboEPGChannels->setCurrentText(tvg_id);
+        if ( tvg_id.isEmpty() ) {
+            ui->cboEPGChannels->setCurrentText(" ");
+        } else {
+            ui->cboEPGChannels->setCurrentText(tvg_id);
+        }
+
         ui->edtStationUrl->setText(url);
         ui->edtStationName->setText(title);
 
@@ -1854,7 +1860,6 @@ void MainWindow::on_actionselect_application_font_triggered()
         settings.setValue("fontbold", font.bold());
         settings.setValue("fontitalic", font.italic());
         settings.sync();
-
     }
 }
 
@@ -1896,7 +1901,6 @@ void MainWindow::on_actionimport_m3u_file_triggered()
 
 void MainWindow::on_cmdAddToFavorits_clicked()
 {
-
     const int pls_id = ui->cboPlaylists->itemData(ui->cboPlaylists->currentIndex()).toString().toInt();
 
     QMessageBox msgBox;
@@ -1927,8 +1931,6 @@ void MainWindow::on_chkAutoPlay_stateChanged(int arg1)
     QSettings settings(m_SettingsFile, QSettings::IniFormat);
     settings.setValue("AutoPlay", arg1);
     settings.sync();
-
-    this->fillComboPlaylists();
 }
 
 void MainWindow::on_actionDB_Browser_triggered()
@@ -2108,6 +2110,19 @@ void MainWindow::on_actionExplorer_storage_folder_triggered()
 
             QMessageBox::information(this, "m3uMan", QString("%1 set as explorer...").arg(program) );
         }
+    }
+}
+
+
+void MainWindow::on_cboEPGChannels_currentTextChanged(const QString &arg1)
+{
+    QTreeWidgetItem* item = ui->twPLS_Items->currentItem();
+
+    if ( item != nullptr ) {
+
+        int extinf_id = item->data(1,1).toInt();
+
+        db.updateEXTINF_tvg_id_byRef(extinf_id, arg1);
     }
 }
 

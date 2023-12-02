@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>897</width>
-    <height>661</height>
+    <width>929</width>
+    <height>782</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -806,7 +806,14 @@
           <layout class="QHBoxLayout" name="horizontalLayout_3"/>
          </item>
          <item>
-          <widget class="QTextEdit" name="edtOutput"/>
+          <widget class="QTextEdit" name="edtOutput">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
          </item>
         </layout>
        </widget>
@@ -820,8 +827,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>897</width>
-     <height>22</height>
+     <width>929</width>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuSettings">
