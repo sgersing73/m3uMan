@@ -2,6 +2,8 @@
 #include "ui_mainwindow.h"
 #include <qstyle.h>
 #include <qpainter.h>
+#include <QRect>
+#include <QPoint>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -921,16 +923,6 @@ void MainWindow::fillTwPls_Item()
     ui->cmdMoveUp->setEnabled( added );
     ui->cmdMoveDown->setEnabled( added );
     ui->edtStationUrl->setText("");
-
-/*
-    buttonImage = QPixmap(":/images/template.png");
-
-    topImage = QPixmap("C:/Users/Developer/Downloads/62fb8958ce481.svg");
-    QPainter painter(&buttonImage);
-    painter.drawPixmap(10, 10, buttonImage.width()-20, buttonImage.height()-20, topImage);
-
-    ui->lblLogo->setPixmap(buttonImage.scaled(100,100,Qt::KeepAspectRatio, Qt::SmoothTransformation));
-*/
 }
 
 void MainWindow::on_cboPlaylists_currentTextChanged(const QString &arg1)
@@ -1102,6 +1094,8 @@ void MainWindow::SaveM3u()
 
 void MainWindow::SaveXML()
 {
+    qDebug() << "test";
+
     const QDateTime now = QDateTime::currentDateTime();
     const QString timestamp = now.toString(QLatin1String("yyyyMMddhhmmss"));
 
@@ -1152,6 +1146,7 @@ void MainWindow::on_twPLS_Items_itemSelectionChanged()
     QString   desc;
     QString   tmdb_id;
     QPixmap   buttonImage;
+    QPixmap   backImage;
 
     QList<QTreeWidgetItem*>items = ui->twPLS_Items->selectedItems();
 
@@ -1247,13 +1242,25 @@ void MainWindow::on_twPLS_Items_itemSelectionChanged()
                     buttonImage.loadFromData(file.readAll());
                     file.close();
 
-                    ui->lblLogo->setPixmap(buttonImage.scaledToWidth(ui->lblLogo->maximumWidth()));
+                    if ( logo.contains( "lo1.in" ) ) {
+
+                        ui->lblLogo->setPixmap(buttonImage.scaled(ui->lblLogo->maximumWidth(),ui->lblLogo->maximumHeight(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
+
+                    } else {
+
+                        backImage = QPixmap(":/images/template.png");
+
+                        QPainter painter(&backImage);
+                        painter.drawPixmap(10, 10, backImage.width()-20, backImage.height()-20, buttonImage);
+
+                        ui->lblLogo->setPixmap(backImage.scaled(ui->lblLogo->maximumWidth(),ui->lblLogo->maximumHeight(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
+                    }
                 }
             }
 
         } else {
             const QPixmap buttonImage (":/images/iptv.png");
-            ui->lblLogo->setPixmap(buttonImage.scaledToWidth(ui->lblLogo->maximumWidth()));
+            ui->lblLogo->setPixmap(buttonImage.scaled(ui->lblLogo->maximumWidth(),ui->lblLogo->maximumHeight(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
         }
 
         ui->lvStations->setCurrentRow( ui->twPLS_Items->indexOfTopLevelItem( mitem ) );        
@@ -1305,7 +1312,7 @@ void MainWindow::loadImage()
         buttonImage.loadFromData(file.readAll());
         file.close();
 
-        ui->lblLogo->setPixmap(buttonImage.scaledToWidth(ui->lblLogo->maximumWidth()));
+        ui->lblLogo->setPixmap(buttonImage.scaledToWidth(ui->lblLogo->width()));
 
         item = ui->lvStations->currentItem();
         item->setData(Qt::DecorationRole, buttonImage.scaled(50,50,Qt::KeepAspectRatio, Qt::SmoothTransformation));
@@ -1885,10 +1892,25 @@ void MainWindow::on_cmdImdb_clicked()
 
 void MainWindow::on_cmdPlayExtern_clicked()
 {
+    // xdotool search --name http key --window %1 0xff52
+
     QString program = "ffplay";
     QStringList arguments;
 
-    arguments << "-x" << "640" << "-y" << "480" << "-loglevel" << "warning" << "-nostats" << ui->edtStationUrl->text();
+    QRect test = ui->widVideo->geometry();
+
+    QPoint topLeft = ui->widVideo->mapToGlobal(test.topLeft());
+    QPoint bottomRight = ui->widVideo->mapToGlobal(test.bottomRight());
+
+    arguments << "-alwaysontop"
+              << "-noborder"
+              << "-top" << QString("%1").arg(topLeft.y())
+              << "-left" << QString("%1").arg(topLeft.x())
+              << "-x" << QString("%1").arg(bottomRight.x() - topLeft.x())
+              << "-y" << QString("%1").arg(bottomRight.y() - topLeft.y())
+              << "-loglevel" << "warning"
+              << "-nostats"
+              << ui->edtStationUrl->text();
 
     m_Process->setProcessChannelMode(QProcess::MergedChannels);
     m_Process->start(program, arguments);
