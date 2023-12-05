@@ -1,9 +1,5 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include <qstyle.h>
-#include <qpainter.h>
-#include <QRect>
-#include <QPoint>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -850,6 +846,7 @@ void MainWindow::fillTwPls_Item()
     bool    added = false;
     QFile   file;
     QPixmap buttonImage, topImage;
+    QAction *action;
 
     int pls_id = ui->cboPlaylists->itemData(ui->cboPlaylists->currentIndex()).toString().toInt();
 
@@ -863,8 +860,7 @@ void MainWindow::fillTwPls_Item()
     for(int i = 0; i < 3; i++)
         ui->twPLS_Items->header()->setSectionResizeMode(i, QHeaderView::ResizeToContents);
 
-    ui->lvStations->clear();
-    ui->lvStations->setFlow(QListView::Flow::LeftToRight);
+    ui->mainToolBar->clear();
 
     select = db.selectPLS_Items(pls_id);
     while ( select->next() ) {
@@ -906,14 +902,11 @@ void MainWindow::fillTwPls_Item()
             }
         }
 
-        QListWidgetItem* item = new QListWidgetItem(buttonImage, "");
+        // ----------------------------------------------------
 
-        item->setData(Qt::UserRole, url);
-        item->setData(Qt::UserRole+1, tvg_id);
-        item->setData(Qt::DecorationRole, buttonImage.scaled(50,50,Qt::KeepAspectRatio, Qt::SmoothTransformation));
-        item->setToolTip(tvg_name);
-
-        ui->lvStations->addItem(item);
+        action = new QAction(QIcon(buttonImage), tvg_name);
+        action->setData(select->at());
+        ui->mainToolBar->addAction(action);
 
         added = true;
     }
@@ -1262,8 +1255,6 @@ void MainWindow::on_twPLS_Items_itemSelectionChanged()
             const QPixmap buttonImage (":/images/iptv.png");
             ui->lblLogo->setPixmap(buttonImage.scaled(ui->lblLogo->maximumWidth(),ui->lblLogo->maximumHeight(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
         }
-
-        ui->lvStations->setCurrentRow( ui->twPLS_Items->indexOfTopLevelItem( mitem ) );        
     }
 }
 
@@ -1288,9 +1279,6 @@ void MainWindow::processFinished()
 
 void MainWindow::loadImage()
 {
-    QListWidgetItem *item;
-
-    QPixmap buttonImage;
     dir.mkpath(m_AppDataPath + "/logos/");
 
     QString filename = m_AppDataPath + "/logos/" + m_pImgCtrl->filename();
@@ -1303,22 +1291,6 @@ void MainWindow::loadImage()
         QTextStream out(&file);
         file.write(m_pImgCtrl->downloadedData());
         file.close();
-    }
-
-    if ( file.exists() && file.size() > 0 ) {
-
-        file.open(QIODevice::ReadOnly);
-        QTextStream in(&file);
-        buttonImage.loadFromData(file.readAll());
-        file.close();
-
-        ui->lblLogo->setPixmap(buttonImage.scaledToWidth(ui->lblLogo->width()));
-
-        item = ui->lvStations->currentItem();
-        item->setData(Qt::DecorationRole, buttonImage.scaled(50,50,Qt::KeepAspectRatio, Qt::SmoothTransformation));
-
-    } else {
-        ui->lblLogo->setText("no data!");
     }
 }
 
@@ -1337,17 +1309,6 @@ void MainWindow::on_edtStationUrl_textChanged(const QString &arg1)
      ui->cmdGatherData->setEnabled(arg1.trimmed().length() > 0);
      ui->cmdPlayExtern->setEnabled(arg1.trimmed().length() > 0);
      ui->cmdPlayStream->setEnabled(arg1.trimmed().length() > 0);
-}
-
-void MainWindow::on_lvStations_itemClicked(QListWidgetItem *item)
-{
-    QVariant url      =  item->data(Qt::UserRole);
-    QVariant tvg_id   =  item->data(Qt::UserRole+1); // zdf.de
-
-    ui->twPLS_Items->clearSelection();
-    ui->twPLS_Items->topLevelItem( ui->lvStations->currentRow() )->setSelected(true);
-
-    ui->twPLS_Items->scrollToItem( ui->twPLS_Items->selectedItems().at(0) );
 }
 
 void MainWindow::on_cmdSavePosition_clicked()
@@ -2148,3 +2109,13 @@ void MainWindow::on_cboEPGChannels_currentTextChanged(const QString &arg1)
     }
 }
 
+void MainWindow::on_mainToolBar_actionTriggered(QAction *action)
+{
+    qDebug() << action->text() << action->data() << "triggert";
+
+    ui->twPLS_Items->clearSelection();
+    ui->twPLS_Items->topLevelItem( action->data().toInt() )->setSelected(true);
+
+    ui->twPLS_Items->scrollToItem( ui->twPLS_Items->selectedItems().at(0) );
+
+}

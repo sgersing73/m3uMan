@@ -33,6 +33,10 @@
 #include <QProgressBar>
 #include <QPushButton>
 #include <QFontDialog>
+#include <QStyle>
+#include <QPainter>
+#include <QRect>
+#include <QPoint>
 
 #ifdef Q_OS_WIN
 #include <QWinTaskbarButton>
@@ -121,7 +125,6 @@ private slots:
     void on_twPLS_Items_itemSelectionChanged();
     void on_cmdPlayStream_clicked();
     void on_edtStationUrl_textChanged(const QString &arg1);
-    void on_lvStations_itemClicked(QListWidgetItem *item);
 
     void readyReadStandardOutput();
     void processStarted();
@@ -172,16 +175,14 @@ private slots:
     void on_chkAutoPlay_stateChanged(int arg1);
 
     void on_actionDB_Browser_triggered();
-
     void on_actionFTP_Client_triggered();
-
     void on_actionEdit_settings_ini_triggered();
-
     void on_actionExplore_application_folder_triggered();
-
     void on_actionExplorer_storage_folder_triggered();
 
     void on_cboEPGChannels_currentTextChanged(const QString &arg1);
+
+    void on_mainToolBar_actionTriggered(QAction *);
 
 private:
     QString         curFile;
