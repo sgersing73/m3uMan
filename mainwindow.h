@@ -137,7 +137,8 @@ private slots:
     void ShowDownloadProgress();
     void serviceRequestFinished(QNetworkReply*);
 
-    void ShowContextMenu( const QPoint & );
+    void ShowContextMenuTreeWidget( const QPoint & );
+    void ShowContextMenuPlsItems( const QPoint & );
 
     void on_cmdSavePosition_clicked();
     void on_treeWidget_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);

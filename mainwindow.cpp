@@ -100,7 +100,14 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
 
     connect(ui->treeWidget, SIGNAL(customContextMenuRequested(const QPoint&)),
-            this, SLOT(ShowContextMenu(const QPoint&)));
+            this, SLOT(ShowContextMenuTreeWidget(const QPoint&)));
+
+
+
+    ui->twPLS_Items->setContextMenuPolicy(Qt::CustomContextMenu);
+
+    connect(ui->twPLS_Items, SIGNAL(customContextMenuRequested(const QPoint&)),
+            this, SLOT(ShowContextMenuPlsItems(const QPoint&)));
 
     createActions();
     createStatusBar();
@@ -150,7 +157,45 @@ void MainWindow::isBuffering(int buffer) {
     ui->pgbBuffer->setValue(buffer);
 }
 
-void MainWindow::ShowContextMenu( const QPoint & pos )
+
+void MainWindow::ShowContextMenuPlsItems( const QPoint & pos )
+{
+    QTreeWidgetItem *item = ui->twPLS_Items->itemAt(pos);
+    if (!item)
+       return;
+
+    QPoint globalPos = ui->twPLS_Items->mapToGlobal(pos);
+
+    QMenu myMenu;
+    myMenu.addAction("add to favorites");
+    myMenu.addAction("remove from favorites");
+    // ...
+
+    QAction* selectedItem = myMenu.exec(globalPos);
+    if (selectedItem)
+    {
+        if ( selectedItem->text().contains("add to favorites") ) {
+            if ( db.updatePLS_item_favorite ( item->data(0, 1).toInt(), 1) ) {
+                qDebug() << "add";
+            }
+        }
+        if ( selectedItem->text().contains("remove from favorites") ) {
+            if ( db.updatePLS_item_favorite ( item->data(0, 1).toInt(), 0) ) {
+                qDebug() << "removed";
+            }
+        }
+
+        this->fillTwPls_Item();
+    }
+    else
+    {
+        // nothing was chosen
+    }
+}
+
+
+
+void MainWindow::ShowContextMenuTreeWidget( const QPoint & pos )
 {
     QTreeWidgetItem *item = ui->treeWidget->itemAt(pos);
     if (!item)
@@ -725,7 +770,7 @@ void MainWindow::fillComboPlaylists()
     select = db.selectPLS(favorite);
     while ( select->next() ) {
 
-        id = select->value(0).toByteArray().constData();
+        id = select->value(0).toByteArray().constData();        
         title = select->value(1).toByteArray().constData();
 
         ui->cboPlaylists->addItem(title, id);
@@ -847,6 +892,7 @@ void MainWindow::fillTwPls_Item()
     QFile   file;
     QPixmap buttonImage, topImage;
     QAction *action;
+    int     favorite;
 
     int pls_id = ui->cboPlaylists->itemData(ui->cboPlaylists->currentIndex()).toString().toInt();
 
@@ -868,10 +914,11 @@ void MainWindow::fillTwPls_Item()
         id = select->value(0).toByteArray().constData();
         extinf_id = select->value(2).toByteArray().constData();
         pls_pos = select->value(3).toByteArray().constData();
-        logo = select->value(9).toByteArray().constData();
-        tvg_name = select->value(6).toByteArray().constData();
-        tvg_id = select->value(7).toByteArray().constData();
-        url = select->value(10).toByteArray().constData();
+        favorite = select->value(5).toByteArray().toInt();
+        logo = select->value(10).toByteArray().constData();
+        tvg_name = select->value(7).toByteArray().constData();
+        tvg_id = select->value(8).toByteArray().constData();
+        url = select->value(11).toByteArray().constData();
 
         QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui->twPLS_Items);
 
@@ -896,7 +943,22 @@ void MainWindow::fillTwPls_Item()
 
                 buttonImage.loadFromData(file.readAll());
 
-                file.close();
+                file.close();                
+
+                if ( logo.contains( "lo1.in" ) ) {
+
+                    buttonImage = buttonImage.scaled(ui->lblLogo->maximumWidth(),ui->lblLogo->maximumHeight(),Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
+                } else {
+
+                    QPixmap backImage = QPixmap(":/images/template.png");
+
+                    QPainter painter(&backImage);
+                    painter.drawPixmap(10, 10, backImage.width()-20, backImage.height()-20, buttonImage);
+
+                    buttonImage = backImage.scaled(ui->lblLogo->maximumWidth(),ui->lblLogo->maximumHeight(),Qt::KeepAspectRatio, Qt::SmoothTransformation);
+                }
+
             } else {
                 buttonImage = QPixmap(":/images/iptv.png");
             }
@@ -904,9 +966,12 @@ void MainWindow::fillTwPls_Item()
 
         // ----------------------------------------------------
 
-        action = new QAction(QIcon(buttonImage), tvg_name);
-        action->setData(select->at());
-        ui->mainToolBar->addAction(action);
+        if ( favorite == 1 ) {
+            action = new QAction(QIcon(buttonImage), tvg_name);
+            qDebug() << select->at();
+            action->setData(select->at());
+            ui->mainToolBar->addAction(action);
+        }
 
         added = true;
     }
@@ -2111,11 +2176,8 @@ void MainWindow::on_cboEPGChannels_currentTextChanged(const QString &arg1)
 
 void MainWindow::on_mainToolBar_actionTriggered(QAction *action)
 {
-    qDebug() << action->text() << action->data() << "triggert";
-
     ui->twPLS_Items->clearSelection();
+
     ui->twPLS_Items->topLevelItem( action->data().toInt() )->setSelected(true);
-
     ui->twPLS_Items->scrollToItem( ui->twPLS_Items->selectedItems().at(0) );
-
 }
