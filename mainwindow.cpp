@@ -175,12 +175,12 @@ void MainWindow::ShowContextMenuPlsItems( const QPoint & pos )
     if (selectedItem)
     {
         if ( selectedItem->text().contains("add to favorites") ) {
-            if ( db.updatePLS_item_favorite ( item->data(0, 1).toInt(), 1) ) {
+            if ( db.updatePLS_item_favorite ( item->data(0, Qt::UserRole).toInt(), 1) ) {
                 qDebug() << "add";
             }
         }
         if ( selectedItem->text().contains("remove from favorites") ) {
-            if ( db.updatePLS_item_favorite ( item->data(0, 1).toInt(), 0) ) {
+            if ( db.updatePLS_item_favorite ( item->data(0, Qt::UserRole).toInt(), 0) ) {
                 qDebug() << "removed";
             }
         }
@@ -893,17 +893,18 @@ void MainWindow::fillTwPls_Item()
     QPixmap buttonImage, topImage;
     QAction *action;
     int     favorite;
+    QString program;
 
     int pls_id = ui->cboPlaylists->itemData(ui->cboPlaylists->currentIndex()).toString().toInt();
 
     // Add root nodes
-    QSqlQuery *select = nullptr;
+    QSqlQuery *select, *select2 = nullptr;
 
     ui->twPLS_Items->clear();
-    ui->twPLS_Items->setColumnCount(3);
-    ui->twPLS_Items->setHeaderLabels(QStringList() << "Place" << "Stations"  << "EPG");
+    ui->twPLS_Items->setColumnCount(4);
+    ui->twPLS_Items->setHeaderLabels(QStringList() << "Place" << "Stations"  << "EPG" << "Program" );
 
-    for(int i = 0; i < 3; i++)
+    for(int i = 0; i < 4 ; i++)
         ui->twPLS_Items->header()->setSectionResizeMode(i, QHeaderView::ResizeToContents);
 
     ui->mainToolBar->clear();
@@ -920,14 +921,23 @@ void MainWindow::fillTwPls_Item()
         tvg_id = select->value(8).toByteArray().constData();
         url = select->value(11).toByteArray().constData();
 
+        program.clear();
+        select2 = db.selectProgramData(tvg_id);
+        while ( select2->next() ) {
+            program = select2->value(4).toByteArray().constData();
+        }
+
+        delete select2;
+
         QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui->twPLS_Items);
 
         treeItem->setText(0, QString("%1").arg(pls_pos.toInt() + 1) );
         treeItem->setText(1, tvg_name);
         treeItem->setText(2, tvg_id);
+        treeItem->setText(3, program);
 
-        treeItem->setData(0, 1, id);
-        treeItem->setData(1, 1, extinf_id);
+        treeItem->setData(0, Qt::UserRole, id);
+        treeItem->setData(0, Qt::UserRole+1, extinf_id);
         treeItem->setStatusTip(0, tr("double click to remove the station"));
 
         if ( QUrl(logo).fileName().trimmed().isEmpty() ) {
@@ -962,13 +972,14 @@ void MainWindow::fillTwPls_Item()
             } else {
                 buttonImage = QPixmap(":/images/iptv.png");
             }
+
+            treeItem->setIcon(0, QIcon(buttonImage.scaled(16,16,Qt::KeepAspectRatio, Qt::SmoothTransformation)) );
         }
 
         // ----------------------------------------------------
 
         if ( favorite == 1 ) {
             action = new QAction(QIcon(buttonImage), tvg_name);
-            qDebug() << select->at();
             action->setData(select->at());
             ui->mainToolBar->addAction(action);
         }
@@ -993,7 +1004,7 @@ void MainWindow::on_cboPlaylists_currentTextChanged(const QString &arg1)
 
 void MainWindow::on_twPLS_Items_itemDoubleClicked(QTreeWidgetItem *item, int column)
 {
-    db.removePLS_Item( item->data(0, 1).toInt() );
+    db.removePLS_Item( item->data(0, Qt::UserRole).toInt() );
 
     fillTwPls_Item();
 }
@@ -1061,7 +1072,7 @@ void MainWindow::MakePlaylist()
     for(int i=0;i<ui->twPLS_Items->topLevelItemCount();++i) {
 
         item = ui->twPLS_Items->topLevelItem(i);
-        extinf_id = item->data(1, 1).toInt();
+        extinf_id = item->data(0, Qt::UserRole+1).toInt();
 
         select = db.selectEXTINF_byRef(extinf_id);
         while ( select->next() ) {
@@ -1210,7 +1221,7 @@ void MainWindow::on_twPLS_Items_itemSelectionChanged()
 
     foreach( QTreeWidgetItem* mitem, items) {
 
-        int extinf_id = mitem->data(1,1).toInt();
+        int extinf_id = mitem->data(0, Qt::UserRole+1).toInt();
 
         select = db.selectEXTINF_byRef(extinf_id);
         while ( select->next() ) {
@@ -1247,8 +1258,6 @@ void MainWindow::on_twPLS_Items_itemSelectionChanged()
         if ( m_actualTitle.contains("|") ) {
             m_actualTitle = m_actualTitle.mid(4);
         }
-
-        setWindowTitle(m_actualTitle);
 
         if ( url.contains("mkv") || url.contains("mp4") ) {
 
@@ -1364,6 +1373,8 @@ void MainWindow::on_cmdPlayStream_clicked()
     if (ui->edtStationUrl->text().isEmpty())
         return;
 
+    setWindowTitle(m_actualTitle);
+
     _media = new VlcMedia(ui->edtStationUrl->text(), _instance);
 
     _player->open(_media);
@@ -1382,7 +1393,7 @@ void MainWindow::on_cmdSavePosition_clicked()
 
     if ( item != nullptr ) {
 
-        int extinf_id = item->data(1,1).toInt();
+        int extinf_id = item->data(0, Qt::UserRole+1).toInt();
 
         db.updateEXTINF_tvg_id_byRef(extinf_id, ui->cboEPGChannels->currentText());
         db.updateEXTINF_url_byRef(extinf_id, ui->edtStationUrl->text());
@@ -1392,7 +1403,7 @@ void MainWindow::on_cmdSavePosition_clicked()
 
         item = ui->twPLS_Items->topLevelItem(i);
 
-        db.updatePLS_item_pls_pos(item->data(0, 1).toInt() , i );
+        db.updatePLS_item_pls_pos(item->data(0, Qt::UserRole).toInt(), i );
     }
 
     fillTwPls_Item();
