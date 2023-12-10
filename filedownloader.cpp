@@ -2,20 +2,18 @@
 
 FileDownloader::FileDownloader(QUrl imageUrl, QObject *parent) : QObject(parent)
 {
-    connect( &m_WebCtrl, SIGNAL(finished(QNetworkReply*)), this, SLOT (fileDownloaded(QNetworkReply*)));
+    m_sFilename = imageUrl.fileName();
 
     QNetworkRequest request(imageUrl);
     request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
 
+    connect(&m_WebCtrl, SIGNAL(finished(QNetworkReply*)), this, SLOT (fileDownloaded(QNetworkReply*)));
     QNetworkReply* reply = m_WebCtrl.get(request);
 
     connect(reply, SIGNAL(downloadProgress(qint64, qint64)), SLOT(updateDownloadProgress(qint64, qint64)));
-
-    m_sFilename = imageUrl.fileName();
 }
 
 FileDownloader::~FileDownloader() {
-
 }
 
 void FileDownloader::updateDownloadProgress(qint64 bytesRead, qint64 totalBytes)
@@ -36,7 +34,6 @@ void FileDownloader::fileDownloaded(QNetworkReply* pReply) {
 
     m_DownloadedData = pReply->readAll();
 
-    //emit a signal
     pReply->deleteLater();
     emit downloaded();
 }

@@ -1,7 +1,5 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include <qstyle.h>
-#include <qpainter.h>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -15,6 +13,16 @@ MainWindow::MainWindow(QWidget *parent) :
     dir.mkpath(m_AppDataPath);
 
     m_SettingsFile = m_AppDataPath + "/settings.ini";
+
+    db.open(m_AppDataPath + "/m3uMan.sqlite");
+
+    if (db.isOpen()) {
+        if ( ! db.createTable() ) {
+            qApp->exit();
+        }
+    } else {
+        qDebug() << "Database is not open!";
+    }
 
     _instance = new VlcInstance(VlcCommon::args(), this);
 
@@ -40,7 +48,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(_player, SIGNAL(buffering(int)), this, SLOT(isBuffering(int)));
     connect(_player, SIGNAL(error()), this, SLOT(showVlcError()));
 
-    this->findAllButtons();
+    this->FindAndColorAllButtons();
 
     QSettings settings(m_SettingsFile, QSettings::IniFormat);
     restoreGeometry(settings.value("geometry").toByteArray());
@@ -51,6 +59,21 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->splitter_4->restoreState(settings.value("splitter_4").toByteArray());
     ui->edtUrl->setText(settings.value("iptvurl").toByteArray());
     ui->edtUrlEpg->setText(settings.value("iptvepgurl").toByteArray());
+
+
+    if ( settings.value("PlaylistOnlyFavorits").toInt() == Qt::Checked ) {
+        ui->chkPlaylistOnlyFavorits->setCheckState( Qt::Checked );
+    } else {
+        ui->chkPlaylistOnlyFavorits->setCheckState( Qt::Unchecked );
+        this->fillComboPlaylists();
+    }
+
+    if ( settings.value("AutoPlay").toInt() == Qt::Checked ) {
+        ui->chkAutoPlay->setCheckState( Qt::Checked );
+    } else {
+        ui->chkAutoPlay->setCheckState( Qt::Unchecked );
+    }
+
     ui->cmdImdb->setEnabled(false);
 
     if ( ! settings.value("stylsheet").toByteArray().isEmpty() ) {
@@ -78,31 +101,34 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
 
     connect(ui->treeWidget, SIGNAL(customContextMenuRequested(const QPoint&)),
-            this, SLOT(ShowContextMenu(const QPoint&)));
+            this, SLOT(ShowContextMenuTreeWidget(const QPoint&)));
+
+    ui->twPLS_Items->setContextMenuPolicy(Qt::CustomContextMenu);
+
+    connect(ui->twPLS_Items, SIGNAL(customContextMenuRequested(const QPoint&)),
+            this, SLOT(ShowContextMenuPlsItems(const QPoint&)));
 
     createActions();
     createStatusBar();
 
-    db.open(m_AppDataPath + "/m3uMan.sqlite");
-
-    if (db.isOpen()) {
-        if ( ! db.createTable() ) {
-             qApp->exit();
-        }
-     } else {
-        qDebug() << "Database is not open!";
-     }
-
-    fillComboPlaylists();
     fillComboGroupTitels();
     fillComboEPGChannels();
     fillTreeWidget();
+
+    ui->cboPlaylists->setCurrentText(settings.value("CurrentPlaylist").toByteArray());
 
     m_Process = new QProcess(this);
 
     connect(m_Process, SIGNAL(started()), this, SLOT(processStarted()));
     connect(m_Process, SIGNAL(readyReadStandardOutput()),this,SLOT(readyReadStandardOutput()));
     connect(m_Process, SIGNAL(finished(int)), this, SLOT(processFinished()));
+
+    m_Process2 = new QProcess(this);
+
+    connect(m_Process2, SIGNAL(started()), this, SLOT(processStarted()));
+    connect(m_Process2, SIGNAL(readyReadStandardOutput()),this,SLOT(readyReadStandardOutputJson()));
+    connect(m_Process2, SIGNAL(finished(int)), this, SLOT(processFinished()));
+
 
 #ifdef Q_OS_WIN
     taskbarButton = new QWinTaskbarButton(this);
@@ -124,23 +150,60 @@ void MainWindow::showEvent(QShowEvent *e)
 
 void MainWindow::isPlaying() {
 
+    ui->cmdPlayStream->setEnabled( false );
     qDebug() << "VLC is playing...";
 }
 
 void MainWindow::isStopped() {
 
-    qDebug() << "VLC is stopped...";
+    ui->cmdPlayStream->setEnabled( true );
     ui->pgbBuffer->setValue(0);
 }
 
 void MainWindow::isBuffering(int buffer) {
 
-    //qDebug() << "VLC is buffering..." << buffer;
-
     ui->pgbBuffer->setValue(buffer);
 }
 
-void MainWindow::ShowContextMenu( const QPoint & pos )
+
+void MainWindow::ShowContextMenuPlsItems( const QPoint & pos )
+{
+    QTreeWidgetItem *item = ui->twPLS_Items->itemAt(pos);
+    if (!item)
+       return;
+
+    QPoint globalPos = ui->twPLS_Items->mapToGlobal(pos);
+
+    QMenu myMenu;
+    myMenu.addAction("add to favorites");
+    myMenu.addAction("remove from favorites");
+    // ...
+
+    QAction* selectedItem = myMenu.exec(globalPos);
+    if (selectedItem)
+    {
+        if ( selectedItem->text().contains("add to favorites") ) {
+            if ( db.updatePLS_item_favorite ( item->data(0, Qt::UserRole).toInt(), 1) ) {
+                qDebug() << "add";
+            }
+        }
+        if ( selectedItem->text().contains("remove from favorites") ) {
+            if ( db.updatePLS_item_favorite ( item->data(0, Qt::UserRole).toInt(), 0) ) {
+                qDebug() << "removed";
+            }
+        }
+
+        this->fillTwPls_Item();
+    }
+    else
+    {
+        // nothing was chosen
+    }
+}
+
+
+
+void MainWindow::ShowContextMenuTreeWidget( const QPoint & pos )
 {
     QTreeWidgetItem *item = ui->treeWidget->itemAt(pos);
     if (!item)
@@ -217,6 +280,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     settings.setValue("splitter_4",ui->splitter_4->saveState());
     settings.setValue("iptvurl", ui->edtUrl->text());
     settings.setValue("iptvepgurl", ui->edtUrlEpg->text());
+    settings.setValue("CurrentPlaylist", ui->cboPlaylists->currentText());
     settings.sync();
 
     _player->stop();
@@ -704,7 +768,7 @@ void MainWindow::fillComboPlaylists()
     QSqlQuery *select = nullptr;
     QString title;
     QString id;
-    int      favorite = 0;
+    int     favorite = 0;
 
     ui->cboPlaylists->clear();
 
@@ -715,7 +779,7 @@ void MainWindow::fillComboPlaylists()
     select = db.selectPLS(favorite);
     while ( select->next() ) {
 
-        id = select->value(0).toByteArray().constData();
+        id = select->value(0).toByteArray().constData();        
         title = select->value(1).toByteArray().constData();
 
         ui->cboPlaylists->addItem(title, id);
@@ -836,21 +900,23 @@ void MainWindow::fillTwPls_Item()
     bool    added = false;
     QFile   file;
     QPixmap buttonImage, topImage;
+    QAction *action;
+    int     favorite;
+    QString program;
 
     int pls_id = ui->cboPlaylists->itemData(ui->cboPlaylists->currentIndex()).toString().toInt();
 
     // Add root nodes
-    QSqlQuery *select = nullptr;
+    QSqlQuery *select, *select2 = nullptr;
 
     ui->twPLS_Items->clear();
-    ui->twPLS_Items->setColumnCount(3);
-    ui->twPLS_Items->setHeaderLabels(QStringList() << "Place" << "Stations"  << "EPG");
+    ui->twPLS_Items->setColumnCount(4);
+    ui->twPLS_Items->setHeaderLabels(QStringList() << "Place" << "Stations"  << "EPG" << "Program" );
 
-    for(int i = 0; i < 3; i++)
+    for(int i = 0; i < 4 ; i++)
         ui->twPLS_Items->header()->setSectionResizeMode(i, QHeaderView::ResizeToContents);
 
-    ui->lvStations->clear();
-    ui->lvStations->setFlow(QListView::Flow::LeftToRight);
+    ui->mainToolBar->clear();
 
     select = db.selectPLS_Items(pls_id);
     while ( select->next() ) {
@@ -858,19 +924,29 @@ void MainWindow::fillTwPls_Item()
         id = select->value(0).toByteArray().constData();
         extinf_id = select->value(2).toByteArray().constData();
         pls_pos = select->value(3).toByteArray().constData();
-        logo = select->value(9).toByteArray().constData();
-        tvg_name = select->value(6).toByteArray().constData();
-        tvg_id = select->value(7).toByteArray().constData();
-        url = select->value(10).toByteArray().constData();
+        favorite = select->value(5).toByteArray().toInt();
+        logo = select->value(10).toByteArray().constData();
+        tvg_name = select->value(7).toByteArray().constData();
+        tvg_id = select->value(8).toByteArray().constData();
+        url = select->value(11).toByteArray().constData();
+
+        program.clear();
+        select2 = db.selectProgramData(tvg_id);
+        while ( select2->next() ) {
+            program = select2->value(4).toByteArray().constData();
+        }
+
+        delete select2;
 
         QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui->twPLS_Items);
 
         treeItem->setText(0, QString("%1").arg(pls_pos.toInt() + 1) );
         treeItem->setText(1, tvg_name);
         treeItem->setText(2, tvg_id);
+        treeItem->setText(3, program);
 
-        treeItem->setData(0, 1, id);
-        treeItem->setData(1, 1, extinf_id);
+        treeItem->setData(0, Qt::UserRole, id);
+        treeItem->setData(0, Qt::UserRole+1, extinf_id);
         treeItem->setStatusTip(0, tr("double click to remove the station"));
 
         if ( QUrl(logo).fileName().trimmed().isEmpty() ) {
@@ -886,20 +962,36 @@ void MainWindow::fillTwPls_Item()
 
                 buttonImage.loadFromData(file.readAll());
 
-                file.close();
+                file.close();                
+
+                if ( logo.contains( "lo1.in" ) ) {
+
+                    buttonImage = buttonImage.scaled(ui->lblLogo->maximumWidth(),ui->lblLogo->maximumHeight(),Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
+                } else {
+
+                    QPixmap backImage = QPixmap(":/images/template.png");
+
+                    QPainter painter(&backImage);
+                    painter.drawPixmap(10, 10, backImage.width()-20, backImage.height()-20, buttonImage);
+
+                    buttonImage = backImage.scaled(ui->lblLogo->maximumWidth(),ui->lblLogo->maximumHeight(),Qt::KeepAspectRatio, Qt::SmoothTransformation);
+                }
+
             } else {
                 buttonImage = QPixmap(":/images/iptv.png");
             }
+
+            treeItem->setIcon(0, QIcon(buttonImage.scaled(16,16,Qt::KeepAspectRatio, Qt::SmoothTransformation)) );
         }
 
-        QListWidgetItem* item = new QListWidgetItem(buttonImage, "");
+        // ----------------------------------------------------
 
-        item->setData(Qt::UserRole, url);
-        item->setData(Qt::UserRole+1, tvg_id);
-        item->setData(Qt::DecorationRole, buttonImage.scaled(50,50,Qt::KeepAspectRatio, Qt::SmoothTransformation));
-        item->setToolTip(tvg_name);
-
-        ui->lvStations->addItem(item);
+        if ( favorite == 1 ) {
+            action = new QAction(QIcon(buttonImage), tvg_name);
+            action->setData(select->at());
+            ui->mainToolBar->addAction(action);
+        }
 
         added = true;
     }
@@ -909,16 +1001,6 @@ void MainWindow::fillTwPls_Item()
     ui->cmdMoveUp->setEnabled( added );
     ui->cmdMoveDown->setEnabled( added );
     ui->edtStationUrl->setText("");
-
-/*
-    buttonImage = QPixmap(":/images/template.png");
-
-    topImage = QPixmap("C:/Users/Developer/Downloads/62fb8958ce481.svg");
-    QPainter painter(&buttonImage);
-    painter.drawPixmap(10, 10, buttonImage.width()-20, buttonImage.height()-20, topImage);
-
-    ui->lblLogo->setPixmap(buttonImage.scaled(100,100,Qt::KeepAspectRatio, Qt::SmoothTransformation));
-*/
 }
 
 void MainWindow::on_cboPlaylists_currentTextChanged(const QString &arg1)
@@ -931,7 +1013,7 @@ void MainWindow::on_cboPlaylists_currentTextChanged(const QString &arg1)
 
 void MainWindow::on_twPLS_Items_itemDoubleClicked(QTreeWidgetItem *item, int column)
 {
-    db.removePLS_Item( item->data(0, 1).toInt() );
+    db.removePLS_Item( item->data(0, Qt::UserRole).toInt() );
 
     fillTwPls_Item();
 }
@@ -999,7 +1081,7 @@ void MainWindow::MakePlaylist()
     for(int i=0;i<ui->twPLS_Items->topLevelItemCount();++i) {
 
         item = ui->twPLS_Items->topLevelItem(i);
-        extinf_id = item->data(1, 1).toInt();
+        extinf_id = item->data(0, Qt::UserRole+1).toInt();
 
         select = db.selectEXTINF_byRef(extinf_id);
         while ( select->next() ) {
@@ -1048,6 +1130,7 @@ void MainWindow::on_edtDownload_clicked()
     if (QMessageBox::Yes == QMessageBox(QMessageBox::Information, "Downloader", "start the download?", QMessageBox::Yes|QMessageBox::No).exec())  {
 
         QUrl imageUrl(ui->edtUrl->text());
+
         m_pImgCtrl = new FileDownloader(imageUrl, this);
 
         connect(m_pImgCtrl, SIGNAL (downloaded()), this, SLOT (SaveM3u()));
@@ -1057,7 +1140,7 @@ void MainWindow::on_edtDownload_clicked()
 
 void MainWindow::ShowDownloadProgress(){
 
-    statusBar()->showMessage(tr("file download %1%").arg(m_pImgCtrl->downloadedProgress()), 2000);
+    statusBar()->showMessage(tr("file download %1%").arg(m_pImgCtrl->downloadedProgress()));
 }
 
 void MainWindow::SaveM3u()
@@ -1090,6 +1173,8 @@ void MainWindow::SaveM3u()
 
 void MainWindow::SaveXML()
 {
+    qDebug() << "test";
+
     const QDateTime now = QDateTime::currentDateTime();
     const QString timestamp = now.toString(QLatin1String("yyyyMMddhhmmss"));
 
@@ -1116,18 +1201,6 @@ void MainWindow::SaveXML()
     }
 }
 
-
-void MainWindow::on_cmdGatherData_clicked()
-{
-    QString program = "ffprobe";
-    QStringList arguments;
-
-    arguments << "-hide_banner" << ui->edtStationUrl->text();
-
-    m_Process->setProcessChannelMode(QProcess::MergedChannels);
-    m_Process->start(program, arguments);
-}
-
 void MainWindow::on_twPLS_Items_itemSelectionChanged()
 {
     QSqlQuery *select;
@@ -1140,12 +1213,13 @@ void MainWindow::on_twPLS_Items_itemSelectionChanged()
     QString   desc;
     QString   tmdb_id;
     QPixmap   buttonImage;
+    QPixmap   backImage;
 
     QList<QTreeWidgetItem*>items = ui->twPLS_Items->selectedItems();
 
     foreach( QTreeWidgetItem* mitem, items) {
 
-        int extinf_id = mitem->data(1,1).toInt();
+        int extinf_id = mitem->data(0, Qt::UserRole+1).toInt();
 
         select = db.selectEXTINF_byRef(extinf_id);
         while ( select->next() ) {
@@ -1168,7 +1242,12 @@ void MainWindow::on_twPLS_Items_itemSelectionChanged()
 
         delete select;
 
-        ui->cboEPGChannels->setCurrentText(tvg_id);
+        if ( tvg_id.isEmpty() ) {
+            ui->cboEPGChannels->setCurrentText(" ");
+        } else {
+            ui->cboEPGChannels->setCurrentText(tvg_id);
+        }
+
         ui->edtStationUrl->setText(url);
         ui->edtStationName->setText(title);
 
@@ -1177,8 +1256,6 @@ void MainWindow::on_twPLS_Items_itemSelectionChanged()
         if ( m_actualTitle.contains("|") ) {
             m_actualTitle = m_actualTitle.mid(4);
         }
-
-        setWindowTitle(m_actualTitle);
 
         if ( url.contains("mkv") || url.contains("mp4") ) {
 
@@ -1230,16 +1307,28 @@ void MainWindow::on_twPLS_Items_itemSelectionChanged()
                     buttonImage.loadFromData(file.readAll());
                     file.close();
 
-                    ui->lblLogo->setPixmap(buttonImage.scaledToWidth(ui->lblLogo->maximumWidth()));
+                    qDebug() << "load logo" << fi.fileName();
+
+                    if ( logo.contains( "lo1.in" ) ) {
+
+                        ui->lblLogo->setPixmap(buttonImage.scaled(ui->lblLogo->maximumWidth(),ui->lblLogo->maximumHeight(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
+
+                    } else {
+
+                        backImage = QPixmap(":/images/template.png");
+
+                        QPainter painter(&backImage);
+                        painter.drawPixmap(10, 10, backImage.width()-20, backImage.height()-20, buttonImage);
+
+                        ui->lblLogo->setPixmap(backImage.scaled(ui->lblLogo->maximumWidth(),ui->lblLogo->maximumHeight(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
+                    }
                 }
             }
 
         } else {
             const QPixmap buttonImage (":/images/iptv.png");
-            ui->lblLogo->setPixmap(buttonImage.scaledToWidth(ui->lblLogo->maximumWidth()));
+            ui->lblLogo->setPixmap(buttonImage.scaled(ui->lblLogo->maximumWidth(),ui->lblLogo->maximumHeight(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
         }
-
-        ui->lvStations->setCurrentRow( ui->twPLS_Items->indexOfTopLevelItem( mitem ) );        
     }
 }
 
@@ -1264,9 +1353,6 @@ void MainWindow::processFinished()
 
 void MainWindow::loadImage()
 {
-    QListWidgetItem *item;
-
-    QPixmap buttonImage;
     dir.mkpath(m_AppDataPath + "/logos/");
 
     QString filename = m_AppDataPath + "/logos/" + m_pImgCtrl->filename();
@@ -1279,22 +1365,8 @@ void MainWindow::loadImage()
         QTextStream out(&file);
         file.write(m_pImgCtrl->downloadedData());
         file.close();
-    }
 
-    if ( file.exists() && file.size() > 0 ) {
-
-        file.open(QIODevice::ReadOnly);
-        QTextStream in(&file);
-        buttonImage.loadFromData(file.readAll());
-        file.close();
-
-        ui->lblLogo->setPixmap(buttonImage.scaledToWidth(ui->lblLogo->maximumWidth()));
-
-        item = ui->lvStations->currentItem();
-        item->setData(Qt::DecorationRole, buttonImage.scaled(50,50,Qt::KeepAspectRatio, Qt::SmoothTransformation));
-
-    } else {
-        ui->lblLogo->setText("no data!");
+        qDebug() << "loadImage done..." << filename;
     }
 }
 
@@ -1303,27 +1375,21 @@ void MainWindow::on_cmdPlayStream_clicked()
     if (ui->edtStationUrl->text().isEmpty())
         return;
 
+    setWindowTitle(m_actualTitle);
+
     _media = new VlcMedia(ui->edtStationUrl->text(), _instance);
 
     _player->open(_media);
+
+    _mediaManager = new VlcMetaManager(_media);
 }
 
 void MainWindow::on_edtStationUrl_textChanged(const QString &arg1)
 {
-     ui->cmdGatherData->setEnabled(arg1.trimmed().length() > 0);
+     ui->cmdGatherStream->setEnabled(arg1.trimmed().length() > 0);
+     ui->cmdGatherStreamData->setEnabled(arg1.trimmed().length() > 0);
      ui->cmdPlayExtern->setEnabled(arg1.trimmed().length() > 0);
      ui->cmdPlayStream->setEnabled(arg1.trimmed().length() > 0);
-}
-
-void MainWindow::on_lvStations_itemClicked(QListWidgetItem *item)
-{
-    QVariant url      =  item->data(Qt::UserRole);
-    QVariant tvg_id   =  item->data(Qt::UserRole+1); // zdf.de
-
-    ui->twPLS_Items->clearSelection();
-    ui->twPLS_Items->topLevelItem( ui->lvStations->currentRow() )->setSelected(true);
-
-    ui->twPLS_Items->scrollToItem( ui->twPLS_Items->selectedItems().at(0) );
 }
 
 void MainWindow::on_cmdSavePosition_clicked()
@@ -1332,7 +1398,7 @@ void MainWindow::on_cmdSavePosition_clicked()
 
     if ( item != nullptr ) {
 
-        int extinf_id = item->data(1,1).toInt();
+        int extinf_id = item->data(0, Qt::UserRole+1).toInt();
 
         db.updateEXTINF_tvg_id_byRef(extinf_id, ui->cboEPGChannels->currentText());
         db.updateEXTINF_url_byRef(extinf_id, ui->edtStationUrl->text());
@@ -1342,7 +1408,7 @@ void MainWindow::on_cmdSavePosition_clicked()
 
         item = ui->twPLS_Items->topLevelItem(i);
 
-        db.updatePLS_item_pls_pos(item->data(0, 1).toInt() , i );
+        db.updatePLS_item_pls_pos(item->data(0, Qt::UserRole).toInt(), i );
     }
 
     fillTwPls_Item();
@@ -1528,7 +1594,7 @@ void MainWindow::on_cmdMoveBackward_clicked()
     _player->setTime( _player->time() - 60 * 1000 );
 }
 
-void MainWindow::findAllButtons() {
+void MainWindow::FindAndColorAllButtons() {
 
     QSettings settings(m_SettingsFile, QSettings::IniFormat);
     m_IconColor = settings.value("iconcolor", "black").toByteArray();
@@ -1572,13 +1638,11 @@ void MainWindow::on_actionIcon_color_triggered()
 
     if ( color.isValid() ) {
 
-        qDebug() << m_SettingsFile;
-
         QSettings settings(m_SettingsFile, QSettings::IniFormat);
         settings.setValue("iconcolor", color.name());
         settings.sync();
 
-        this->findAllButtons();
+        FindAndColorAllButtons();
     }
 }
 
@@ -1591,7 +1655,6 @@ void MainWindow::on_chkOnlyFavorites_stateChanged(int arg1)
 void MainWindow::on_cmdEqualizer_clicked()
 {
     _equalizerDialog->show();
-
 }
 
 void MainWindow::on_cmdMute_clicked()
@@ -1688,7 +1751,7 @@ void MainWindow::serviceRequestFinished(QNetworkReply* reply)
         statusBar()->showMessage(tr("Netzwerk-Fehler auf themoviedb.org Zugriff..."));
     }
 
-    delete reply;
+   // delete reply;
 }
 
 void MainWindow::displayMovieInfo(int extinf_id, QString moviedata, bool storedata)
@@ -1794,7 +1857,7 @@ void MainWindow::on_cmdSetLogo_clicked()
 
     if ( item != nullptr ) {
 
-        int extinf_id = item->data(1,1).toInt();
+        int extinf_id = item->data(0, Qt::UserRole+1).toInt();
 
         QString url = QInputDialog::getText(this, tr("Set channel logo"),
                                              tr("Please enter URL from station logo:"), QLineEdit::Normal,
@@ -1817,7 +1880,7 @@ void MainWindow::fillComboEPGChannels()
     ui->cboEPGChannels->clear();
     ui->cboEPGChannels->addItem(" ");
 
-    select = db.selectEPGChannels(".de");
+    select = db.selectEPGChannels("DE:");
     while ( select->next() ) {
 
         title = select->value(3).toByteArray().constData();
@@ -1846,7 +1909,6 @@ void MainWindow::on_actionselect_application_font_triggered()
         settings.setValue("fontbold", font.bold());
         settings.setValue("fontitalic", font.italic());
         settings.sync();
-
     }
 }
 
@@ -1872,10 +1934,25 @@ void MainWindow::on_cmdImdb_clicked()
 
 void MainWindow::on_cmdPlayExtern_clicked()
 {
+    // xdotool search --name http key --window %1 0xff52
+
     QString program = "ffplay";
     QStringList arguments;
 
-    arguments << "-x" << "640" << "-y" << "480" << "-loglevel" << "warning" << "-nostats" << ui->edtStationUrl->text();
+    QRect test = ui->widVideo->geometry();
+
+    QPoint topLeft = ui->widVideo->mapToGlobal(test.topLeft());
+    QPoint bottomRight = ui->widVideo->mapToGlobal(test.bottomRight());
+
+    arguments << "-alwaysontop"
+              << "-noborder"
+              << "-top" << QString("%1").arg(topLeft.y())
+              << "-left" << QString("%1").arg(topLeft.x())
+              << "-x" << QString("%1").arg(bottomRight.x() - topLeft.x())
+              << "-y" << QString("%1").arg(bottomRight.y() - topLeft.y())
+              << "-loglevel" << "warning"
+              << "-nostats"
+              << ui->edtStationUrl->text();
 
     m_Process->setProcessChannelMode(QProcess::MergedChannels);
     m_Process->start(program, arguments);
@@ -1888,7 +1965,6 @@ void MainWindow::on_actionimport_m3u_file_triggered()
 
 void MainWindow::on_cmdAddToFavorits_clicked()
 {
-
     const int pls_id = ui->cboPlaylists->itemData(ui->cboPlaylists->currentIndex()).toString().toInt();
 
     QMessageBox msgBox;
@@ -1907,5 +1983,264 @@ void MainWindow::on_cmdAddToFavorits_clicked()
 
 void MainWindow::on_chkPlaylistOnlyFavorits_stateChanged(int arg1)
 {
+    QSettings settings(m_SettingsFile, QSettings::IniFormat);
+    settings.setValue("PlaylistOnlyFavorits", arg1);
+    settings.sync();
+
     this->fillComboPlaylists();
 }
+
+void MainWindow::on_chkAutoPlay_stateChanged(int arg1)
+{
+    QSettings settings(m_SettingsFile, QSettings::IniFormat);
+    settings.setValue("AutoPlay", arg1);
+    settings.sync();
+}
+
+void MainWindow::on_actionDB_Browser_triggered()
+{
+    QString program = "DBBrowser";
+    QStringList arguments;
+
+    QSettings settings(m_SettingsFile, QSettings::IniFormat);
+    program = settings.value(program).toByteArray();
+
+    QFile exe(program);
+
+    if ( exe.exists() ) {
+
+        arguments << m_AppDataPath + "/m3uMan.sqlite";
+
+        m_Process->setProcessChannelMode(QProcess::MergedChannels);
+        m_Process->start(program, arguments);
+        qDebug() << program << arguments;
+
+    } else {
+
+        program = QFileDialog::getOpenFileName(this, ("Select ftpclient program file"),
+                                               m_AppDataPath,
+                                               ("exe program file (*.exe)"));
+
+        if ( ! program.isNull() ) {
+
+            settings.setValue("DBBrowser", program);
+            settings.sync();
+
+            QMessageBox::information(this, "m3uMan", QString("%1 set as sqlite client...").arg(program) );
+        }
+    }
+}
+
+
+void MainWindow::on_actionFTP_Client_triggered()
+{
+    QString program = "FTPClient";
+    QStringList arguments;
+
+    QSettings settings(m_SettingsFile, QSettings::IniFormat);
+    program = settings.value(program).toByteArray();
+
+    QFile exe(program);
+
+    if ( exe.exists() ) {
+
+        arguments << dir.homePath();
+
+        m_Process->setProcessChannelMode(QProcess::MergedChannels);
+        m_Process->start(program, arguments);
+        qDebug() << program << arguments;
+
+    } else {
+
+        program = QFileDialog::getOpenFileName(this, ("Select ftpclient program file"),
+                                                      m_AppDataPath,
+                                                      ("exe program file (*.exe)"));
+
+        if ( ! program.isNull() ) {
+
+            settings.setValue("FTPClient", program);
+            settings.sync();
+
+            QMessageBox::information(this, "m3uMan", QString("%1 set as ftp client...").arg(program) );
+        }
+    }
+}
+
+
+void MainWindow::on_actionEdit_settings_ini_triggered()
+{
+    QString program = "Editor";
+    QStringList arguments;
+
+    QSettings settings(m_SettingsFile, QSettings::IniFormat);
+    program = settings.value(program).toByteArray();
+
+    QFile exe(program);
+
+    if ( exe.exists() ) {
+
+        arguments << m_SettingsFile;
+
+        m_Process->setProcessChannelMode(QProcess::MergedChannels);
+        m_Process->start(program, arguments);
+        qDebug() << program << arguments;
+
+    } else {
+
+        program = QFileDialog::getOpenFileName(this, ("Select editor program file"),
+                                               m_AppDataPath,
+                                               ("exe program file (*.exe)"));
+
+        if ( ! program.isNull() ) {
+
+            settings.setValue("Editor", program);
+            settings.sync();
+
+            QMessageBox::information(this, "m3uMan", QString("%1 set as editor...").arg(program) );
+        }
+    }
+}
+
+void MainWindow::on_actionExplore_application_folder_triggered()
+{
+    QString program = "Explorer";
+    QStringList arguments;
+
+    QSettings settings(m_SettingsFile, QSettings::IniFormat);
+    program = settings.value(program).toByteArray();
+
+    QFile exe(program);
+
+    if ( exe.exists() ) {
+
+#ifdef Q_OS_WIN
+        arguments <<  dir.homePath().replace("/","\\");
+#else
+        arguments <<  dir.homePath();
+#endif
+
+        m_Process->setProcessChannelMode(QProcess::MergedChannels);
+        m_Process->start(program, arguments);
+
+        qDebug() << program << arguments;
+
+    } else {
+
+        program = QFileDialog::getOpenFileName(this, ("Select explorer program file"),
+                                               m_AppDataPath,
+                                               ("exe program file (*.exe)"));
+
+        if ( ! program.isNull() ) {
+
+            settings.setValue("Explorer", program);
+            settings.sync();
+
+            QMessageBox::information(this, "m3uMan", QString("%1 set as explorer...").arg(program) );
+        }
+    }
+}
+
+void MainWindow::on_actionExplorer_storage_folder_triggered()
+{
+    QString program = "Explorer";
+    QStringList arguments;
+
+    QSettings settings(m_SettingsFile, QSettings::IniFormat);
+    program = settings.value(program).toByteArray();
+
+    QFile exe(program);
+
+    if ( exe.exists() ) {
+
+#ifdef Q_OS_WIN
+        arguments <<  m_AppDataPath.replace("/","\\");
+#else
+        arguments <<  m_AppDataPath;
+#endif
+        m_Process->setProcessChannelMode(QProcess::MergedChannels);
+        m_Process->start(program, arguments);
+        qDebug() << program << arguments;
+
+    } else {
+
+        program = QFileDialog::getOpenFileName(this, ("Select explorer program file"),
+                                               m_AppDataPath,
+                                               ("exe program file (*.exe)"));
+
+        if ( ! program.isNull() ) {
+
+            settings.setValue("Explorer", program);
+            settings.sync();
+
+            QMessageBox::information(this, "m3uMan", QString("%1 set as explorer...").arg(program) );
+        }
+    }
+}
+
+
+void MainWindow::on_cboEPGChannels_currentTextChanged(const QString &arg1)
+{
+    QTreeWidgetItem* item = ui->twPLS_Items->currentItem();
+
+    if ( item != nullptr ) {
+
+        int extinf_id = item->data(0, Qt::UserRole+1).toInt();
+
+        db.updateEXTINF_tvg_id_byRef(extinf_id, arg1);
+    }
+}
+
+void MainWindow::on_mainToolBar_actionTriggered(QAction *action)
+{
+    ui->twPLS_Items->clearSelection();
+
+    ui->twPLS_Items->topLevelItem( action->data().toInt() )->setSelected(true);
+    ui->twPLS_Items->scrollToItem( ui->twPLS_Items->selectedItems().at(0) );
+}
+
+void MainWindow::readyReadStandardOutputJson()
+{
+    ui->edtOutput->clear();
+
+    m_JsonString.append(m_Process2->readAllStandardOutput());
+
+    QJsonDocument jsonResponse = QJsonDocument::fromJson(m_JsonString.toUtf8());
+
+    QJsonObject jsonObj = jsonResponse.object();
+
+    QJsonObject format = jsonObj.value("format").toObject();
+    QJsonObject tags = format.value("tags").toObject();
+
+    ui->edtOutput->append( "title:\t" + tags.value("StreamTitle").toString());
+    ui->edtOutput->append( "" ) ;
+    ui->edtOutput->append( "genre:\t" + tags.value("icy-genre").toString());
+    ui->edtOutput->append( "name:\t" + tags.value("icy-name").toString());
+    ui->edtOutput->append( "description:\t" + tags.value("icy-description").toString());
+    ui->edtOutput->append( "audio-info:\t" + tags.value("icy-audio-info").toString());
+}
+
+void MainWindow::on_cmdGatherStream_clicked()
+{
+    QString program = "ffprobe";
+    QStringList arguments;
+
+    arguments << "-hide_banner" << ui->edtStationUrl->text();
+
+    m_Process->setProcessChannelMode(QProcess::MergedChannels);
+    m_Process->start(program, arguments);
+}
+
+void MainWindow::on_cmdGatherStreamData_clicked()
+{
+    QString program = "ffprobe";
+    QStringList arguments;
+
+    m_JsonString = "";
+
+    arguments << "-v" << "quiet" << "-print_format" << "json=compact=1" << "-show_format" << ui->edtStationUrl->text();
+
+    m_Process2->kill();
+    m_Process2->setProcessChannelMode(QProcess::MergedChannels);
+    m_Process2->start(program, arguments);
+}
+

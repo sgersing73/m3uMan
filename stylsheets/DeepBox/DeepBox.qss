@@ -24,7 +24,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 QWidget
 {
 	background-color: #141414;
-	color: #000000;
+        color: #ffffff;
 
 }
 

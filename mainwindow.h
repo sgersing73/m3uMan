@@ -33,6 +33,10 @@
 #include <QProgressBar>
 #include <QPushButton>
 #include <QFontDialog>
+#include <QStyle>
+#include <QPainter>
+#include <QRect>
+#include <QPoint>
 
 #ifdef Q_OS_WIN
 #include <QWinTaskbarButton>
@@ -98,7 +102,7 @@ private:
     void addTreeChild(QTreeWidgetItem *parent, const QString &, const QString &, const QString &, const QString &, const QString &, const QString &, const QString& logo);
     void get_media_sub_items( const libvlc_media_t& media );
 
-    void findAllButtons();
+    void FindAndColorAllButtons();
     void MakePlaylist();
 
     QPixmap changeIconColor(QIcon, QColor);
@@ -117,13 +121,12 @@ private slots:
     void on_edtFilter_returnPressed();
     void on_cboGroupTitels_currentTextChanged(const QString &arg1);
     void on_edtDownload_clicked();
-    void on_cmdGatherData_clicked();
     void on_twPLS_Items_itemSelectionChanged();
     void on_cmdPlayStream_clicked();
     void on_edtStationUrl_textChanged(const QString &arg1);
-    void on_lvStations_itemClicked(QListWidgetItem *item);
 
     void readyReadStandardOutput();
+    void readyReadStandardOutputJson();
     void processStarted();
     void processFinished();
     void showVlcError();
@@ -134,7 +137,8 @@ private slots:
     void ShowDownloadProgress();
     void serviceRequestFinished(QNetworkReply*);
 
-    void ShowContextMenu( const QPoint & );
+    void ShowContextMenuTreeWidget( const QPoint & );
+    void ShowContextMenuPlsItems( const QPoint & );
 
     void on_cmdSavePosition_clicked();
     void on_treeWidget_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
@@ -169,6 +173,21 @@ private slots:
     void on_cmdAddToFavorits_clicked();
     void on_chkPlaylistOnlyFavorits_stateChanged(int arg1);
 
+    void on_chkAutoPlay_stateChanged(int arg1);
+
+    void on_actionDB_Browser_triggered();
+    void on_actionFTP_Client_triggered();
+    void on_actionEdit_settings_ini_triggered();
+    void on_actionExplore_application_folder_triggered();
+    void on_actionExplorer_storage_folder_triggered();
+
+    void on_cboEPGChannels_currentTextChanged(const QString &arg1);
+    void on_mainToolBar_actionTriggered(QAction *);
+
+    void on_cmdGatherStream_clicked();
+
+    void on_cmdGatherStreamData_clicked();
+
 private:
     QString         curFile;
     QDir            dir;
@@ -176,6 +195,7 @@ private:
     bool            somethingchanged;
     FileDownloader  *m_pImgCtrl;
     QProcess        *m_Process;
+    QProcess        *m_Process2;
     QString         m_OutputString;
     QStandardPaths  *path;
     QString         m_AppDataPath;
@@ -185,6 +205,7 @@ private:
     QString               m_IconColor;
     QNetworkAccessManager *m_nam;
     QString         m_actualTitle;
+    QString         m_JsonString;
 
     VlcInstance     *_instance;
     VlcMedia        *_media;

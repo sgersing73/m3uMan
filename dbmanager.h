@@ -41,7 +41,7 @@ public:
 
     bool updatePLS_item_pls_pos(int, int);
     bool updatePLS_item_tmdb_by_extinf_id(int, double);
-
+    bool updatePLS_item_favorite(int, int);
 
     int insertPLS(const QString &);
     bool removePLS(int);

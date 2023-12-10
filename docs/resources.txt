@@ -5,3 +5,7 @@ https://github.com/junguler/m3u-radio-music-playlists
 Layout
 
 https://qss-stock.devsecstudio.com/templates.php
+
+EPG
+
+https://xmltv.info/de/epg.xml

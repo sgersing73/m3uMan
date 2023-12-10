@@ -124,6 +124,7 @@ bool DbManager::createTable()
                   "          extinf_id INTEGER, "
                   "          pls_pos   INTEGER DEFAULT 0, "
                   "          tmdb_id   INTEGER DEFAULT 0, "
+                  "          favorite INTEGER DEFAULT 0,"
                   "          FOREIGN KEY(extinf_id) REFERENCES extinf(id) ON DELETE CASCADE,"
                   "          FOREIGN KEY(pls_id)    REFERENCES pls(id) ON DELETE CASCADE"
                   ")");
@@ -492,6 +493,23 @@ bool DbManager::updatePLS_favorite(int id, int favorite )
     return success;
 }
 
+bool DbManager::updatePLS_item_favorite(int id, int favorite )
+{
+    bool success = false;
+
+    QSqlQuery query;
+    query.prepare("UPDATE pls_item SET favorite = :favorite WHERE id = :id");
+    query.bindValue(":favorite", favorite);
+    query.bindValue(":id", id);
+
+    if ( query.exec() ) {
+        success = true;
+    } else {
+        qDebug() << "updatePLS_favorite" << query.lastError();
+    }
+
+    return success;
+}
 bool DbManager::updatePLS_item_tmdb_by_extinf_id(int extinf_id, double tmdb_id )
 {
     bool success = false;
@@ -668,8 +686,8 @@ QSqlQuery* DbManager::selectProgramData(const QString &channel)
 {
     QSqlQuery *select = new QSqlQuery();
 
-    select->prepare("SELECT * FROM program WHERE strftime('%Y%m%d%H%M%S +0000', 'now', 'localtime', '-1 hours') > start AND "
-                    "                            strftime('%Y%m%d%H%M%S +0000', 'now', 'localtime', '-1 hours') < stop AND "
+    select->prepare("SELECT * FROM program WHERE strftime('%Y%m%d%H%M%S +0000', 'now', 'localtime') > start AND "
+                    "                            strftime('%Y%m%d%H%M%S +0000', 'now', 'localtime') < stop AND "
                     "                            channel = :channel");
     select->bindValue(":channel", channel);
 

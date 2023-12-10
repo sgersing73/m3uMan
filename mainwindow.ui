@@ -6,8 +6,13 @@
    <rect>
     <x>0</x>
     <y>0</y>
+<<<<<<< HEAD
     <width>897</width>
     <height>698</height>
+=======
+    <width>929</width>
+    <height>782</height>
+>>>>>>> 453bcb4e7876e90700a78b7a5d7871a91fb44614
    </rect>
   </property>
   <property name="windowTitle">
@@ -286,7 +291,23 @@
            <property name="sizeConstraint">
             <enum>QLayout::SetMinimumSize</enum>
            </property>
-           <item row="2" column="0">
+           <item row="0" column="0">
+            <widget class="VlcWidgetSeek" name="widSeek" native="true">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>35</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
             <layout class="QHBoxLayout" name="horizontalLayout_5">
              <property name="sizeConstraint">
               <enum>QLayout::SetMinimumSize</enum>
@@ -422,35 +443,6 @@
               </widget>
              </item>
             </layout>
-           </item>
-           <item row="1" column="0">
-            <widget class="VlcWidgetSeek" name="widSeek" native="true">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>16777215</width>
-               <height>35</height>
-              </size>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="0">
-            <widget class="QListWidget" name="lvStations">
-             <property name="maximumSize">
-              <size>
-               <width>16777215</width>
-               <height>70</height>
-              </size>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">backgroud=rgb(255, 85, 0)</string>
-             </property>
-            </widget>
            </item>
           </layout>
          </widget>
@@ -708,7 +700,7 @@
                 <string>save playlist</string>
                </property>
                <property name="text">
-                <string>save positions</string>
+                <string>save settings</string>
                </property>
                <property name="icon">
                 <iconset resource="m3uMan.qrc">
@@ -729,7 +721,7 @@
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout">
            <item>
-            <widget class="QPushButton" name="cmdGatherData">
+            <widget class="QPushButton" name="cmdGatherStream">
              <property name="enabled">
               <bool>false</bool>
              </property>
@@ -741,7 +733,21 @@
              </property>
              <property name="icon">
               <iconset resource="m3uMan.qrc">
-               <normaloff>:/images/Ui/icons8-search-in-cloud-50.png</normaloff>:/images/Ui/icons8-search-in-cloud-50.png</iconset>
+               <normaloff>:/images/Ui/icons8-preview-pane-50.png</normaloff>:/images/Ui/icons8-preview-pane-50.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="cmdGatherStreamData">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="text">
+              <string>stream data</string>
+             </property>
+             <property name="icon">
+              <iconset resource="m3uMan.qrc">
+               <normaloff>:/images/Ui/icons8-preview-pane-50.png</normaloff>:/images/Ui/icons8-preview-pane-50.png</iconset>
              </property>
             </widget>
            </item>
@@ -812,7 +818,14 @@
           <layout class="QHBoxLayout" name="horizontalLayout_3"/>
          </item>
          <item>
-          <widget class="QTextEdit" name="edtOutput"/>
+          <widget class="QTextEdit" name="edtOutput">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
          </item>
         </layout>
        </widget>
@@ -826,8 +839,13 @@
     <rect>
      <x>0</x>
      <y>0</y>
+<<<<<<< HEAD
      <width>897</width>
      <height>26</height>
+=======
+     <width>929</width>
+     <height>23</height>
+>>>>>>> 453bcb4e7876e90700a78b7a5d7871a91fb44614
     </rect>
    </property>
    <widget class="QMenu" name="menuSettings">
@@ -847,10 +865,27 @@
     <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <addaction name="actionDB_Browser"/>
+    <addaction name="actionFTP_Client"/>
+    <addaction name="actionEdit_settings_ini"/>
+    <addaction name="actionExplore_application_folder"/>
+    <addaction name="actionExplorer_storage_folder"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuSettings"/>
+   <addaction name="menuTools"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
+   <property name="iconSize">
+    <size>
+     <width>50</width>
+     <height>50</height>
+    </size>
+   </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
    </attribute>
@@ -861,17 +896,17 @@
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionIcon_color">
    <property name="text">
-    <string>select icon color</string>
+    <string>Select icon color</string>
    </property>
   </action>
   <action name="actionload_stylsheet">
    <property name="text">
-    <string>load and set stylsheet</string>
+    <string>Load and set stylsheet</string>
    </property>
   </action>
   <action name="actionselect_application_font">
    <property name="text">
-    <string>select application font</string>
+    <string>Select application font</string>
    </property>
   </action>
   <action name="actionExit">
@@ -884,7 +919,32 @@
   </action>
   <action name="actionimport_m3u_file">
    <property name="text">
-    <string>import m3u file</string>
+    <string>Import M3U file</string>
+   </property>
+  </action>
+  <action name="actionDB_Browser">
+   <property name="text">
+    <string>SQLite DB browser</string>
+   </property>
+  </action>
+  <action name="actionFTP_Client">
+   <property name="text">
+    <string>FTP upload client</string>
+   </property>
+  </action>
+  <action name="actionEdit_settings_ini">
+   <property name="text">
+    <string>Edit settings.ini</string>
+   </property>
+  </action>
+  <action name="actionExplore_application_folder">
+   <property name="text">
+    <string>Explore application folder</string>
+   </property>
+  </action>
+  <action name="actionExplorer_storage_folder">
+   <property name="text">
+    <string>Explore storage folder</string>
    </property>
   </action>
  </widget>
