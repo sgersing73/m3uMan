@@ -689,7 +689,7 @@
                 <string>save playlist</string>
                </property>
                <property name="text">
-                <string>save positions</string>
+                <string>save settings</string>
                </property>
                <property name="icon">
                 <iconset resource="m3uMan.qrc">
@@ -710,7 +710,7 @@
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout">
            <item>
-            <widget class="QPushButton" name="cmdGatherData">
+            <widget class="QPushButton" name="cmdGatherStream">
              <property name="enabled">
               <bool>false</bool>
              </property>
@@ -722,7 +722,21 @@
              </property>
              <property name="icon">
               <iconset resource="m3uMan.qrc">
-               <normaloff>:/images/Ui/icons8-search-in-cloud-50.png</normaloff>:/images/Ui/icons8-search-in-cloud-50.png</iconset>
+               <normaloff>:/images/Ui/icons8-preview-pane-50.png</normaloff>:/images/Ui/icons8-preview-pane-50.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="cmdGatherStreamData">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="text">
+              <string>stream data</string>
+             </property>
+             <property name="icon">
+              <iconset resource="m3uMan.qrc">
+               <normaloff>:/images/Ui/icons8-preview-pane-50.png</normaloff>:/images/Ui/icons8-preview-pane-50.png</iconset>
              </property>
             </widget>
            </item>
@@ -815,7 +829,7 @@
      <x>0</x>
      <y>0</y>
      <width>929</width>
-     <height>22</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuSettings">

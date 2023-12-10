@@ -121,12 +121,12 @@ private slots:
     void on_edtFilter_returnPressed();
     void on_cboGroupTitels_currentTextChanged(const QString &arg1);
     void on_edtDownload_clicked();
-    void on_cmdGatherData_clicked();
     void on_twPLS_Items_itemSelectionChanged();
     void on_cmdPlayStream_clicked();
     void on_edtStationUrl_textChanged(const QString &arg1);
 
     void readyReadStandardOutput();
+    void readyReadStandardOutputJson();
     void processStarted();
     void processFinished();
     void showVlcError();
@@ -182,8 +182,11 @@ private slots:
     void on_actionExplorer_storage_folder_triggered();
 
     void on_cboEPGChannels_currentTextChanged(const QString &arg1);
-
     void on_mainToolBar_actionTriggered(QAction *);
+
+    void on_cmdGatherStream_clicked();
+
+    void on_cmdGatherStreamData_clicked();
 
 private:
     QString         curFile;
@@ -192,6 +195,7 @@ private:
     bool            somethingchanged;
     FileDownloader  *m_pImgCtrl;
     QProcess        *m_Process;
+    QProcess        *m_Process2;
     QString         m_OutputString;
     QStandardPaths  *path;
     QString         m_AppDataPath;
@@ -201,6 +205,7 @@ private:
     QString               m_IconColor;
     QNetworkAccessManager *m_nam;
     QString         m_actualTitle;
+    QString         m_JsonString;
 
     VlcInstance     *_instance;
     VlcMedia        *_media;

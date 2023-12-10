@@ -686,8 +686,8 @@ QSqlQuery* DbManager::selectProgramData(const QString &channel)
 {
     QSqlQuery *select = new QSqlQuery();
 
-    select->prepare("SELECT * FROM program WHERE strftime('%Y%m%d%H%M%S +0000', 'now', 'localtime', '-1 hours') > start AND "
-                    "                            strftime('%Y%m%d%H%M%S +0000', 'now', 'localtime', '-1 hours') < stop AND "
+    select->prepare("SELECT * FROM program WHERE strftime('%Y%m%d%H%M%S +0000', 'now', 'localtime') > start AND "
+                    "                            strftime('%Y%m%d%H%M%S +0000', 'now', 'localtime') < stop AND "
                     "                            channel = :channel");
     select->bindValue(":channel", channel);
 

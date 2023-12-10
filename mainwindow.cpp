@@ -60,6 +60,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->edtUrl->setText(settings.value("iptvurl").toByteArray());
     ui->edtUrlEpg->setText(settings.value("iptvepgurl").toByteArray());
 
+
     if ( settings.value("PlaylistOnlyFavorits").toInt() == Qt::Checked ) {
         ui->chkPlaylistOnlyFavorits->setCheckState( Qt::Checked );
     } else {
@@ -102,8 +103,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->treeWidget, SIGNAL(customContextMenuRequested(const QPoint&)),
             this, SLOT(ShowContextMenuTreeWidget(const QPoint&)));
 
-
-
     ui->twPLS_Items->setContextMenuPolicy(Qt::CustomContextMenu);
 
     connect(ui->twPLS_Items, SIGNAL(customContextMenuRequested(const QPoint&)),
@@ -116,11 +115,20 @@ MainWindow::MainWindow(QWidget *parent) :
     fillComboEPGChannels();
     fillTreeWidget();
 
+    ui->cboPlaylists->setCurrentText(settings.value("CurrentPlaylist").toByteArray());
+
     m_Process = new QProcess(this);
 
     connect(m_Process, SIGNAL(started()), this, SLOT(processStarted()));
     connect(m_Process, SIGNAL(readyReadStandardOutput()),this,SLOT(readyReadStandardOutput()));
     connect(m_Process, SIGNAL(finished(int)), this, SLOT(processFinished()));
+
+    m_Process2 = new QProcess(this);
+
+    connect(m_Process2, SIGNAL(started()), this, SLOT(processStarted()));
+    connect(m_Process2, SIGNAL(readyReadStandardOutput()),this,SLOT(readyReadStandardOutputJson()));
+    connect(m_Process2, SIGNAL(finished(int)), this, SLOT(processFinished()));
+
 
 #ifdef Q_OS_WIN
     taskbarButton = new QWinTaskbarButton(this);
@@ -272,6 +280,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     settings.setValue("splitter_4",ui->splitter_4->saveState());
     settings.setValue("iptvurl", ui->edtUrl->text());
     settings.setValue("iptvepgurl", ui->edtUrlEpg->text());
+    settings.setValue("CurrentPlaylist", ui->cboPlaylists->currentText());
     settings.sync();
 
     _player->stop();
@@ -759,7 +768,7 @@ void MainWindow::fillComboPlaylists()
     QSqlQuery *select = nullptr;
     QString title;
     QString id;
-    int      favorite = 0;
+    int     favorite = 0;
 
     ui->cboPlaylists->clear();
 
@@ -1121,6 +1130,7 @@ void MainWindow::on_edtDownload_clicked()
     if (QMessageBox::Yes == QMessageBox(QMessageBox::Information, "Downloader", "start the download?", QMessageBox::Yes|QMessageBox::No).exec())  {
 
         QUrl imageUrl(ui->edtUrl->text());
+
         m_pImgCtrl = new FileDownloader(imageUrl, this);
 
         connect(m_pImgCtrl, SIGNAL (downloaded()), this, SLOT (SaveM3u()));
@@ -1130,7 +1140,7 @@ void MainWindow::on_edtDownload_clicked()
 
 void MainWindow::ShowDownloadProgress(){
 
-    statusBar()->showMessage(tr("file download %1%").arg(m_pImgCtrl->downloadedProgress()), 2000);
+    statusBar()->showMessage(tr("file download %1%").arg(m_pImgCtrl->downloadedProgress()));
 }
 
 void MainWindow::SaveM3u()
@@ -1189,18 +1199,6 @@ void MainWindow::SaveXML()
     } else {
         QMessageBox(QMessageBox::Critical, "Downloader", tr("File %1 download fails!").arg(filename), QMessageBox::Ok).exec() ;
     }
-}
-
-
-void MainWindow::on_cmdGatherData_clicked()
-{
-    QString program = "ffprobe";
-    QStringList arguments;
-
-    arguments << "-hide_banner" << ui->edtStationUrl->text();
-
-    m_Process->setProcessChannelMode(QProcess::MergedChannels);
-    m_Process->start(program, arguments);
 }
 
 void MainWindow::on_twPLS_Items_itemSelectionChanged()
@@ -1309,6 +1307,8 @@ void MainWindow::on_twPLS_Items_itemSelectionChanged()
                     buttonImage.loadFromData(file.readAll());
                     file.close();
 
+                    qDebug() << "load logo" << fi.fileName();
+
                     if ( logo.contains( "lo1.in" ) ) {
 
                         ui->lblLogo->setPixmap(buttonImage.scaled(ui->lblLogo->maximumWidth(),ui->lblLogo->maximumHeight(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
@@ -1365,6 +1365,8 @@ void MainWindow::loadImage()
         QTextStream out(&file);
         file.write(m_pImgCtrl->downloadedData());
         file.close();
+
+        qDebug() << "loadImage done..." << filename;
     }
 }
 
@@ -1378,11 +1380,14 @@ void MainWindow::on_cmdPlayStream_clicked()
     _media = new VlcMedia(ui->edtStationUrl->text(), _instance);
 
     _player->open(_media);
+
+    _mediaManager = new VlcMetaManager(_media);
 }
 
 void MainWindow::on_edtStationUrl_textChanged(const QString &arg1)
 {
-     ui->cmdGatherData->setEnabled(arg1.trimmed().length() > 0);
+     ui->cmdGatherStream->setEnabled(arg1.trimmed().length() > 0);
+     ui->cmdGatherStreamData->setEnabled(arg1.trimmed().length() > 0);
      ui->cmdPlayExtern->setEnabled(arg1.trimmed().length() > 0);
      ui->cmdPlayStream->setEnabled(arg1.trimmed().length() > 0);
 }
@@ -1852,7 +1857,7 @@ void MainWindow::on_cmdSetLogo_clicked()
 
     if ( item != nullptr ) {
 
-        int extinf_id = item->data(1,1).toInt();
+        int extinf_id = item->data(0, Qt::UserRole+1).toInt();
 
         QString url = QInputDialog::getText(this, tr("Set channel logo"),
                                              tr("Please enter URL from station logo:"), QLineEdit::Normal,
@@ -1875,7 +1880,7 @@ void MainWindow::fillComboEPGChannels()
     ui->cboEPGChannels->clear();
     ui->cboEPGChannels->addItem(" ");
 
-    select = db.selectEPGChannels(".de");
+    select = db.selectEPGChannels("DE:");
     while ( select->next() ) {
 
         title = select->value(3).toByteArray().constData();
@@ -2179,7 +2184,7 @@ void MainWindow::on_cboEPGChannels_currentTextChanged(const QString &arg1)
 
     if ( item != nullptr ) {
 
-        int extinf_id = item->data(1,1).toInt();
+        int extinf_id = item->data(0, Qt::UserRole+1).toInt();
 
         db.updateEXTINF_tvg_id_byRef(extinf_id, arg1);
     }
@@ -2192,3 +2197,50 @@ void MainWindow::on_mainToolBar_actionTriggered(QAction *action)
     ui->twPLS_Items->topLevelItem( action->data().toInt() )->setSelected(true);
     ui->twPLS_Items->scrollToItem( ui->twPLS_Items->selectedItems().at(0) );
 }
+
+void MainWindow::readyReadStandardOutputJson()
+{
+    ui->edtOutput->clear();
+
+    m_JsonString.append(m_Process2->readAllStandardOutput());
+
+    QJsonDocument jsonResponse = QJsonDocument::fromJson(m_JsonString.toUtf8());
+
+    QJsonObject jsonObj = jsonResponse.object();
+
+    QJsonObject format = jsonObj.value("format").toObject();
+    QJsonObject tags = format.value("tags").toObject();
+
+    ui->edtOutput->append( "title:\t" + tags.value("StreamTitle").toString());
+    ui->edtOutput->append( "" ) ;
+    ui->edtOutput->append( "genre:\t" + tags.value("icy-genre").toString());
+    ui->edtOutput->append( "name:\t" + tags.value("icy-name").toString());
+    ui->edtOutput->append( "description:\t" + tags.value("icy-description").toString());
+    ui->edtOutput->append( "audio-info:\t" + tags.value("icy-audio-info").toString());
+}
+
+void MainWindow::on_cmdGatherStream_clicked()
+{
+    QString program = "ffprobe";
+    QStringList arguments;
+
+    arguments << "-hide_banner" << ui->edtStationUrl->text();
+
+    m_Process->setProcessChannelMode(QProcess::MergedChannels);
+    m_Process->start(program, arguments);
+}
+
+void MainWindow::on_cmdGatherStreamData_clicked()
+{
+    QString program = "ffprobe";
+    QStringList arguments;
+
+    m_JsonString = "";
+
+    arguments << "-v" << "quiet" << "-print_format" << "json=compact=1" << "-show_format" << ui->edtStationUrl->text();
+
+    m_Process2->kill();
+    m_Process2->setProcessChannelMode(QProcess::MergedChannels);
+    m_Process2->start(program, arguments);
+}
+
