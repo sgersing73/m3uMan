@@ -188,6 +188,12 @@ private slots:
 
     void on_cmdGatherStreamData_clicked();
 
+    void on_edtFilter_2_returnPressed();
+
+    void on_radTv_clicked();
+    void on_radRadio_clicked();
+    void on_radMovie_clicked();
+
 private:
     QString         curFile;
     QDir            dir;

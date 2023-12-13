@@ -59,7 +59,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->splitter_4->restoreState(settings.value("splitter_4").toByteArray());
     ui->edtUrl->setText(settings.value("iptvurl").toByteArray());
     ui->edtUrlEpg->setText(settings.value("iptvepgurl").toByteArray());
-
+    ui->edtFilter_2->setText(settings.value("Filter2").toByteArray());
 
     if ( settings.value("PlaylistOnlyFavorits").toInt() == Qt::Checked ) {
         ui->chkPlaylistOnlyFavorits->setCheckState( Qt::Checked );
@@ -281,6 +281,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     settings.setValue("iptvurl", ui->edtUrl->text());
     settings.setValue("iptvepgurl", ui->edtUrlEpg->text());
     settings.setValue("CurrentPlaylist", ui->cboPlaylists->currentText());
+    settings.setValue("Filter2", ui->edtFilter_2->text());
     settings.sync();
 
     _player->stop();
@@ -705,7 +706,7 @@ void MainWindow::fillTreeWidget()
     ui->treeWidget->setHeaderLabels(QStringList() << "Group" << "Station" << "ID" << "Logo");
 
     if ( ui->cboGroupTitels->currentText().isEmpty() ) {
-        group = "EU |";
+        group = "%EU |%";
     } else {
         group = ui->cboGroupTitels->currentText();
     }
@@ -769,6 +770,7 @@ void MainWindow::fillComboPlaylists()
     QString title;
     QString id;
     int     favorite = 0;
+    int     kind = 0;
 
     ui->cboPlaylists->clear();
 
@@ -780,7 +782,8 @@ void MainWindow::fillComboPlaylists()
     while ( select->next() ) {
 
         id = select->value(0).toByteArray().constData();        
-        title = select->value(1).toByteArray().constData();
+        title = select->value(1).toByteArray().constData();        
+        kind = select->value(3).toByteArray().toInt();
 
         ui->cboPlaylists->addItem(title, id);
     }
@@ -887,7 +890,7 @@ void MainWindow::on_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int colu
     }
 
     ui->treeWidget->clearSelection();
-    fillTwPls_Item();
+    this->fillTwPls_Item();
 }
 
 void MainWindow::fillTwPls_Item()
@@ -902,12 +905,34 @@ void MainWindow::fillTwPls_Item()
     QPixmap buttonImage, topImage;
     QAction *action;
     int     favorite;
+    int     kind = 0;
     QString program;
+
+    ui->radTv->setChecked(false);
+    ui->radRadio->setChecked(false);
+    ui->radMovie->setChecked(false);
 
     int pls_id = ui->cboPlaylists->itemData(ui->cboPlaylists->currentIndex()).toString().toInt();
 
     // Add root nodes
     QSqlQuery *select, *select2 = nullptr;
+
+    select = db.selectPLS_by_id(pls_id);
+
+    select->last();
+    select->first();
+
+    if ( select->isValid() ) {
+        kind = select->value(3).toByteArray().toInt();
+    }
+
+    delete select;
+
+    switch (kind) {
+        case 1 : ui->radTv->setChecked(true); break;
+        case 2 : ui->radRadio->setChecked(true); break;
+        case 3 : ui->radMovie->setChecked(true); break;
+    }
 
     ui->twPLS_Items->clear();
     ui->twPLS_Items->setColumnCount(4);
@@ -918,7 +943,12 @@ void MainWindow::fillTwPls_Item()
 
     ui->mainToolBar->clear();
 
-    select = db.selectPLS_Items(pls_id);
+    tvg_name = ui->edtFilter_2->text();
+    if ( tvg_name.isEmpty() ) {
+        tvg_name = "%%";
+    }
+
+    select = db.selectPLS_Items(pls_id, tvg_name);
     while ( select->next() ) {
 
         id = select->value(0).toByteArray().constData();
@@ -931,7 +961,7 @@ void MainWindow::fillTwPls_Item()
         url = select->value(11).toByteArray().constData();
 
         program.clear();
-        select2 = db.selectProgramData(tvg_id);
+        select2 = db.selectActualProgramData(tvg_id);
         while ( select2->next() ) {
             program = select2->value(4).toByteArray().constData();
         }
@@ -962,7 +992,7 @@ void MainWindow::fillTwPls_Item()
 
                 buttonImage.loadFromData(file.readAll());
 
-                file.close();                
+                file.close();
 
                 if ( logo.contains( "lo1.in" ) ) {
 
@@ -1269,7 +1299,7 @@ void MainWindow::on_twPLS_Items_itemSelectionChanged()
 
             ui->cmdImdb->setEnabled(false);
 
-            select = db.selectProgramData(tvg_id);
+            select = db.selectActualProgramData(tvg_id);
 
             while ( select->next() ) {
 
@@ -1318,7 +1348,9 @@ void MainWindow::on_twPLS_Items_itemSelectionChanged()
                         backImage = QPixmap(":/images/template.png");
 
                         QPainter painter(&backImage);
-                        painter.drawPixmap(10, 10, backImage.width()-20, backImage.height()-20, buttonImage);
+
+                        buttonImage = buttonImage.scaledToWidth(backImage.width()-20, Qt::SmoothTransformation);
+                        painter.drawPixmap(10, (backImage.height() - buttonImage.height()) / 2 , buttonImage);
 
                         ui->lblLogo->setPixmap(backImage.scaled(ui->lblLogo->maximumWidth(),ui->lblLogo->maximumHeight(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
                     }
@@ -1353,6 +1385,8 @@ void MainWindow::processFinished()
 
 void MainWindow::loadImage()
 {
+    QPixmap buttonImage;
+
     dir.mkpath(m_AppDataPath + "/logos/");
 
     QString filename = m_AppDataPath + "/logos/" + m_pImgCtrl->filename();
@@ -2244,3 +2278,28 @@ void MainWindow::on_cmdGatherStreamData_clicked()
     m_Process2->start(program, arguments);
 }
 
+void MainWindow::on_edtFilter_2_returnPressed()
+{
+    this->fillTwPls_Item();
+}
+
+void MainWindow::on_radTv_clicked()
+{
+    const int pls_id = ui->cboPlaylists->itemData(ui->cboPlaylists->currentIndex()).toString().toInt();
+
+    db.updatePLS_kind(pls_id, 1 );
+}
+
+void MainWindow::on_radRadio_clicked()
+{
+    const int pls_id = ui->cboPlaylists->itemData(ui->cboPlaylists->currentIndex()).toString().toInt();
+
+    db.updatePLS_kind(pls_id, 2 );
+}
+
+void MainWindow::on_radMovie_clicked()
+{
+    const int pls_id = ui->cboPlaylists->itemData(ui->cboPlaylists->currentIndex()).toString().toInt();
+
+    db.updatePLS_kind(pls_id, 3 );
+}

@@ -6,13 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-<<<<<<< HEAD
-    <width>897</width>
-    <height>698</height>
-=======
     <width>929</width>
     <height>782</height>
->>>>>>> 453bcb4e7876e90700a78b7a5d7871a91fb44614
    </rect>
   </property>
   <property name="windowTitle">
@@ -551,6 +546,34 @@
           </layout>
          </item>
          <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_7">
+           <item>
+            <widget class="QRadioButton" name="radTv">
+             <property name="text">
+              <string>tv stream</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="radRadio">
+             <property name="text">
+              <string>radio stream</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="radMovie">
+             <property name="text">
+              <string>movie stream</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="edtFilter_2"/>
+         </item>
+         <item>
           <layout class="QHBoxLayout" name="horizontalLayout_4">
            <item>
             <widget class="QTreeWidget" name="twPLS_Items">
@@ -839,13 +862,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-<<<<<<< HEAD
-     <width>897</width>
-     <height>26</height>
-=======
      <width>929</width>
-     <height>23</height>
->>>>>>> 453bcb4e7876e90700a78b7a5d7871a91fb44614
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuSettings">

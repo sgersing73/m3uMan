@@ -38,6 +38,7 @@ public:
 
     bool updatePLS(int, const QString &);
     bool updatePLS_favorite(int, int);
+    bool updatePLS_kind(int, int);
 
     bool updatePLS_item_pls_pos(int, int);
     bool updatePLS_item_tmdb_by_extinf_id(int, double);
@@ -46,6 +47,7 @@ public:
     int insertPLS(const QString &);
     bool removePLS(int);
     QSqlQuery* selectPLS(int);
+    QSqlQuery* selectPLS_by_id(int);
     QSqlQuery* selectPLS_by_pls_name(const QString& );
 
     QSqlQuery* selectEXTINF_byRef(int);
@@ -53,12 +55,13 @@ public:
     QSqlQuery* selectPLS_Items_by_key(int, int);
 
     int insertPLS_Item(int, int, int);
-    QSqlQuery* selectPLS_Items(int);
+    QSqlQuery* selectPLS_Items(int, const QString& );
     bool removePLS_Item(int);
     bool removePLS_Items(int);
 
     bool removeAllPrograms();
     bool addProgram(const QString&, const QString&, const QString&, const QString&, const QString&);
+    QSqlQuery* selectActualProgramData(const QString &);
     QSqlQuery* selectProgramData(const QString &);
 
     QSqlQuery* selectEPGChannels(const QString&);

@@ -163,6 +163,13 @@ bool DbManager::createTable()
         success = false;
     }
 
+    query.prepare("CREATE INDEX IF NOT EXISTS idx_program_channel ON program(channel);");
+
+    if (!query.exec()) {
+        qDebug() << "createIndex idx_program_channel " <<  query.lastError();
+        success = false;
+    }
+
     return success;
 }
 
@@ -219,7 +226,7 @@ bool DbManager::removeObsoleteEXTINFs()
     return success;
 }
 
-QSqlQuery* DbManager::selectEXTINF(const QString& group_title, const QString& station, const QString& state, int favorite)
+QSqlQuery* DbManager::selectEXTINF(const QString& group_title, const QString& tvg_name, const QString& state, int favorite)
 {
     QSqlQuery *select = new QSqlQuery();
 
@@ -228,12 +235,18 @@ QSqlQuery* DbManager::selectEXTINF(const QString& group_title, const QString& st
                             "FROM  extinf, "
                             "      groups "
                             "WHERE groups.id = extinf.group_id "
-                            "AND  (groups.favorite = %4 OR %4 = 0) "
-                            "AND  (groups.group_title LIKE '%%1%' OR '%1' = '') "
-                            "AND   tvg_name LIKE '%%2%' "
-                            "AND  (state = %3 OR %3 = 0) ORDER BY groups.group_title").arg(group_title).arg(station).arg(state.toInt()).arg(favorite);
+                            "AND  (groups.favorite = :favorite OR :favorite = 0) "
+                            "AND  (groups.group_title LIKE :group_title OR :group_title = '') "
+                            "AND  (tvg_name LIKE :tvg_name OR :tvg_name = '') "
+                            "AND  (state = :state OR :state = 0) "
+                            "ORDER BY groups.group_title");
 
     select->prepare( query );
+    select->bindValue(":state", state);
+    select->bindValue(":favorite", favorite);
+    select->bindValue(":group_title", group_title);
+    select->bindValue(":tvg_name", tvg_name);
+
     if ( ! select->exec() ) {
         qDebug() << "selectEXTINF" << select->lastError();
     }
@@ -420,6 +433,20 @@ QSqlQuery* DbManager::selectPLS(int favorite)
     return select;
 }
 
+QSqlQuery* DbManager::selectPLS_by_id(int id)
+{
+    QSqlQuery *select = new QSqlQuery();
+
+    select->prepare("SELECT * FROM pls WHERE id = :id");
+    select->bindValue(":id", id);
+
+    if ( ! select->exec() ) {
+        qDebug() << "selectPLS_by_id" << select->lastError();
+    }
+
+    return select;
+}
+
 bool DbManager::removePLS(int id)
 {
     bool success = false;
@@ -488,6 +515,24 @@ bool DbManager::updatePLS_favorite(int id, int favorite )
         success = true;
     } else {
         qDebug() << "updatePLS_favorite" << query.lastError();
+    }
+
+    return success;
+}
+
+bool DbManager::updatePLS_kind(int id, int kind )
+{
+    bool success = false;
+
+    QSqlQuery query;
+    query.prepare("UPDATE pls SET kind = :kind WHERE id = :id");
+    query.bindValue(":kind", kind);
+    query.bindValue(":id", id);
+
+    if ( query.exec() ) {
+        success = true;
+    } else {
+        qDebug() << "updatePLS_kind" << query.lastError();
     }
 
     return success;
@@ -565,12 +610,19 @@ int DbManager::insertPLS_Item(int pls_id, int extinf_id, int pls_pos )
     return id;
 }
 
-QSqlQuery* DbManager::selectPLS_Items(int pls_id)
+QSqlQuery* DbManager::selectPLS_Items(int pls_id, const QString& tvg_name )
 {
     QSqlQuery *select = new QSqlQuery();
 
-    select->prepare("SELECT * FROM pls_item, extinf WHERE pls_id = :pls_id AND extinf.id = pls_item.extinf_id ORDER BY pls_pos");
+    select->prepare("SELECT * "
+                    "FROM   pls_item, extinf "
+                    "WHERE  pls_id = :pls_id "
+                    "AND    extinf.id = pls_item.extinf_id "
+                    "AND    extinf.tvg_name like :tvg_name "
+                    "ORDER BY pls_pos");
+
     select->bindValue(":pls_id", pls_id);
+    select->bindValue(":tvg_name", tvg_name);
 
     if ( ! select->exec() ) {
         qDebug() << "selectPLS_Item" << select->lastError();
@@ -682,13 +734,31 @@ bool DbManager::removeAllPrograms()
     return success;
 }
 
-QSqlQuery* DbManager::selectProgramData(const QString &channel)
+QSqlQuery* DbManager::selectActualProgramData(const QString &channel)
 {
     QSqlQuery *select = new QSqlQuery();
 
     select->prepare("SELECT * FROM program WHERE strftime('%Y%m%d%H%M%S +0000', 'now', 'localtime') > start AND "
                     "                            strftime('%Y%m%d%H%M%S +0000', 'now', 'localtime') < stop AND "
                     "                            channel = :channel");
+    select->bindValue(":channel", channel);
+
+    if ( ! select->exec() ) {
+        qDebug() << "selectProgramData" << select->lastError();
+    }
+
+    return select;
+}
+
+QSqlQuery* DbManager::selectProgramData(const QString &channel)
+{
+    QSqlQuery *select = new QSqlQuery();
+
+    select->prepare("SELECT * "
+                    "FROM   program "
+                    "WHERE  strftime('%Y%m%d%H%M%S +0000', 'now', 'localtime') > start "
+                    "AND    channel = :channel");
+
     select->bindValue(":channel", channel);
 
     if ( ! select->exec() ) {
