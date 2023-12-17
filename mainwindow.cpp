@@ -986,6 +986,8 @@ void MainWindow::fillTwPls_Item()
         tvg_id = select->value(8).toByteArray().constData();
         url = select->value(11).toByteArray().constData();
 
+        qDebug() << logo;
+
         program.clear();
         select2 = db.selectActualProgramData(tvg_id);
         while ( select2->next() ) {
@@ -1005,7 +1007,9 @@ void MainWindow::fillTwPls_Item()
         treeItem->setData(0, Qt::UserRole+1, extinf_id);
         treeItem->setStatusTip(0, tr("double click to remove the station"));
 
-        if ( QUrl(logo).fileName().trimmed().isEmpty() ) {
+        qDebug() << "fill"  << QUrl(logo).fileName();
+
+        if ( QUrl(logo).fileName().isEmpty() ) {
 
             buttonImage = QPixmap(":/images/iptv.png");
 
@@ -1366,11 +1370,15 @@ void MainWindow::on_twPLS_Items_itemSelectionChanged()
 
         if ( ! logo.trimmed().isEmpty() ) { // z.B.: https://lo1.in/ger/dsr.png
 
-            QFileInfo fi(logo.trimmed());
+            QUrl url(logo);
 
-            QFile file(m_AppDataPath + "/pictures/" + fi.fileName().toUtf8());
+            QFileInfo fi(url.fileName());
+
+            QFile file(m_AppDataPath + "/pictures/" + fi.fileName());
 
             if ( ( ! file.exists() ) || ( file.size() == 0 ) ) {
+
+                qDebug() << "File does not exists..." << m_AppDataPath + "/pictures/" + fi.fileName();
 
                 m_pImgCtrl = new FileDownloader(logo, this);
                 connect(m_pImgCtrl, SIGNAL(downloaded()), SLOT(loadImage()));
@@ -1454,6 +1462,8 @@ void MainWindow::loadImage()
     dir.mkpath(m_AppDataPath + "/pictures/");
 
     QString filename = m_AppDataPath + "/pictures/" + m_pImgCtrl->getFilename();
+
+    qDebug() << "LoadImage" << filename;
 
     QFile file(filename);
 
@@ -1996,6 +2006,8 @@ void MainWindow::on_cmdSetLogo_clicked()
                                              tr("Please enter URL from station logo:"), QLineEdit::Normal,
                                              "", &ok);
         if (ok && !url.isEmpty()) {
+
+            qDebug() << "set logo" << url;
 
             db.updateEXTINF_tvg_logo_byRef(extinf_id, url);
         }

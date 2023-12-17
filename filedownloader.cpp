@@ -3,6 +3,9 @@
 FileDownloader::FileDownloader(QUrl imageUrl, QObject *parent) : QObject(parent)
 {
     m_sFilename = imageUrl.fileName();
+
+    qDebug() << "FileDownloader" << imageUrl.fileName();
+
     m_sUrl = imageUrl.toString();
 
     QNetworkRequest request(imageUrl);
