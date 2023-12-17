@@ -21,6 +21,7 @@ public:
     bool updateEXTINF_byRef(int, const QString&, int, const QString&, int);
     bool updateEXTINF_tvg_logo_byRef(int, const QString&);
     bool updateEXTINF_tvg_id_byRef(int, const QString&);
+    bool updateEXTINF_tvg_name_byRef(int, const QString&);
     bool updateEXTINF_url_byRef(int, const QString&);
 
     bool deactivateEXTINFs();
@@ -44,7 +45,7 @@ public:
     bool updatePLS_item_tmdb_by_extinf_id(int, double);
     bool updatePLS_item_favorite(int, int);
 
-    int insertPLS(const QString &);
+    int insertPLS(const QString &, int);
     bool removePLS(int);
     QSqlQuery* selectPLS(int);
     QSqlQuery* selectPLS_by_id(int);

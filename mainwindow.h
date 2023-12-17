@@ -194,6 +194,8 @@ private slots:
     void on_radRadio_clicked();
     void on_radMovie_clicked();
 
+    void on_actionExport_M3U_file_triggered();
+
 private:
     QString         curFile;
     QDir            dir;
@@ -207,6 +209,7 @@ private:
     QString         m_AppDataPath;
     QString         m_SettingsFile;
     bool            m_ProgressWasCanceled;
+    QTreeWidgetItem *m_ActTreeItem;
 
     QString               m_IconColor;
     QNetworkAccessManager *m_nam;

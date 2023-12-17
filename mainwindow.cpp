@@ -175,9 +175,10 @@ void MainWindow::ShowContextMenuPlsItems( const QPoint & pos )
     QPoint globalPos = ui->twPLS_Items->mapToGlobal(pos);
 
     QMenu myMenu;
-    myMenu.addAction("add to favorites");
-    myMenu.addAction("remove from favorites");
-    // ...
+    myMenu.addAction(QIcon(":/images/Ui/icons8-add-to-favorites-50.png"), "add to favorites");
+    myMenu.addAction(QIcon(":/images/Ui/icons8-trash-can-50.png"),"remove from favorites");
+    myMenu.addSeparator();
+    myMenu.addAction(QIcon(":/images/Ui/icons8-add-50.png"),"add logo to store");
 
     QAction* selectedItem = myMenu.exec(globalPos);
     if (selectedItem)
@@ -190,6 +191,21 @@ void MainWindow::ShowContextMenuPlsItems( const QPoint & pos )
         if ( selectedItem->text().contains("remove from favorites") ) {
             if ( db.updatePLS_item_favorite ( item->data(0, Qt::UserRole).toInt(), 0) ) {
                 qDebug() << "removed";
+            }
+        }
+        if ( selectedItem->text().contains("add logo to store") ) {
+
+            dir.mkpath(m_AppDataPath + "/logos/");
+
+            const QPixmap* pix = ui->lblLogo->pixmap();
+
+            if ( pix ) {
+
+                const QString fileName =  QString("%1").arg(QString(QCryptographicHash::hash(m_actualTitle.toUtf8(),QCryptographicHash::Sha1).toHex()));
+
+                pix->save(m_AppDataPath + "/logos/" + fileName + ".png", "PNG");
+
+                statusBar()->showMessage(tr("Logo added to store..."));
             }
         }
 
@@ -389,6 +405,8 @@ void MainWindow::getFileData(const QString &filename)
     int     group_id, pls_id, plsi_id, extinf_id;
     QString tvg_logo;
 
+    bool overwrite = false;
+
     QSqlQuery *query = nullptr;
 
     QFile file(filename);
@@ -496,7 +514,7 @@ void MainWindow::getFileData(const QString &filename)
                 query->last();
                 query->first();
 
-                if ( query->isValid() ) {
+                if ( query->isValid() && overwrite ) {
 
                     extinf_id = query->value(0).toByteArray().toInt();
 
@@ -526,7 +544,7 @@ void MainWindow::getFileData(const QString &filename)
                 if ( query->isValid() ) {
                     pls_id = query->value(0).toByteArray().toInt();
                 } else {
-                    pls_id = db.insertPLS(group_title);
+                    pls_id = db.insertPLS(group_title, 0);
                 }
 
                 delete query;
@@ -708,7 +726,7 @@ void MainWindow::fillTreeWidget()
     if ( ui->cboGroupTitels->currentText().isEmpty() ) {
         group = "%EU |%";
     } else {
-        group = ui->cboGroupTitels->currentText();
+        group = "%" + ui->cboGroupTitels->currentText() + "%";
     }
 
     if ( ! ui->edtFilter->text().isEmpty() ) {
@@ -770,7 +788,6 @@ void MainWindow::fillComboPlaylists()
     QString title;
     QString id;
     int     favorite = 0;
-    int     kind = 0;
 
     ui->cboPlaylists->clear();
 
@@ -779,11 +796,11 @@ void MainWindow::fillComboPlaylists()
     }
 
     select = db.selectPLS(favorite);
+
     while ( select->next() ) {
 
         id = select->value(0).toByteArray().constData();        
         title = select->value(1).toByteArray().constData();        
-        kind = select->value(3).toByteArray().toInt();
 
         ui->cboPlaylists->addItem(title, id);
     }
@@ -830,11 +847,12 @@ void MainWindow::on_cmdNewPlaylist_clicked()
                                          "", &ok);
     if (ok && !text.isEmpty()) {
 
-        db.insertPLS(text);
+        db.insertPLS(text, 1);
+
         fillComboPlaylists();
 
         QMessageBox::information (this, "The Playlist",
-                                  QString("Playlist '%1' added...").arg(text));
+                                  QString("Playlist '%1' added... don't forget to select the kind").arg(text));
 
         ui->cboPlaylists->setCurrentText(text);
     }
@@ -845,13 +863,12 @@ void MainWindow::on_cmdDeletePlaylist_clicked()
     QMessageBox::StandardButton reply;
     reply = QMessageBox::question(this, "The Playlist " + ui->cboPlaylists->currentText(), "Do you really want to delete the playlist?",
                                   QMessageBox::Yes|QMessageBox::No);
+
     if (reply == QMessageBox::Yes) {
 
         db.removePLS( ui->cboPlaylists->itemData(ui->cboPlaylists->currentIndex()).toString().toInt() );
 
-        fillComboPlaylists();
-    } else {
-      qDebug() << "Yes was *not* clicked";
+        fillComboPlaylists();     
     }
 }
 
@@ -929,9 +946,18 @@ void MainWindow::fillTwPls_Item()
     delete select;
 
     switch (kind) {
-        case 1 : ui->radTv->setChecked(true); break;
-        case 2 : ui->radRadio->setChecked(true); break;
-        case 3 : ui->radMovie->setChecked(true); break;
+        case 1 : ui->radTv->setChecked(true);
+                 ui->cmdImdb->setVisible(false);
+                 ui->cboEPGChannels->setVisible(true);
+                 break;
+        case 2 : ui->radRadio->setChecked(true);
+                 ui->cmdImdb->setVisible(false);
+                 ui->cboEPGChannels->setVisible(false);
+                 break;
+        case 3 : ui->radMovie->setChecked(true);
+                 ui->cmdImdb->setVisible(true);
+                 ui->cboEPGChannels->setVisible(false);
+                 break;
     }
 
     ui->twPLS_Items->clear();
@@ -985,7 +1011,7 @@ void MainWindow::fillTwPls_Item()
 
         } else {
 
-            file.setFileName(m_AppDataPath + "/logos/" + QUrl(logo).fileName());
+            file.setFileName(m_AppDataPath + "/pictures/" + QUrl(logo).fileName());
             if ( file.exists() && file.size() > 0 ) {
 
                 file.open(QIODevice::ReadOnly);
@@ -994,18 +1020,31 @@ void MainWindow::fillTwPls_Item()
 
                 file.close();
 
-                if ( logo.contains( "lo1.in" ) ) {
+                if ( ui->radTv->isChecked() ) {
 
-                    buttonImage = buttonImage.scaled(ui->lblLogo->maximumWidth(),ui->lblLogo->maximumHeight(),Qt::KeepAspectRatio, Qt::SmoothTransformation);
+                    if ( logo.contains( "lo1.in" ) ) {
 
+                        buttonImage = buttonImage.scaled(ui->lblLogo->maximumWidth(),ui->lblLogo->maximumHeight(),Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
+                    } else {
+
+                        QPixmap backImage = QPixmap(":/images/template.png");
+
+                        QPainter painter(&backImage);
+
+                        if (buttonImage.height() > backImage.width() )
+                          buttonImage = buttonImage.scaledToHeight(backImage.height()-20, Qt::SmoothTransformation);
+
+                        if (buttonImage.width() > backImage.width() )
+                          buttonImage = buttonImage.scaledToWidth(backImage.width()-20, Qt::SmoothTransformation);
+
+                        painter.drawPixmap((backImage.width() - buttonImage.width()) / 2 ,
+                                           (backImage.height() - buttonImage.height()) / 2 , buttonImage);
+
+                        buttonImage = backImage.scaled(ui->lblLogo->maximumWidth(),ui->lblLogo->maximumHeight(),Qt::KeepAspectRatio, Qt::SmoothTransformation);
+                    }
                 } else {
-
-                    QPixmap backImage = QPixmap(":/images/template.png");
-
-                    QPainter painter(&backImage);
-                    painter.drawPixmap(10, 10, backImage.width()-20, backImage.height()-20, buttonImage);
-
-                    buttonImage = backImage.scaled(ui->lblLogo->maximumWidth(),ui->lblLogo->maximumHeight(),Qt::KeepAspectRatio, Qt::SmoothTransformation);
+                    buttonImage = buttonImage.scaled(ui->lblLogo->maximumWidth(),ui->lblLogo->maximumHeight(),Qt::KeepAspectRatio, Qt::SmoothTransformation);
                 }
 
             } else {
@@ -1090,15 +1129,23 @@ void MainWindow::MakePlaylist()
     QString         logo;
     QString         url;
     QDir            dir;
+    bool            ok = false;
 
     QString fileName = dir.homePath() + "/"+ ui->cboPlaylists->currentText() + ".m3u";
 
+
+    fileName = QInputDialog::getText(this, tr("Make playlist"),
+                                         tr("Please enter the name of the playlist"), QLineEdit::Normal,
+                                         fileName, &ok);
+    if (!ok || fileName.isEmpty()) {
+        qDebug() << "Invalid input " << fileName << ok;
+        return;
+    }
+
     QFile file( fileName );
 
-    if(!file.open(QFile::WriteOnly |
-                  QFile::Text))
-    {
-        qDebug() << " Could not open file '" + fileName + "' for writing";
+    if(!file.open(QFile::WriteOnly | QFile::Text)) {
+        qDebug() << "Could not open file '" + fileName + "' for writing";
         return;
     }
 
@@ -1249,6 +1296,8 @@ void MainWindow::on_twPLS_Items_itemSelectionChanged()
 
     foreach( QTreeWidgetItem* mitem, items) {
 
+        m_ActTreeItem = mitem;
+
         int extinf_id = mitem->data(0, Qt::UserRole+1).toInt();
 
         select = db.selectEXTINF_byRef(extinf_id);
@@ -1258,7 +1307,7 @@ void MainWindow::on_twPLS_Items_itemSelectionChanged()
             title = select->value(1).toByteArray().constData();
             tvg_id = select->value(2).toByteArray().constData();
             group = select->value(3).toByteArray().constData();
-            logo = select->value(4).toByteArray().constData();
+            logo = select->value(4).toByteArray();
             url = select->value(5).toByteArray().constData();
         }
 
@@ -1319,12 +1368,14 @@ void MainWindow::on_twPLS_Items_itemSelectionChanged()
 
             QFileInfo fi(logo.trimmed());
 
-            QFile file(m_AppDataPath + "/logos/" + fi.fileName());
+            QFile file(m_AppDataPath + "/pictures/" + fi.fileName().toUtf8());
 
             if ( ( ! file.exists() ) || ( file.size() == 0 ) ) {
 
                 m_pImgCtrl = new FileDownloader(logo, this);
                 connect(m_pImgCtrl, SIGNAL(downloaded()), SLOT(loadImage()));
+
+                statusBar()->showMessage("Requesting image...");
 
                 qDebug() << "requesting logo..." << file.fileName() << id << logo;
 
@@ -1339,20 +1390,33 @@ void MainWindow::on_twPLS_Items_itemSelectionChanged()
 
                     qDebug() << "load logo" << fi.fileName();
 
-                    if ( logo.contains( "lo1.in" ) ) {
+                    if ( ui->radTv->isChecked() ) {
+
+                        if ( logo.contains( "lo1.in" ) ) {
+
+                            ui->lblLogo->setPixmap(buttonImage.scaled(ui->lblLogo->maximumWidth(),ui->lblLogo->maximumHeight(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
+
+                        } else {
+
+                            backImage = QPixmap(":/images/template.png");
+
+                            QPainter painter(&backImage);
+
+                            if (buttonImage.height() > backImage.width() )
+                              buttonImage = buttonImage.scaledToHeight(backImage.height()-20, Qt::SmoothTransformation);
+
+                            if (buttonImage.width() > backImage.width() )
+                              buttonImage = buttonImage.scaledToWidth(backImage.width()-20, Qt::SmoothTransformation);
+
+                            painter.drawPixmap((backImage.width() - buttonImage.width()) / 2 ,
+                                               (backImage.height() - buttonImage.height()) / 2 , buttonImage);
+
+                            ui->lblLogo->setPixmap(backImage.scaled(ui->lblLogo->maximumWidth(),ui->lblLogo->maximumHeight(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
+                        }
+
+                    } else if ( ui->radRadio->isChecked()  || ui->radMovie->isChecked() ) {
 
                         ui->lblLogo->setPixmap(buttonImage.scaled(ui->lblLogo->maximumWidth(),ui->lblLogo->maximumHeight(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
-
-                    } else {
-
-                        backImage = QPixmap(":/images/template.png");
-
-                        QPainter painter(&backImage);
-
-                        buttonImage = buttonImage.scaledToWidth(backImage.width()-20, Qt::SmoothTransformation);
-                        painter.drawPixmap(10, (backImage.height() - buttonImage.height()) / 2 , buttonImage);
-
-                        ui->lblLogo->setPixmap(backImage.scaled(ui->lblLogo->maximumWidth(),ui->lblLogo->maximumHeight(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
                     }
                 }
             }
@@ -1385,11 +1449,11 @@ void MainWindow::processFinished()
 
 void MainWindow::loadImage()
 {
-    QPixmap buttonImage;
+    QPixmap buttonImage, backImage;
 
-    dir.mkpath(m_AppDataPath + "/logos/");
+    dir.mkpath(m_AppDataPath + "/pictures/");
 
-    QString filename = m_AppDataPath + "/logos/" + m_pImgCtrl->filename();
+    QString filename = m_AppDataPath + "/pictures/" + m_pImgCtrl->getFilename();
 
     QFile file(filename);
 
@@ -1400,7 +1464,43 @@ void MainWindow::loadImage()
         file.write(m_pImgCtrl->downloadedData());
         file.close();
 
-        qDebug() << "loadImage done..." << filename;
+        file.open(QIODevice::ReadOnly);
+        QTextStream in(&file);
+        buttonImage.loadFromData(file.readAll());
+        file.close();
+
+        if ( ui->radTv->isChecked() ) {
+
+            if ( m_pImgCtrl->getUrl().contains( "lo1.in" ) ) {
+
+                ui->lblLogo->setPixmap(buttonImage.scaled(ui->lblLogo->maximumWidth(),ui->lblLogo->maximumHeight(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
+
+            } else {
+
+                backImage = QPixmap(":/images/template.png");
+
+                QPainter painter(&backImage);
+
+                if (buttonImage.height() > backImage.width() )
+                  buttonImage = buttonImage.scaledToHeight(backImage.height()-20, Qt::SmoothTransformation);
+
+                if (buttonImage.width() > backImage.width() )
+                  buttonImage = buttonImage.scaledToWidth(backImage.width()-20, Qt::SmoothTransformation);
+
+                painter.drawPixmap((backImage.width() - buttonImage.width()) / 2 ,
+                                   (backImage.height() - buttonImage.height()) / 2 , buttonImage);
+
+                ui->lblLogo->setPixmap(backImage.scaled(ui->lblLogo->maximumWidth(),ui->lblLogo->maximumHeight(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
+            }
+
+        } else if ( ui->radRadio->isChecked()  || ui->radMovie->isChecked() ) {
+
+            ui->lblLogo->setPixmap(buttonImage.scaled(ui->lblLogo->maximumWidth(),ui->lblLogo->maximumHeight(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        }
+
+        m_ActTreeItem->setIcon(0, QIcon(buttonImage.scaled(16,16,Qt::KeepAspectRatio, Qt::SmoothTransformation)) );
+
+        statusBar()->showMessage("Image successful retrieved...");
     }
 }
 
@@ -1436,6 +1536,7 @@ void MainWindow::on_cmdSavePosition_clicked()
 
         db.updateEXTINF_tvg_id_byRef(extinf_id, ui->cboEPGChannels->currentText());
         db.updateEXTINF_url_byRef(extinf_id, ui->edtStationUrl->text());
+        db.updateEXTINF_tvg_name_byRef(extinf_id,ui->edtStationName->text());
     }
 
     for (int i = 0; i < ui->twPLS_Items->topLevelItemCount(); i++) {
@@ -1447,9 +1548,7 @@ void MainWindow::on_cmdSavePosition_clicked()
 
     fillTwPls_Item();
 
-    MakePlaylist();
-
-    statusBar()->showMessage("positions set...");
+    statusBar()->showMessage("settings saved...");
 }
 
 void MainWindow::on_treeWidget_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
@@ -2260,6 +2359,7 @@ void MainWindow::on_cmdGatherStream_clicked()
 
     arguments << "-hide_banner" << ui->edtStationUrl->text();
 
+    m_Process->kill();
     m_Process->setProcessChannelMode(QProcess::MergedChannels);
     m_Process->start(program, arguments);
 }
@@ -2302,4 +2402,9 @@ void MainWindow::on_radMovie_clicked()
     const int pls_id = ui->cboPlaylists->itemData(ui->cboPlaylists->currentIndex()).toString().toInt();
 
     db.updatePLS_kind(pls_id, 3 );
+}
+
+void MainWindow::on_actionExport_M3U_file_triggered()
+{
+    this->MakePlaylist();
 }

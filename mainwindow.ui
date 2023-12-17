@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>929</width>
-    <height>782</height>
+    <width>953</width>
+    <height>787</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -286,27 +286,38 @@
            <property name="sizeConstraint">
             <enum>QLayout::SetMinimumSize</enum>
            </property>
-           <item row="0" column="0">
-            <widget class="VlcWidgetSeek" name="widSeek" native="true">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>16777215</width>
-               <height>35</height>
-              </size>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
+           <item row="2" column="0">
             <layout class="QHBoxLayout" name="horizontalLayout_5">
              <property name="sizeConstraint">
               <enum>QLayout::SetMinimumSize</enum>
              </property>
+             <item>
+              <widget class="QPushButton" name="cmdPlayExtern">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="text">
+                <string>play extern</string>
+               </property>
+               <property name="icon">
+                <iconset resource="m3uMan.qrc">
+                 <normaloff>:/images/Ui/icons8-movie-projector-50.png</normaloff>:/images/Ui/icons8-movie-projector-50.png</iconset>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_2">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
              <item>
               <widget class="QProgressBar" name="pgbBuffer">
                <property name="maximumSize">
@@ -438,6 +449,22 @@
               </widget>
              </item>
             </layout>
+           </item>
+           <item row="0" column="0">
+            <widget class="VlcWidgetSeek" name="widSeek" native="true">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>35</height>
+              </size>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>
@@ -577,6 +604,12 @@
           <layout class="QHBoxLayout" name="horizontalLayout_4">
            <item>
             <widget class="QTreeWidget" name="twPLS_Items">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Ignored">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="mouseTracking">
               <bool>true</bool>
              </property>
@@ -662,76 +695,67 @@
                </property>
               </widget>
              </item>
-             <item>
-              <spacer name="verticalSpacer_2">
-               <property name="orientation">
-                <enum>Qt::Vertical</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>20</width>
-                 <height>40</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item>
-              <widget class="QPushButton" name="cmdSetPos">
-               <property name="toolTip">
-                <string>set station position</string>
-               </property>
-               <property name="text">
-                <string>set position</string>
-               </property>
-               <property name="icon">
-                <iconset resource="m3uMan.qrc">
-                 <normaloff>:/images/Ui/icons8-shortlist-50.png</normaloff>:/images/Ui/icons8-shortlist-50.png</iconset>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="cmdMoveUp">
-               <property name="toolTip">
-                <string>move item up in list</string>
-               </property>
-               <property name="text">
-                <string>move up</string>
-               </property>
-               <property name="icon">
-                <iconset resource="m3uMan.qrc">
-                 <normaloff>:/images/Ui/icons8-move-up-50.png</normaloff>:/images/Ui/icons8-move-up-50.png</iconset>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="cmdMoveDown">
-               <property name="toolTip">
-                <string>move item down in list</string>
-               </property>
-               <property name="text">
-                <string>move down</string>
-               </property>
-               <property name="icon">
-                <iconset resource="m3uMan.qrc">
-                 <normaloff>:/images/Ui/icons8-move-down-50.png</normaloff>:/images/Ui/icons8-move-down-50.png</iconset>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="cmdSavePosition">
-               <property name="toolTip">
-                <string>save playlist</string>
-               </property>
-               <property name="text">
-                <string>save settings</string>
-               </property>
-               <property name="icon">
-                <iconset resource="m3uMan.qrc">
-                 <normaloff>:/images/Ui/icons8-checkmark-50.png</normaloff>:/images/Ui/icons8-checkmark-50.png</iconset>
-               </property>
-              </widget>
-             </item>
             </layout>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_8">
+           <item>
+            <widget class="QPushButton" name="cmdMoveUp">
+             <property name="toolTip">
+              <string>move item up in list</string>
+             </property>
+             <property name="text">
+              <string>move up</string>
+             </property>
+             <property name="icon">
+              <iconset resource="m3uMan.qrc">
+               <normaloff>:/images/Ui/icons8-move-up-50.png</normaloff>:/images/Ui/icons8-move-up-50.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="cmdSetPos">
+             <property name="toolTip">
+              <string>set station position</string>
+             </property>
+             <property name="text">
+              <string>set position</string>
+             </property>
+             <property name="icon">
+              <iconset resource="m3uMan.qrc">
+               <normaloff>:/images/Ui/icons8-shortlist-50.png</normaloff>:/images/Ui/icons8-shortlist-50.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="cmdMoveDown">
+             <property name="toolTip">
+              <string>move item down in list</string>
+             </property>
+             <property name="text">
+              <string>move down</string>
+             </property>
+             <property name="icon">
+              <iconset resource="m3uMan.qrc">
+               <normaloff>:/images/Ui/icons8-move-down-50.png</normaloff>:/images/Ui/icons8-move-down-50.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="cmdSavePosition">
+             <property name="toolTip">
+              <string>save playlist</string>
+             </property>
+             <property name="text">
+              <string>save settings</string>
+             </property>
+             <property name="icon">
+              <iconset resource="m3uMan.qrc">
+               <normaloff>:/images/Ui/icons8-checkmark-50.png</normaloff>:/images/Ui/icons8-checkmark-50.png</iconset>
+             </property>
+            </widget>
            </item>
           </layout>
          </item>
@@ -771,20 +795,6 @@
              <property name="icon">
               <iconset resource="m3uMan.qrc">
                <normaloff>:/images/Ui/icons8-preview-pane-50.png</normaloff>:/images/Ui/icons8-preview-pane-50.png</iconset>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="cmdPlayExtern">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="text">
-              <string>play extern</string>
-             </property>
-             <property name="icon">
-              <iconset resource="m3uMan.qrc">
-               <normaloff>:/images/Ui/icons8-movie-projector-50.png</normaloff>:/images/Ui/icons8-movie-projector-50.png</iconset>
              </property>
             </widget>
            </item>
@@ -862,7 +872,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>929</width>
+     <width>953</width>
      <height>21</height>
     </rect>
    </property>
@@ -880,6 +890,7 @@
      <string>File</string>
     </property>
     <addaction name="actionimport_m3u_file"/>
+    <addaction name="actionExport_M3U_file"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
@@ -898,10 +909,13 @@
    <addaction name="menuTools"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
+   <property name="windowTitle">
+    <string>Favorites</string>
+   </property>
    <property name="iconSize">
     <size>
-     <width>50</width>
-     <height>50</height>
+     <width>40</width>
+     <height>40</height>
     </size>
    </property>
    <attribute name="toolBarArea">
@@ -963,6 +977,11 @@
   <action name="actionExplorer_storage_folder">
    <property name="text">
     <string>Explore storage folder</string>
+   </property>
+  </action>
+  <action name="actionExport_M3U_file">
+   <property name="text">
+    <string>Export M3U file</string>
    </property>
   </action>
  </widget>

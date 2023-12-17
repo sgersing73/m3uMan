@@ -230,6 +230,8 @@ QSqlQuery* DbManager::selectEXTINF(const QString& group_title, const QString& tv
 {
     QSqlQuery *select = new QSqlQuery();
 
+    qDebug() << group_title <<tvg_name<<favorite<<state;
+
     QString query = QString("SELECT *, "
                             "( select count(*) from pls_item where pls_item.extinf_id = extinf.id ) "
                             "FROM  extinf, "
@@ -238,7 +240,7 @@ QSqlQuery* DbManager::selectEXTINF(const QString& group_title, const QString& tv
                             "AND  (groups.favorite = :favorite OR :favorite = 0) "
                             "AND  (groups.group_title LIKE :group_title OR :group_title = '') "
                             "AND  (tvg_name LIKE :tvg_name OR :tvg_name = '') "
-                            "AND  (state = :state OR :state = 0) "
+                            "AND  (state = :state OR :state = '0') "
                             "ORDER BY groups.group_title");
 
     select->prepare( query );
@@ -317,6 +319,25 @@ bool DbManager::updateEXTINF_byRef(int id, const QString& tvg_name, int group_id
     return retCode;
 }
 
+bool DbManager::updateEXTINF_tvg_name_byRef(int id, const QString& tvg_name)
+{
+    int retCode = true;
+
+    QSqlQuery *select = new QSqlQuery();
+
+    select->prepare("UPDATE extinf SET tvg_name =:tvg_name WHERE id = :id");
+    select->bindValue(":id", id);
+    select->bindValue(":tvg_name", tvg_name);
+
+    if ( ! select->exec() ) {
+        qDebug() << "updateEXTINF_tvg_name_byRef" << select->lastError();
+        retCode = false;
+    }
+
+    delete select;
+
+    return retCode;
+}
 
 bool DbManager::updateEXTINF_tvg_logo_byRef(int id, const QString& tvg_logo)
 {
@@ -573,13 +594,14 @@ bool DbManager::updatePLS_item_tmdb_by_extinf_id(int extinf_id, double tmdb_id )
     return success;
 }
 
-int DbManager::insertPLS(const QString & pls_name )
+int DbManager::insertPLS(const QString & pls_name, int favorite)
 {
     int id = 0;
 
     QSqlQuery query;
-    query.prepare("INSERT INTO pls (pls_name) VALUES (:pls_name)");
+    query.prepare("INSERT INTO pls (pls_name, favorite) VALUES (:pls_name, :favorite)");
     query.bindValue(":pls_name", pls_name);
+    query.bindValue(":favorite", favorite);
 
     if ( query.exec() ) {
         id = query.lastInsertId().toInt();
@@ -867,5 +889,3 @@ QSqlQuery* DbManager::selectEPGChannels(const QString& region)
 
     return select;
 }
-
-

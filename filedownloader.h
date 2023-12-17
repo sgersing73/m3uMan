@@ -14,7 +14,8 @@ public:
     explicit FileDownloader(QUrl imageUrl, QObject *parent = nullptr);
     virtual ~FileDownloader();
     QByteArray downloadedData() const;
-    QString filename() const ;
+    QString getFilename() const ;
+    QString getUrl() const ;
     qint64  downloadedProgress() const;
 
 signals:
@@ -30,6 +31,7 @@ private:
     QNetworkAccessManager m_WebCtrl;
     QByteArray            m_DownloadedData;
     QString               m_sFilename;
+    QString               m_sUrl;
     QNetworkReply*        m_reply;
     qint64                m_iProgress;
 };

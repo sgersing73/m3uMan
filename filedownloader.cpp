@@ -3,6 +3,7 @@
 FileDownloader::FileDownloader(QUrl imageUrl, QObject *parent) : QObject(parent)
 {
     m_sFilename = imageUrl.fileName();
+    m_sUrl = imageUrl.toString();
 
     QNetworkRequest request(imageUrl);
     request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
@@ -43,7 +44,12 @@ QByteArray FileDownloader::downloadedData() const {
     return m_DownloadedData;
 }
 
-QString FileDownloader::filename() const {
+QString FileDownloader::getFilename() const {
 
     return m_sFilename ;
+}
+
+QString FileDownloader::getUrl() const {
+
+    return m_sUrl ;
 }
