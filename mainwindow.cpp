@@ -201,9 +201,9 @@ void MainWindow::ShowContextMenuPlsItems( const QPoint & pos )
 
             if ( pix ) {
 
-                const QString fileName =  QString("%1").arg(QString(QCryptographicHash::hash(m_actualTitle.toUtf8(),QCryptographicHash::Sha1).toHex()));
+                qDebug() << "add to store" << m_actualTitle;
 
-                pix->save(m_AppDataPath + "/logos/" + fileName + ".png", "PNG");
+                pix->save(m_AppDataPath + "/logos/" + m_actualTitle + ".png", "PNG");
 
                 statusBar()->showMessage(tr("Logo added to store..."));
             }
@@ -1015,44 +1015,59 @@ void MainWindow::fillTwPls_Item()
 
         } else {
 
-            file.setFileName(m_AppDataPath + "/pictures/" + QUrl(logo).fileName());
+            if ( tvg_name.contains("|") ) {
+                m_actualTitle = tvg_name.mid(4);
+            }
+
+            file.setFileName(m_AppDataPath + "/logos/" + m_actualTitle + ".PNG");
             if ( file.exists() && file.size() > 0 ) {
 
+                qDebug() << "use logo from store" << m_actualTitle;
+
                 file.open(QIODevice::ReadOnly);
-
                 buttonImage.loadFromData(file.readAll());
-
                 file.close();
 
-                if ( ui->radTv->isChecked() ) {
+            } else {
 
-                    if ( logo.contains( "lo1.in" ) ) {
+                file.setFileName(m_AppDataPath + "/pictures/" + QUrl(logo).fileName());
+                if ( file.exists() && file.size() > 0 ) {
 
-                        buttonImage = buttonImage.scaled(ui->lblLogo->maximumWidth(),ui->lblLogo->maximumHeight(),Qt::KeepAspectRatio, Qt::SmoothTransformation);
+                    file.open(QIODevice::ReadOnly);
 
+                    buttonImage.loadFromData(file.readAll());
+
+                    file.close();
+
+                    if ( ui->radTv->isChecked() ) {
+
+                        if ( logo.contains( "lo1.in" ) ) {
+
+                            buttonImage = buttonImage.scaled(ui->lblLogo->maximumWidth(),ui->lblLogo->maximumHeight(),Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
+                        } else {
+
+                            QPixmap backImage = QPixmap(":/images/template.png");
+
+                            QPainter painter(&backImage);
+
+                            if (buttonImage.height() > backImage.width() )
+                                buttonImage = buttonImage.scaledToHeight(backImage.height()-20, Qt::SmoothTransformation);
+
+                            if (buttonImage.width() > backImage.width() )
+                                buttonImage = buttonImage.scaledToWidth(backImage.width()-20, Qt::SmoothTransformation);
+
+                            painter.drawPixmap((backImage.width() - buttonImage.width()) / 2 ,
+                                               (backImage.height() - buttonImage.height()) / 2 , buttonImage);
+
+                            buttonImage = backImage.scaled(ui->lblLogo->maximumWidth(),ui->lblLogo->maximumHeight(),Qt::KeepAspectRatio, Qt::SmoothTransformation);
+                        }
                     } else {
-
-                        QPixmap backImage = QPixmap(":/images/template.png");
-
-                        QPainter painter(&backImage);
-
-                        if (buttonImage.height() > backImage.width() )
-                          buttonImage = buttonImage.scaledToHeight(backImage.height()-20, Qt::SmoothTransformation);
-
-                        if (buttonImage.width() > backImage.width() )
-                          buttonImage = buttonImage.scaledToWidth(backImage.width()-20, Qt::SmoothTransformation);
-
-                        painter.drawPixmap((backImage.width() - buttonImage.width()) / 2 ,
-                                           (backImage.height() - buttonImage.height()) / 2 , buttonImage);
-
-                        buttonImage = backImage.scaled(ui->lblLogo->maximumWidth(),ui->lblLogo->maximumHeight(),Qt::KeepAspectRatio, Qt::SmoothTransformation);
+                        buttonImage = buttonImage.scaled(ui->lblLogo->maximumWidth(),ui->lblLogo->maximumHeight(),Qt::KeepAspectRatio, Qt::SmoothTransformation);
                     }
                 } else {
-                    buttonImage = buttonImage.scaled(ui->lblLogo->maximumWidth(),ui->lblLogo->maximumHeight(),Qt::KeepAspectRatio, Qt::SmoothTransformation);
+                    buttonImage = QPixmap(":/images/iptv.png");
                 }
-
-            } else {
-                buttonImage = QPixmap(":/images/iptv.png");
             }
 
             treeItem->setIcon(0, QIcon(buttonImage.scaled(16,16,Qt::KeepAspectRatio, Qt::SmoothTransformation)) );
@@ -2020,12 +2035,15 @@ void MainWindow::fillComboEPGChannels()
     QString title;
     QString id;
 
+    QSettings settings(m_SettingsFile, QSettings::IniFormat);
+    QString EpgPreSelection = settings.value("EpgPreSelection").toString();
+
     ui->cboEPGChannels->blockSignals(true);
 
     ui->cboEPGChannels->clear();
     ui->cboEPGChannels->addItem(" ");
 
-    select = db.selectEPGChannels("DE:");
+    select = db.selectEPGChannels(EpgPreSelection);
     while ( select->next() ) {
 
         title = select->value(3).toByteArray().constData();
