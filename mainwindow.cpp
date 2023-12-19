@@ -317,10 +317,31 @@ MainWindow::~MainWindow()
 
 void MainWindow::about()
 {
-   QMessageBox::about(this, tr("About Application"),
-            tr("The <b>Application</b> example demonstrates how to "
-               "write modern GUI applications using Qt, with a menu bar, "
-               "toolbars, and a status bar."));
+
+    QSysInfo  systemInfo;
+    QString   info;
+
+    info.append(tr("Windows Version:\t%1\n").arg(systemInfo.windowsVersion()));
+    info.append(tr("Build Cpu Architecture:\t%1\n").arg(systemInfo.buildCpuArchitecture()));
+    info.append(tr("Current Cpu Architecture:\t%1\n").arg(systemInfo.currentCpuArchitecture()));
+    info.append(tr("Kernel Type:\t\t%1\n").arg(systemInfo.kernelType()));
+    info.append(tr("Kernel Version:\t\t%1\n").arg(systemInfo.kernelVersion()));
+    info.append(tr("Machine Host Name:\t%1\n").arg(systemInfo.machineHostName()));
+    info.append(tr("Product Type:\t\t%1\n").arg(systemInfo.productType()));
+    info.append(tr("Product Version:\t\t%1\n").arg(systemInfo.productVersion()));
+    info.append(tr("Byte Order:\t\t%1\n").arg(systemInfo.buildAbi()));
+    info.append(tr("Pretty ProductName:\t%1\n").arg(systemInfo.prettyProductName()));
+    info.append("");
+
+    QHostInfo hostInfo = QHostInfo::fromName( QHostInfo::localHostName() );
+
+    if (!hostInfo.addresses().isEmpty()) {
+        QHostAddress address = hostInfo.addresses().first();
+        info.append(tr("IP Address:\t\t%1\n").arg(address.toString()));
+    }
+
+    QMessageBox::about(this, tr("About Application"),info);
+
 }
 
 void MainWindow::createStatusBar()
@@ -1136,6 +1157,116 @@ void MainWindow::on_cmdMoveDown_clicked()
     }
 }
 
+
+void MainWindow::ImportLogoUrlList()
+{
+    QString tvg_name, tvg_logo;
+
+    QString filename = QFileDialog::getOpenFileName(this, ("Select logo url file"),
+                                           dir.homePath(),
+                                           ("txt file (*.txt)"));
+
+    if ( filename.isNull() ) {
+        return;
+    }
+
+    QFile file(filename);
+
+    if(!file.exists()){
+        qDebug() << "File cannot be found " << filename;
+    }
+
+    QString line;
+
+    if (file.open(QIODevice::ReadOnly | QIODevice::Text)){
+
+        QTextStream stream(&file);
+
+        statusBar()->showMessage(tr("import logo list..."));
+
+        stream.seek(0);
+
+        while (!stream.atEnd() ) {
+
+            line = stream.readLine();
+
+            tvg_name = line.split(",").at(0);
+            tvg_logo = line.split(",").at(1);
+
+            if ( ! db.updateEXTINF_tvg_logo_by_tvg_name(tvg_name, tvg_logo) ) {
+                qDebug() << "-E-" << tvg_name << tvg_logo;
+            }
+        }
+    }
+
+    file.close();
+
+    QMessageBox::information(this, "m3uMan", tr("import logo list <b>%1</b> done...").arg(filename), QMessageBox::Ok);
+
+    statusBar()->showMessage(tr("import logo list done..."));
+}
+
+void MainWindow::MakeLogoUrlList()
+{
+    QTreeWidgetItem *item;
+    int             extinf_id;
+    QSqlQuery       *select;
+    QString         logo,title;
+    QDir            dir;
+    bool            ok = false;
+
+    QString fileName = dir.homePath() + "/"+ ui->cboPlaylists->currentText() + "_logo.txt";
+
+    fileName = QInputDialog::getText(this, tr("Make Logo Url List"),
+                                     tr("Please enter the name of the list"), QLineEdit::Normal,
+                                     fileName, &ok);
+    if (!ok || fileName.isEmpty()) {
+        qDebug() << "Invalid input " << fileName << ok;
+        return;
+    }
+
+    QFile file( fileName );
+
+    if(!file.open(QFile::WriteOnly | QFile::Text)) {
+        qDebug() << "Could not open file '" + fileName + "' for writing";
+        return;
+    }
+
+    QGuiApplication::setOverrideCursor(Qt::WaitCursor);
+
+    QTextStream out(&file);
+
+    for(int i=0;i<ui->twPLS_Items->topLevelItemCount();++i) {
+
+        item = ui->twPLS_Items->topLevelItem(i);
+        extinf_id = item->data(0, Qt::UserRole+1).toInt();
+
+        select = db.selectEXTINF_byRef(extinf_id);
+        while ( select->next() ) {
+
+            title = select->value(1).toByteArray().constData();
+            logo = select->value(4).toByteArray().constData();
+
+            if ( ! logo.isEmpty() ) {
+                out << QString("%1,%2\n").arg(title, logo);
+            }
+        }
+
+        delete select;
+
+        QGuiApplication::restoreOverrideCursor();
+    }
+
+    file.flush();
+    file.close();
+
+    somethingchanged = false;
+
+    QMessageBox::information(this, "m3uMan", tr("Export logo list <b>%1</b> done...").arg(fileName), QMessageBox::Ok);
+
+    statusBar()->showMessage(tr("Export logo list done..."));
+}
+
 void MainWindow::MakePlaylist()
 {
     QTreeWidgetItem *item;
@@ -1151,7 +1282,6 @@ void MainWindow::MakePlaylist()
     bool            ok = false;
 
     QString fileName = dir.homePath() + "/"+ ui->cboPlaylists->currentText() + ".m3u";
-
 
     fileName = QInputDialog::getText(this, tr("Make playlist"),
                                          tr("Please enter the name of the playlist"), QLineEdit::Normal,
@@ -1204,7 +1334,9 @@ void MainWindow::MakePlaylist()
 
     somethingchanged = false;
 
-    statusBar()->showMessage(tr("File saved"), 2000);
+    QMessageBox::information(this, "m3uMan", tr("Export playlist <b>%1</b> done...").arg(fileName), QMessageBox::Ok);
+
+    statusBar()->showMessage(tr("File saved"));
 }
 
 void MainWindow::on_edtFilter_returnPressed()
@@ -2438,3 +2570,14 @@ void MainWindow::on_actionExport_M3U_file_triggered()
 {
     this->MakePlaylist();
 }
+
+void MainWindow::on_actionExport_logo_links_triggered()
+{
+    this->MakeLogoUrlList();
+}
+
+void MainWindow::on_actionImport_logo_links_triggered()
+{
+    this->ImportLogoUrlList();
+}
+

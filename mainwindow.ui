@@ -873,7 +873,7 @@
      <x>0</x>
      <y>0</y>
      <width>953</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuSettings">
@@ -891,6 +891,9 @@
     </property>
     <addaction name="actionimport_m3u_file"/>
     <addaction name="actionExport_M3U_file"/>
+    <addaction name="separator"/>
+    <addaction name="actionImport_logo_links"/>
+    <addaction name="actionExport_logo_links"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
@@ -982,6 +985,16 @@
   <action name="actionExport_M3U_file">
    <property name="text">
     <string>Export M3U file</string>
+   </property>
+  </action>
+  <action name="actionExport_logo_links">
+   <property name="text">
+    <string>Export logo links</string>
+   </property>
+  </action>
+  <action name="actionImport_logo_links">
+   <property name="text">
+    <string>Import logo links</string>
    </property>
   </action>
  </widget>

@@ -359,6 +359,25 @@ bool DbManager::updateEXTINF_tvg_logo_byRef(int id, const QString& tvg_logo)
     return retCode;
 }
 
+bool DbManager::updateEXTINF_tvg_logo_by_tvg_name(const QString& tvg_name, const QString& tvg_logo)
+{
+    int retCode = true;
+
+    QSqlQuery *select = new QSqlQuery();
+
+    select->prepare("UPDATE extinf SET tvg_logo =:tvg_logo WHERE tvg_name = :tvg_name");
+    select->bindValue(":tvg_name", tvg_name);
+    select->bindValue(":tvg_logo", tvg_logo);
+
+    if ( ! select->exec() ) {
+        qDebug() << "updateEXTINF_tvg_logo_by_tvg_name" << select->lastError();
+        retCode = false;
+    }
+
+    delete select;
+
+    return retCode;
+}
 
 bool DbManager::updateEXTINF_tvg_id_byRef(int id, const QString& tvg_id)
 {

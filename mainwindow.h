@@ -37,6 +37,7 @@
 #include <QPainter>
 #include <QRect>
 #include <QPoint>
+#include <QHostInfo>
 
 #ifdef Q_OS_WIN
 #include <QWinTaskbarButton>
@@ -104,6 +105,8 @@ private:
 
     void FindAndColorAllButtons();
     void MakePlaylist();
+    void MakeLogoUrlList();
+    void ImportLogoUrlList();
 
     QPixmap changeIconColor(QIcon, QColor);
     void fillComboEPGChannels();
@@ -195,6 +198,10 @@ private slots:
     void on_radMovie_clicked();
 
     void on_actionExport_M3U_file_triggered();
+
+    void on_actionExport_logo_links_triggered();
+
+    void on_actionImport_logo_links_triggered();
 
 private:
     QString         curFile;
