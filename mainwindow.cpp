@@ -59,7 +59,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->splitter_4->restoreState(settings.value("splitter_4").toByteArray());
     ui->edtUrl->setText(settings.value("iptvurl").toByteArray());
     ui->edtUrlEpg->setText(settings.value("iptvepgurl").toByteArray());
-    ui->edtFilter_2->setText(settings.value("Filter2").toByteArray());
 
     if ( settings.value("PlaylistOnlyFavorits").toInt() == Qt::Checked ) {
         ui->chkPlaylistOnlyFavorits->setCheckState( Qt::Checked );
@@ -297,7 +296,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
     settings.setValue("iptvurl", ui->edtUrl->text());
     settings.setValue("iptvepgurl", ui->edtUrlEpg->text());
     settings.setValue("CurrentPlaylist", ui->cboPlaylists->currentText());
-    settings.setValue("Filter2", ui->edtFilter_2->text());
     settings.sync();
 
     _player->stop();
@@ -970,14 +968,17 @@ void MainWindow::fillTwPls_Item()
         case 1 : ui->radTv->setChecked(true);
                  ui->cmdImdb->setVisible(false);
                  ui->cboEPGChannels->setVisible(true);
+                 ui->cmdEPG->setVisible(true);
                  break;
         case 2 : ui->radRadio->setChecked(true);
                  ui->cmdImdb->setVisible(false);
                  ui->cboEPGChannels->setVisible(false);
+                 ui->cmdEPG->setVisible(false);
                  break;
         case 3 : ui->radMovie->setChecked(true);
                  ui->cmdImdb->setVisible(true);
                  ui->cboEPGChannels->setVisible(false);
+                 ui->cmdEPG->setVisible(false);
                  break;
     }
 
@@ -1007,8 +1008,6 @@ void MainWindow::fillTwPls_Item()
         tvg_id = select->value(8).toByteArray().constData();
         url = select->value(11).toByteArray().constData();
 
-        qDebug() << logo;
-
         program.clear();
         select2 = db.selectActualProgramData(tvg_id);
         while ( select2->next() ) {
@@ -1027,8 +1026,6 @@ void MainWindow::fillTwPls_Item()
         treeItem->setData(0, Qt::UserRole, id);
         treeItem->setData(0, Qt::UserRole+1, extinf_id);
         treeItem->setStatusTip(0, tr("double click to remove the station"));
-
-        qDebug() << "fill"  << QUrl(logo).fileName();
 
         if ( QUrl(logo).fileName().isEmpty() ) {
 
@@ -1116,6 +1113,11 @@ void MainWindow::on_cboPlaylists_currentTextChanged(const QString &arg1)
 {
     ui->lblLogo->clear();
     ui->cboEPGChannels->setCurrentText(" ");
+
+    qDebug() << QString("%1").arg(qHash(arg1));
+
+    QSettings settings(m_SettingsFile, QSettings::IniFormat);
+    ui->edtFilter_2->setText( settings.value(QString("%1").arg(qHash(arg1))).toString() );
 
     fillTwPls_Item();
 }
@@ -1401,8 +1403,6 @@ void MainWindow::SaveM3u()
 
 void MainWindow::SaveXML()
 {
-    qDebug() << "test";
-
     const QDateTime now = QDateTime::currentDateTime();
     const QString timestamp = now.toString(QLatin1String("yyyyMMddhhmmss"));
 
@@ -1472,10 +1472,12 @@ void MainWindow::on_twPLS_Items_itemSelectionChanged()
 
         delete select;
 
-        if ( tvg_id.isEmpty() ) {
+        if ( tvg_id.trimmed().isEmpty() ) {
             ui->cboEPGChannels->setCurrentText(" ");
+            ui->cmdEPG->setEnabled(false);
         } else {
             ui->cboEPGChannels->setCurrentText(tvg_id);
+            ui->cmdEPG->setEnabled(true);
         }
 
         ui->edtStationUrl->setText(url);
@@ -1987,8 +1989,6 @@ void MainWindow::getTMDBdate(const QString &title, int tmdb_id, int extinf_id)
         QNetworkReply* reply = m_nam->get(QNetworkRequest(url));
 
         reply->setProperty("extinf_id", extinf_id);
-
-        qDebug() << url;
     }
 }
 
@@ -2021,8 +2021,6 @@ void MainWindow::getTMDBdataById(int tmdb_id, int extinf_id)
         QNetworkReply* reply = m_nam->get(QNetworkRequest(url));
 
         reply->setProperty("extinf_id", extinf_id);
-
-        qDebug() << url;
     }
 }
 
@@ -2542,28 +2540,47 @@ void MainWindow::on_cmdGatherStreamData_clicked()
 
 void MainWindow::on_edtFilter_2_returnPressed()
 {
+    QSettings settings(m_SettingsFile, QSettings::IniFormat);
+    settings.setValue(QString("%1").arg(qHash(ui->cboPlaylists->currentText())), ui->edtFilter_2->text());
+    settings.sync();
+
     this->fillTwPls_Item();
 }
 
 void MainWindow::on_radTv_clicked()
 {
-    const int pls_id = ui->cboPlaylists->itemData(ui->cboPlaylists->currentIndex()).toString().toInt();
+    int pls_id = ui->cboPlaylists->itemData(ui->cboPlaylists->currentIndex()).toString().toInt();
 
     db.updatePLS_kind(pls_id, 1 );
+
+    ui->radTv->setChecked(true);
+    ui->cmdImdb->setVisible(false);
+    ui->cboEPGChannels->setVisible(true);
+    ui->cmdEPG->setVisible(true);
 }
 
 void MainWindow::on_radRadio_clicked()
 {
-    const int pls_id = ui->cboPlaylists->itemData(ui->cboPlaylists->currentIndex()).toString().toInt();
+    int pls_id = ui->cboPlaylists->itemData(ui->cboPlaylists->currentIndex()).toString().toInt();
 
     db.updatePLS_kind(pls_id, 2 );
+
+    ui->radRadio->setChecked(true);
+    ui->cmdImdb->setVisible(false);
+    ui->cboEPGChannels->setVisible(false);
+    ui->cmdEPG->setVisible(false);
 }
 
 void MainWindow::on_radMovie_clicked()
 {
-    const int pls_id = ui->cboPlaylists->itemData(ui->cboPlaylists->currentIndex()).toString().toInt();
+    int pls_id = ui->cboPlaylists->itemData(ui->cboPlaylists->currentIndex()).toString().toInt();
 
     db.updatePLS_kind(pls_id, 3 );
+
+    ui->radMovie->setChecked(true);
+    ui->cmdImdb->setVisible(true);
+    ui->cboEPGChannels->setVisible(false);
+    ui->cmdEPG->setVisible(false);
 }
 
 void MainWindow::on_actionExport_M3U_file_triggered()
@@ -2579,5 +2596,26 @@ void MainWindow::on_actionExport_logo_links_triggered()
 void MainWindow::on_actionImport_logo_links_triggered()
 {
     this->ImportLogoUrlList();
+}
+
+void MainWindow::on_cmdEPG_clicked()
+{
+    QSqlQuery *select;
+    QString   start, stop, title, descr;
+
+    ui->edtOutput->clear();
+
+    select = db.selectProgramData(ui->cboEPGChannels->currentText());
+    while ( select->next() ) {
+
+        start = select->value(0).toByteArray().constData();
+        stop = select->value(1).toByteArray().constData();
+        title = select->value(2).toByteArray().constData();
+        descr = select->value(3).toByteArray().constData();
+
+        ui->edtOutput->append( start + " - " + stop + " - <font color=\"lightgreen\">" + title + "</font><br><br>" + descr + "<br><br>");
+    }
+
+    delete select;
 }
 

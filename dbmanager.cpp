@@ -785,7 +785,7 @@ QSqlQuery* DbManager::selectActualProgramData(const QString &channel)
     select->bindValue(":channel", channel);
 
     if ( ! select->exec() ) {
-        qDebug() << "selectProgramData" << select->lastError();
+        qDebug() << "selectActualProgramData" << select->lastError();
     }
 
     return select;
@@ -795,9 +795,12 @@ QSqlQuery* DbManager::selectProgramData(const QString &channel)
 {
     QSqlQuery *select = new QSqlQuery();
 
-    select->prepare("SELECT * "
+    select->prepare("SELECT SUBSTR (start, 7, 2) || ' ' ||SUBSTR (start, 9, 2) || ':' || SUBSTR (start, 11, 2) || ':' || SUBSTR(start, 13, 2), "
+                    "       SUBSTR (start, 7, 2) || ' ' ||SUBSTR (stop,  9, 2) || ':' || SUBSTR (stop,  11, 2) || ':' || SUBSTR(stop,  13, 2), "
+                    "       title, "
+                    "       desc "
                     "FROM   program "
-                    "WHERE  strftime('%Y%m%d%H%M%S +0000', 'now', 'localtime') > start "
+                    "WHERE  strftime('%Y%m%d%H%M%S +0000', 'now', 'localtime') < stop "
                     "AND    channel = :channel");
 
     select->bindValue(":channel", channel);

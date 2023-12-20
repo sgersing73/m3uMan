@@ -203,6 +203,8 @@ private slots:
 
     void on_actionImport_logo_links_triggered();
 
+    void on_cmdEPG_clicked();
+
 private:
     QString         curFile;
     QDir            dir;
