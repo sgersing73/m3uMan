@@ -1841,6 +1841,10 @@ void MainWindow::getEPGFileData(const QString &sFileName)
             if(token == QXmlStreamReader::EndElement) {
 
                 if(xmlReader->name() == "programme") {
+
+                    start.replace(8, 2, QString("%1").arg(start.mid(8, 2).toInt() + 1, 2, 10, QLatin1Char('0')));
+                    stop.replace(8, 2, QString("%1").arg(stop.mid(8, 2).toInt() + 1, 2, 10, QLatin1Char('0')));
+
                     db.addProgram(start, stop, channel, title, desc);
                     start = stop = channel = title = desc = "";
                 }
@@ -2658,4 +2662,6 @@ void MainWindow::on_cmdEPG_clicked()
     }
 
     delete select;
+
+    ui->edtOutput->moveCursor(QTextCursor::Start);
 }
