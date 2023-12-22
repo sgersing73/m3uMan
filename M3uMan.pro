@@ -62,6 +62,7 @@ RESOURCES += \
     m3uMan.qrc
 
 DISTFILES += \
+    docs/license.txt \
     docs/resources.txt \
     "playlists/Radio Absolut.m3u" \
     "playlists/Telekom Magenta TV.m3u" \

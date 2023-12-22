@@ -31,7 +31,7 @@ MainWindow::MainWindow(QWidget *parent) :
     _videoControl = new VlcControlVideo (_player);
     _video = new VlcVideo(_player);
 
-    _player->setVideoWidget(ui->widVideo);    
+    _player->setVideoWidget(ui->widVideo);
     _equalizerDialog->setMediaPlayer(_player);
     _error = new VlcError();
 
@@ -112,7 +112,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     fillComboGroupTitels();
     fillComboEPGChannels();
-    fillTreeWidget();
 
     ui->cboPlaylists->setCurrentText(settings.value("CurrentPlaylist").toByteArray());
 
@@ -313,23 +312,49 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::license()
+{
+    QString   info;
+
+    QFile f ( ":/docs/license.txt" );
+    f.open(QFile::ReadOnly | QFile::Text);
+    QTextStream ts(&f);
+    info = ts.readAll();
+    f.close();
+
+    QFont font("Courier New");
+    font.setStyleHint(QFont::Monospace);
+    font.setPixelSize(9);
+
+    QMessageBox msgBox;
+    msgBox.setWindowTitle(tr("License Informations"));
+    msgBox.setText(info);
+    msgBox.setStandardButtons(QMessageBox::Ok);
+    msgBox.setFont(font);
+
+    msgBox.exec();
+}
+
 void MainWindow::about()
 {
-
     QSysInfo  systemInfo;
     QString   info;
 
+    QStorageInfo storage = QStorageInfo::root();
+
+    info.append(tr("M3uMan V1.0\n"));
+    info.append("\n");
     info.append(tr("Windows Version:\t%1\n").arg(systemInfo.windowsVersion()));
     info.append(tr("Build Cpu Architecture:\t%1\n").arg(systemInfo.buildCpuArchitecture()));
-    info.append(tr("Current Cpu Architecture:\t%1\n").arg(systemInfo.currentCpuArchitecture()));
+    info.append(tr("Current Cpu Architecture: %1\n").arg(systemInfo.currentCpuArchitecture()));
     info.append(tr("Kernel Type:\t\t%1\n").arg(systemInfo.kernelType()));
     info.append(tr("Kernel Version:\t\t%1\n").arg(systemInfo.kernelVersion()));
     info.append(tr("Machine Host Name:\t%1\n").arg(systemInfo.machineHostName()));
     info.append(tr("Product Type:\t\t%1\n").arg(systemInfo.productType()));
-    info.append(tr("Product Version:\t\t%1\n").arg(systemInfo.productVersion()));
+    info.append(tr("Product Version:\t%1\n").arg(systemInfo.productVersion()));
     info.append(tr("Byte Order:\t\t%1\n").arg(systemInfo.buildAbi()));
     info.append(tr("Pretty ProductName:\t%1\n").arg(systemInfo.prettyProductName()));
-    info.append("");
+    info.append("\n");
 
     QHostInfo hostInfo = QHostInfo::fromName( QHostInfo::localHostName() );
 
@@ -338,7 +363,28 @@ void MainWindow::about()
         info.append(tr("IP Address:\t\t%1\n").arg(address.toString()));
     }
 
-    QMessageBox::about(this, tr("About Application"),info);
+    info.append("\n");
+
+    qDebug() << storage.rootPath();
+    if (storage.isReadOnly())
+        qDebug() << "isReadOnly:" << storage.isReadOnly();
+
+    info.append(tr("Storage Name:\t\t%1\n").arg(storage.displayName()));
+    info.append(tr("File System Type:\t%1\n").arg(QString::fromStdString(storage.fileSystemType().toStdString())));
+    info.append(tr("Size (GB):\t\t%1\n").arg(storage.bytesTotal()/1024/1024/1024));
+    info.append(tr("Free (GB):\t\t%1\n").arg(storage.bytesAvailable()/1024/1024/1024));
+
+    QFont font("Courier New");
+    font.setStyleHint(QFont::Monospace);
+    font.setPixelSize(9);
+
+    QMessageBox msgBox;
+    msgBox.setWindowTitle(tr("About Application"));
+    msgBox.setText(info);
+    msgBox.setStandardButtons(QMessageBox::Ok);
+    msgBox.setFont(font);
+
+    msgBox.exec();
 
 }
 
@@ -365,10 +411,12 @@ void MainWindow::createActions() {
      QAction *aboutAct = helpMenu->addAction(this->style()->standardIcon(QStyle::SP_TitleBarMenuButton), tr("&About"), this, &MainWindow::about);
      aboutAct->setStatusTip(tr("Show the application's About box"));
 
+     QAction *aboutLic = helpMenu->addAction(this->style()->standardIcon(QStyle::SP_TitleBarMenuButton), tr("&License"), this, &MainWindow::license);
+     aboutLic->setStatusTip(tr("Show the application's License Box"));
+
      QAction *aboutQtAct = helpMenu->addAction(this->style()->standardIcon(QStyle::SP_TitleBarMenuButton), tr("About &Qt"), qApp, &QApplication::aboutQt);
      aboutQtAct->setStatusTip(tr("Show the Qt library's About box"));
 
-     menuBar()->addSeparator();
 }
 
 bool MainWindow::maybeSave()
@@ -1094,7 +1142,7 @@ void MainWindow::fillTwPls_Item()
         // ----------------------------------------------------
 
         if ( favorite == 1 ) {
-            action = new QAction(QIcon(buttonImage), tvg_name);
+            action = new QAction(QIcon(buttonImage.scaled(100,100,Qt::KeepAspectRatio, Qt::SmoothTransformation)), tvg_name);
             action->setData(select->at());
             ui->mainToolBar->addAction(action);
         }
@@ -1113,8 +1161,6 @@ void MainWindow::on_cboPlaylists_currentTextChanged(const QString &arg1)
 {
     ui->lblLogo->clear();
     ui->cboEPGChannels->setCurrentText(" ");
-
-    qDebug() << QString("%1").arg(qHash(arg1));
 
     QSettings settings(m_SettingsFile, QSettings::IniFormat);
     ui->edtFilter_2->setText( settings.value(QString("%1").arg(qHash(arg1))).toString() );
@@ -1527,14 +1573,14 @@ void MainWindow::on_twPLS_Items_itemSelectionChanged()
 
             if ( ( ! file.exists() ) || ( file.size() == 0 ) ) {
 
-                qDebug() << "File does not exists..." << m_AppDataPath + "/pictures/" + fi.fileName();
+                // qDebug() << "File does not exists..." << m_AppDataPath + "/pictures/" + fi.fileName();
 
                 m_pImgCtrl = new FileDownloader(logo, this);
                 connect(m_pImgCtrl, SIGNAL(downloaded()), SLOT(loadImage()));
 
                 statusBar()->showMessage("Requesting image...");
 
-                qDebug() << "requesting logo..." << file.fileName() << id << logo;
+                // qDebug() << "requesting logo..." << file.fileName() << id << logo;
 
             } else {
 
@@ -1544,8 +1590,6 @@ void MainWindow::on_twPLS_Items_itemSelectionChanged()
                     QTextStream in(&file);
                     buttonImage.loadFromData(file.readAll());
                     file.close();
-
-                    qDebug() << "load logo" << fi.fileName();
 
                     if ( ui->radTv->isChecked() ) {
 
@@ -1587,8 +1631,6 @@ void MainWindow::on_twPLS_Items_itemSelectionChanged()
 
 void MainWindow::processStarted()
 {
-    qDebug() << "processStarted()";
-
     m_OutputString.clear();
     ui->edtOutput->setText(m_OutputString);
 }
@@ -1601,7 +1643,6 @@ void MainWindow::readyReadStandardOutput()
 
 void MainWindow::processFinished()
 {
-    qDebug() << "processFinished()";
 }
 
 void MainWindow::loadImage()
@@ -2618,4 +2659,3 @@ void MainWindow::on_cmdEPG_clicked()
 
     delete select;
 }
-

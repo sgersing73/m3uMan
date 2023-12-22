@@ -38,6 +38,7 @@
 #include <QRect>
 #include <QPoint>
 #include <QHostInfo>
+#include <QStorageInfo>
 
 #ifdef Q_OS_WIN
 #include <QWinTaskbarButton>
@@ -51,6 +52,7 @@
 #include <VLCQtCore/Error.h>
 #include <VLCQtCore/Video.h>
 #include <VLCQtCore/MetaManager.h>
+#include <VLCQtCore/Stats.h>
 
 #include <VLCQtWidgets/WidgetSeek.h>
 #include <VLCQtWidgets/ControlVideo.h>
@@ -81,6 +83,7 @@ private:
     void createActions();
     void createStatusBar();
     void about();
+    void license();
     bool maybeSave();
     bool save();
     bool saveAs();

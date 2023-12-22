@@ -29,5 +29,6 @@
         <file>images/Ui/icons8-movie-projector-50.png</file>
         <file>images/Ui/icons8-add-to-favorites-50.png</file>
         <file>images/template.png</file>
+        <file>docs/license.txt</file>
     </qresource>
 </RCC>
