@@ -11,10 +11,20 @@ MainWindow::MainWindow(QWidget *parent) :
 
     m_AppDataPath = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
     dir.mkpath(m_AppDataPath);
-
     m_SettingsFile = m_AppDataPath + "/settings.ini";
+    QSettings settings(m_SettingsFile, QSettings::IniFormat);
 
-    //this->Zip(m_AppDataPath + "/m3uMan.sqlite", m_AppDataPath + "/m3uMan.sqlite.bck");
+    if ( QString(settings.value("BackupOnStart").toByteArray()).toInt() == 1 )  {
+
+        qDebug("Perform a database backup, now...");
+
+        const QDateTime now = QDateTime::currentDateTime();
+        const QString timestamp = now.toString(QLatin1String("yyyyMMddhhmmss"));
+
+        this->Zip(m_AppDataPath + "/m3uMan.sqlite", m_AppDataPath + "/m3uMan.sqlite_" + timestamp + ".bck");
+    }
+
+    settings.setValue("BackupOnStart", 0);
 
     db.open(m_AppDataPath + "/m3uMan.sqlite");
 
@@ -52,7 +62,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->FindAndColorAllButtons();
 
-    QSettings settings(m_SettingsFile, QSettings::IniFormat);
     restoreGeometry(settings.value("geometry").toByteArray());
     restoreState(settings.value("windowState").toByteArray());
     ui->splitter->restoreState(settings.value("splitter").toByteArray());
@@ -2785,4 +2794,40 @@ void MainWindow::on_edtUrlEpgHour_returnPressed()
     QSettings settings(m_SettingsFile, QSettings::IniFormat);
     settings.setValue(ui->cboUrlEpgSource->currentText(), ui->edtUrlEpg->text() + ";" + ui->edtUrlEpgHour->text());
     settings.sync();
+}
+
+void MainWindow::on_actionMake_backup_on_next_run_triggered()
+{
+    QSettings settings(m_SettingsFile, QSettings::IniFormat);
+    settings.setValue("BackupOnStart", 1);
+    settings.sync();
+
+    QMessageBox::information(this, "m3uMan", QString("Backup will be done on next program start!" ) );
+}
+
+void MainWindow::on_actionWrite_INI_to_database_triggered()
+{
+    QFile file(m_SettingsFile);
+
+    if (file.open(QIODevice::ReadOnly | QIODevice::Text)){
+
+        db.removeINI();
+
+        QTextStream stream(&file);
+
+        while (!stream.atEnd()){
+
+            const QString line = stream.readLine();
+
+            if ( line.contains("=") ) {
+                db.insertINI(line.split("=").at(0), line.split("=").at(1) );
+            } else {
+                db.insertINI(line, "" );
+            }
+        }
+
+        file.close();
+    }
+
+    QMessageBox::information(this, "m3uMan", QString("INI Settings written to database!" ) );
 }

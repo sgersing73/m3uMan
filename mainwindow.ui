@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1001</width>
+    <width>1142</width>
     <height>787</height>
    </rect>
   </property>
@@ -947,8 +947,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1001</width>
-     <height>21</height>
+     <width>1142</width>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuSettings">
@@ -959,6 +959,8 @@
     <addaction name="actionIcon_color"/>
     <addaction name="actionselect_application_font"/>
     <addaction name="separator"/>
+    <addaction name="actionMake_backup_on_next_run"/>
+    <addaction name="actionWrite_INI_to_database"/>
    </widget>
    <widget class="QMenu" name="menuFile">
     <property name="title">
@@ -1070,6 +1072,16 @@
   <action name="actionImport_logo_links">
    <property name="text">
     <string>Import logo links</string>
+   </property>
+  </action>
+  <action name="actionMake_backup_on_next_run">
+   <property name="text">
+    <string>Make backup on next run</string>
+   </property>
+  </action>
+  <action name="actionWrite_INI_to_database">
+   <property name="text">
+    <string>Write INI to database</string>
    </property>
   </action>
  </widget>

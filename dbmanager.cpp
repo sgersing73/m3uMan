@@ -177,6 +177,18 @@ bool DbManager::createTable()
         success = false;
     }
 
+    // Tabelle settings (save the settings from ini file)
+
+    query.prepare("CREATE TABLE IF NOT EXISTS "
+                  "ini (id       INTEGER PRIMARY KEY AUTOINCREMENT, "
+                  "     key      TEXT,"
+                  "     text     TEXT)");
+
+    if (!query.exec()) {
+        qDebug() << "createTable settings" <<  query.lastError() << query.lastQuery();
+        success = false;
+    }
+
     return success;
 }
 
@@ -924,4 +936,37 @@ QSqlQuery* DbManager::selectEPGChannels(const QString& region)
     }
 
     return select;
+}
+
+int DbManager::insertINI(const QString& key, const QString& text)
+{
+    int id = 0;
+
+    QSqlQuery query;
+    query.prepare("INSERT INTO ini (key, text) VALUES (:key, :text)");
+    query.bindValue(":key", key);
+    query.bindValue(":text", text);
+
+    if ( query.exec() ) {
+        id = query.lastInsertId().toInt();
+    } else {
+        qDebug() << "insertINI" << query.lastError();
+    }
+
+    return id;
+}
+
+bool DbManager::removeINI()
+{
+    bool success = false;
+
+    QSqlQuery query;
+
+    if ( query.exec("DELETE FROM ini") ) {
+        success = true;
+    } else {
+        qDebug() << "removeINI" << query.lastError();
+    }
+
+    return success;
 }

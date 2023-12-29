@@ -218,6 +218,10 @@ private slots:
 
     void on_edtUrlEpgHour_returnPressed();
 
+    void on_actionMake_backup_on_next_run_triggered();
+
+    void on_actionWrite_INI_to_database_triggered();
+
 private:
     QString         curFile;
     QDir            dir;
