@@ -230,7 +230,7 @@ QSqlQuery* DbManager::selectEXTINF(const QString& group_title, const QString& tv
 {
     QSqlQuery *select = new QSqlQuery();
 
-    qDebug() << group_title <<tvg_name<<favorite<<state;
+    //qDebug() << group_title <<tvg_name<<favorite<<state;
 
     QString query = QString("SELECT *, "
                             "( select count(*) from pls_item where pls_item.extinf_id = extinf.id ) "
@@ -651,7 +651,7 @@ int DbManager::insertPLS_Item(int pls_id, int extinf_id, int pls_pos )
     return id;
 }
 
-QSqlQuery* DbManager::selectPLS_Items(int pls_id, const QString& tvg_name )
+QSqlQuery* DbManager::selectPLS_Items(int pls_id, const QString& tvg_name, int onlyepg )
 {
     QSqlQuery *select = new QSqlQuery();
 
@@ -660,13 +660,15 @@ QSqlQuery* DbManager::selectPLS_Items(int pls_id, const QString& tvg_name )
                     "WHERE  pls_id = :pls_id "
                     "AND    extinf.id = pls_item.extinf_id "
                     "AND    extinf.tvg_name like :tvg_name "
+                    "AND    ( ( extinf.tvg_id <> ' ' AND :onlyepg = 1 ) OR ( :onlyepg = 0 ) ) "
                     "ORDER BY pls_pos");
 
     select->bindValue(":pls_id", pls_id);
     select->bindValue(":tvg_name", tvg_name);
+    select->bindValue(":onlyepg", onlyepg);
 
     if ( ! select->exec() ) {
-        qDebug() << "selectPLS_Item" << select->lastError();
+        qDebug() << "selectPLS_Item" << select->lastError() << select->lastQuery();
     }
 
     return select;
