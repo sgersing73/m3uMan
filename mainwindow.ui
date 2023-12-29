@@ -38,27 +38,53 @@
         <bool>false</bool>
        </property>
        <layout class="QGridLayout" name="gridLayout_2">
-        <item row="0" column="0">
-         <widget class="QLabel" name="lblUrl">
+        <item row="1" column="6">
+         <widget class="QPushButton" name="cmdImportEpg">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>50</width>
+            <height>16777215</height>
+           </size>
+          </property>
           <property name="text">
-           <string>URL for stations:</string>
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="m3uMan.qrc">
+            <normaloff>:/images/Ui/icons8-input-50.png</normaloff>:/images/Ui/icons8-input-50.png</iconset>
           </property>
          </widget>
         </item>
-        <item row="0" column="1">
-         <widget class="QLineEdit" name="edtUrl"/>
+        <item row="1" column="5">
+         <widget class="QPushButton" name="edtEPGDownload">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="toolTip">
+           <string>download URL for EPG</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="m3uMan.qrc">
+            <normaloff>:/images/Ui/icons8-download-50.png</normaloff>:/images/Ui/icons8-download-50.png</iconset>
+          </property>
+         </widget>
         </item>
         <item row="0" column="2">
-         <widget class="QCheckBox" name="chkImport">
-          <property name="text">
-           <string>import after download</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-         </widget>
+         <widget class="QLineEdit" name="edtUrl"/>
         </item>
-        <item row="0" column="3">
+        <item row="0" column="5">
          <widget class="QPushButton" name="edtDownload">
           <property name="minimumSize">
            <size>
@@ -84,7 +110,24 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="4">
+        <item row="1" column="0">
+         <widget class="QLabel" name="lblUrlEpg">
+          <property name="text">
+           <string>URL for EPG:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="4">
+         <widget class="QCheckBox" name="chkEPGImport">
+          <property name="text">
+           <string>import after download</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="6">
          <widget class="QPushButton" name="edtLoad">
           <property name="minimumSize">
            <size>
@@ -107,18 +150,15 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="lblUrlEpg">
+        <item row="0" column="0">
+         <widget class="QLabel" name="lblUrl">
           <property name="text">
-           <string>URL for EPG:</string>
+           <string>URL for stations:</string>
           </property>
          </widget>
         </item>
-        <item row="1" column="1">
-         <widget class="QLineEdit" name="edtUrlEpg"/>
-        </item>
-        <item row="1" column="2">
-         <widget class="QCheckBox" name="chkEPGImport">
+        <item row="0" column="4">
+         <widget class="QCheckBox" name="chkImport">
           <property name="text">
            <string>import after download</string>
           </property>
@@ -127,46 +167,32 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="3">
-         <widget class="QPushButton" name="edtEPGDownload">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>30</height>
-           </size>
+        <item row="1" column="1">
+         <widget class="QComboBox" name="cboUrlEpgSource">
+          <property name="editable">
+           <bool>false</bool>
           </property>
-          <property name="toolTip">
-           <string>download URL for EPG</string>
-          </property>
-          <property name="text">
+          <property name="currentText">
            <string/>
-          </property>
-          <property name="icon">
-           <iconset resource="m3uMan.qrc">
-            <normaloff>:/images/Ui/icons8-download-50.png</normaloff>:/images/Ui/icons8-download-50.png</iconset>
           </property>
          </widget>
         </item>
-        <item row="1" column="4">
-         <widget class="QPushButton" name="cmdImportEpg">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>30</height>
-           </size>
-          </property>
+        <item row="1" column="2">
+         <widget class="QLineEdit" name="edtUrlEpg"/>
+        </item>
+        <item row="1" column="3">
+         <widget class="QLineEdit" name="edtUrlEpgHour">
           <property name="maximumSize">
            <size>
-            <width>50</width>
+            <width>30</width>
             <height>16777215</height>
            </size>
           </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="icon">
-           <iconset resource="m3uMan.qrc">
-            <normaloff>:/images/Ui/icons8-input-50.png</normaloff>:/images/Ui/icons8-input-50.png</iconset>
+          <property name="sizeIncrement">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
           </property>
          </widget>
         </item>

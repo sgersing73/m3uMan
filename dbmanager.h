@@ -61,7 +61,7 @@ public:
     bool removePLS_Item(int);
     bool removePLS_Items(int);
 
-    bool removeAllPrograms();
+    bool removeOldPrograms();
     bool addProgram(const QString&, const QString&, const QString&, const QString&, const QString&);
     QSqlQuery* selectActualProgramData(const QString &);
     QSqlQuery* selectProgramData(const QString &);

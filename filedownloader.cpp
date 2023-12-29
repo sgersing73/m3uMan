@@ -56,3 +56,14 @@ QString FileDownloader::getUrl() const {
 
     return m_sUrl ;
 }
+
+void FileDownloader::setData(const QString& data) {
+
+    m_sData = data;
+}
+
+QString FileDownloader::getData() {
+
+    return m_sData ;
+}
+

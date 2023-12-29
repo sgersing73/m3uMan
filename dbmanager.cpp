@@ -163,10 +163,17 @@ bool DbManager::createTable()
         success = false;
     }
 
-    query.prepare("CREATE INDEX IF NOT EXISTS idx_program_channel ON program(channel);");
+    query.prepare("CREATE INDEX IF NOT EXISTS idx_program_channel ON program(channel)");
 
     if (!query.exec()) {
         qDebug() << "createIndex idx_program_channel " <<  query.lastError();
+        success = false;
+    }
+
+    query.prepare("CREATE UNIQUE INDEX IF NOT EXISTS idx_program_uk1 ON program(start, stop, channel)");
+
+    if (!query.exec()) {
+        qDebug() << "createIndex idx_program_uk1 " <<  query.lastError();
         success = false;
     }
 
@@ -744,8 +751,8 @@ bool DbManager::addProgram(const QString& start, const QString& stop,
 {
    bool success = false;
 
-   // you should check if args are ok first...
    QSqlQuery query;
+
    query.prepare("INSERT INTO program (start, stop, channel, title, desc ) VALUES (:start, :stop, :channel, :title, :desc)");
    query.bindValue(":start", start);
    query.bindValue(":stop", stop);
@@ -756,22 +763,26 @@ bool DbManager::addProgram(const QString& start, const QString& stop,
    if ( query.exec() ) {
        success = true;
    } else {
-       qDebug() << "addProgram" << query.lastError();
+       if ( query.lastError().nativeErrorCode().toInt() != 19 ) {
+           qDebug() << "addProgram" << query.lastError();
+       } else {
+           // Program already there...
+       }
    }
 
    return success;
 }
 
-bool DbManager::removeAllPrograms()
+bool DbManager::removeOldPrograms()
 {
     bool success = false;
 
     QSqlQuery query;
 
-    if ( query.exec("DELETE FROM program") ) {
+    if ( query.exec("DELETE FROM program WHERE stop < strftime('%Y%m%d%H%M%S +0000', 'now', 'localtime')") ) {
         success = true;
     } else {
-        qDebug() << "removeAllPrograms" << query.lastError();
+        qDebug() << "removeOldPrograms" << query.lastError();
     }
 
     return success;
@@ -784,6 +795,7 @@ QSqlQuery* DbManager::selectActualProgramData(const QString &channel)
     select->prepare("SELECT * FROM program WHERE strftime('%Y%m%d%H%M%S +0000', 'now', 'localtime') > start AND "
                     "                            strftime('%Y%m%d%H%M%S +0000', 'now', 'localtime') < stop AND "
                     "                            channel = :channel");
+
     select->bindValue(":channel", channel);
 
     if ( ! select->exec() ) {

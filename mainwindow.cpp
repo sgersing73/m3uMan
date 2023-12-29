@@ -60,7 +60,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->splitter_3->restoreState(settings.value("splitter_3").toByteArray());
     ui->splitter_4->restoreState(settings.value("splitter_4").toByteArray());
     ui->edtUrl->setText(settings.value("iptvurl").toByteArray());
-    ui->edtUrlEpg->setText(settings.value("iptvepgurl").toByteArray());
+    ui->edtUrlEpg->setText(settings.value("EPG1").toByteArray());
 
     if ( settings.value("PlaylistOnlyFavorits").toInt() == Qt::Checked ) {
         ui->chkPlaylistOnlyFavorits->setCheckState( Qt::Checked );
@@ -129,6 +129,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(m_Process2, SIGNAL(readyReadStandardOutput()),this,SLOT(readyReadStandardOutputJson()));
     connect(m_Process2, SIGNAL(finished(int)), this, SLOT(processFinished()));
 
+    ui->cboUrlEpgSource->addItems( QStringList() << "EPG1" << "EPG2" << "EPG3" << "EPG4" << "EPG5");
 
 #ifdef Q_OS_WIN
     taskbarButton = new QWinTaskbarButton(this);
@@ -291,7 +292,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     settings.setValue("splitter_3",ui->splitter_3->saveState());
     settings.setValue("splitter_4",ui->splitter_4->saveState());
     settings.setValue("iptvurl", ui->edtUrl->text());
-    settings.setValue("iptvepgurl", ui->edtUrlEpg->text());
+    settings.setValue(ui->cboUrlEpgSource->currentText(), ui->edtUrlEpg->text() + ";" + ui->edtUrlEpgHour->text());
     settings.setValue("CurrentPlaylist", ui->cboPlaylists->currentText());
     settings.sync();
 
@@ -1482,10 +1483,12 @@ void MainWindow::SaveXML()
             newDoc.write(m_pImgCtrl->downloadedData());
             newDoc.close();
 
+            QString sHourCorrection = m_pImgCtrl->getData();
+
             statusBar()->showMessage(tr("File %1 download success!").arg(filename), 5000);
 
             if (ui->chkEPGImport->isChecked() ) {
-                this->getEPGFileData(filename);
+                this->getEPGFileData(filename, sHourCorrection);
             } else {
                 QMessageBox(QMessageBox::Information, "Downloader", tr("File %1 download success!").arg(filename), QMessageBox::Ok).exec() ;
             }
@@ -1794,17 +1797,26 @@ void MainWindow::on_treeWidget_currentItemChanged(QTreeWidgetItem *current, QTre
 
 void MainWindow::on_cmdImportEpg_clicked()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, ("Open xmp program File"),
+    bool    ok=false;
+    QRegExp re("\\d*");
+
+    QString sFileName = QFileDialog::getOpenFileName(this, ("Open xmp program File"),
                                                      m_AppDataPath,
                                                      ("xml program file (*.xml)"));
 
-    if ( !fileName.isNull() ) {
-        qDebug() << "selected file path : " << fileName.toUtf8();
-        this->getEPGFileData(fileName);
+    if ( !sFileName.isNull() ) {
+        qDebug() << "selected file path : " << sFileName.toUtf8();
+
+        QString sHourCorrection = QInputDialog::getText(this, tr("Hour Correction"),
+                                                         "Stundenkorrektur", QLineEdit::Normal,
+                                                         "", &ok);
+        if ( ok && !sHourCorrection.isEmpty() && re.exactMatch(sHourCorrection) ) {
+            this->getEPGFileData(sFileName, sHourCorrection);
+        }
     }
 }
 
-void MainWindow::getEPGFileData(const QString &sFileName)
+void MainWindow::getEPGFileData(const QString &sFileName, const QString &sHourCorrection )
 {
     QFile   *xmlFile;
     QXmlStreamReader *xmlReader;
@@ -1814,7 +1826,7 @@ void MainWindow::getEPGFileData(const QString &sFileName)
 
     QString start, stop, channel, title, desc;
 
-    db.removeAllPrograms();
+    db.removeOldPrograms();
 
     m_progress->setMinimum(0);
     m_progress->setMaximum(0);
@@ -1839,7 +1851,6 @@ void MainWindow::getEPGFileData(const QString &sFileName)
 
     xmlReader = new QXmlStreamReader(xmlFile);
 
-
     //Parse the XML until we reach end of it
     while ( !xmlReader->atEnd() && !xmlReader->hasError() && !ende ) {
 
@@ -1863,12 +1874,12 @@ void MainWindow::getEPGFileData(const QString &sFileName)
                     }
             }
 
-            if(token == QXmlStreamReader::EndElement) {
+            if (token == QXmlStreamReader::EndElement) {
 
-                if(xmlReader->name() == "programme") {
+                if (xmlReader->name() == "programme") {
 
-                    start.replace(8, 2, QString("%1").arg(start.mid(8, 2).toInt() + 1, 2, 10, QLatin1Char('0')));
-                    stop.replace(8, 2, QString("%1").arg(stop.mid(8, 2).toInt() + 1, 2, 10, QLatin1Char('0')));
+                    start.replace(8, 2, QString("%1").arg(start.mid(8, 2).toInt() + sHourCorrection.toInt(), 2, 10, QLatin1Char('0')));
+                    stop.replace(8, 2, QString("%1").arg(stop.mid(8, 2).toInt() + sHourCorrection.toInt(), 2, 10, QLatin1Char('0')));
 
                     db.addProgram(start, stop, channel, title, desc);
                     start = stop = channel = title = desc = "";
@@ -1911,6 +1922,8 @@ void MainWindow::on_edtEPGDownload_clicked()
 
         QUrl imageUrl(ui->edtUrlEpg->text());
         m_pImgCtrl = new FileDownloader(imageUrl, this);
+
+        m_pImgCtrl->setData( ui->edtUrlEpgHour->text() );
 
         connect(m_pImgCtrl, SIGNAL (downloaded()), this, SLOT (SaveXML()));
     }
@@ -2751,4 +2764,25 @@ void MainWindow::Zip (const QString& filename , const QString& zipfilename){
     outfile.write(compressedData);
     infile.close();
     outfile.close();
+}
+
+void MainWindow::on_cboUrlEpgSource_currentTextChanged(const QString &arg1)
+{
+    QSettings settings(m_SettingsFile, QSettings::IniFormat);
+
+    if ( ! QString( settings.value(arg1).toByteArray() ).isEmpty() &&
+           QString( settings.value(arg1).toByteArray() ).contains(";") ) {
+        ui->edtUrlEpg->setText( QString(settings.value(arg1).toByteArray()).split(";").at(0) );
+        ui->edtUrlEpgHour->setText( QString(settings.value(arg1).toByteArray()).split(";").at(1) );
+    } else {
+        ui->edtUrlEpg->clear();
+        ui->edtUrlEpgHour->clear();
+    }
+}
+
+void MainWindow::on_edtUrlEpgHour_returnPressed()
+{
+    QSettings settings(m_SettingsFile, QSettings::IniFormat);
+    settings.setValue(ui->cboUrlEpgSource->currentText(), ui->edtUrlEpg->text() + ";" + ui->edtUrlEpgHour->text());
+    settings.sync();
 }

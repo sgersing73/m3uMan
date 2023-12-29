@@ -90,7 +90,7 @@ private:
     bool saveFile(const QString &);
     void setCurrentFile(const QString &);
     void getFileData(const QString &);
-    void getEPGFileData(const QString &);
+    void getEPGFileData(const QString &, const QString &);
     void fillTreeWidget();
     void fillTwPls_Item();
     void fillComboPlaylists();
@@ -213,6 +213,10 @@ private slots:
     void on_cmdWiki_clicked();
 
     void Zip (const QString&, const QString&);
+
+    void on_cboUrlEpgSource_currentTextChanged(const QString &arg1);
+
+    void on_edtUrlEpgHour_returnPressed();
 
 private:
     QString         curFile;

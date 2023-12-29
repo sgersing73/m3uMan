@@ -16,6 +16,8 @@ public:
     QByteArray downloadedData() const;
     QString getFilename() const ;
     QString getUrl() const ;
+    QString getData();
+    void    setData(const QString&);
     qint64  downloadedProgress() const;
 
 signals:
@@ -32,6 +34,7 @@ private:
     QByteArray            m_DownloadedData;
     QString               m_sFilename;
     QString               m_sUrl;
+    QString               m_sData;
     QNetworkReply*        m_reply;
     qint64                m_iProgress;
 };
