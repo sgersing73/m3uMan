@@ -14,6 +14,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     m_SettingsFile = m_AppDataPath + "/settings.ini";
 
+    //this->Zip(m_AppDataPath + "/m3uMan.sqlite", m_AppDataPath + "/m3uMan.sqlite.bck");
+
     db.open(m_AppDataPath + "/m3uMan.sqlite");
 
     if (db.isOpen()) {
@@ -209,10 +211,6 @@ void MainWindow::ShowContextMenuPlsItems( const QPoint & pos )
 
         this->fillTwPls_Item();
     }
-    else
-    {
-        // nothing was chosen
-    }
 }
 
 
@@ -263,7 +261,7 @@ void MainWindow::ShowContextMenuTreeWidget( const QPoint & pos )
 
                     const int pls_id = ui->cboPlaylists->itemData(ui->cboPlaylists->currentIndex()).toString().toInt();
                     const int extinf_id = item->child(i)->text(2).toInt();
-                    const int pls_pos = ui->twPLS_Items->topLevelItemCount() +1;
+                    const int pls_pos = i;
 
                     db.insertPLS_Item( pls_id, extinf_id, pls_pos );
 
@@ -457,7 +455,6 @@ void MainWindow::getFileData(const QString &filename)
     int counter = 0;
     int linecount = 0;
     bool ende = false;
-    int obsolete = 0;
     int newfiles = 0;
 
     QString tags;
@@ -581,12 +578,15 @@ void MainWindow::getFileData(const QString &filename)
                 query->last();
                 query->first();
 
-                if ( query->isValid() && overwrite ) {
+                if ( query->isValid() ) {
 
                     extinf_id = query->value(0).toByteArray().toInt();
 
-                    if ( ! db.updateEXTINF_byRef(extinf_id, tvg_name, group_id, tvg_logo, 1 ) ) {
-                        qDebug() << "-E-" << "updateEXTINF_byRef" <<tvg_name<< tvg_id<< group_title<< tvg_logo<< url;
+                    if ( overwrite ) {
+
+                        if ( ! db.updateEXTINF_byRef(extinf_id, tvg_name, group_id, tvg_logo, 1 ) ) {
+                            qDebug() << "-E-" << "updateEXTINF_byRef" <<tvg_name<< tvg_id<< group_title<< tvg_logo<< url;
+                        }
                     }
                 } else {
 
@@ -659,7 +659,7 @@ void MainWindow::getFileData(const QString &filename)
 #endif
     m_progress->setVisible(false);
     m_progressCancel->setVisible(false);
-
+/*
     QSqlQuery *test;
 
     test = db.countEXTINF_byState();
@@ -686,7 +686,7 @@ void MainWindow::getFileData(const QString &filename)
             db.removeObsoleteEXTINFs();
         }
     }
-
+*/
     if ( newfiles > 0 ) {
         QMessageBox::information(this, "m3uMan", QString("%1 new stations added!").arg(newfiles), QMessageBox::Ok);
     }
@@ -990,6 +990,7 @@ void MainWindow::fillTwPls_Item()
     QAction *action;
     int     favorite;
     int     kind = 0;
+    int     onlyEpg = 0;
     QString program;
 
     ui->radTv->setChecked(false);
@@ -1017,16 +1018,24 @@ void MainWindow::fillTwPls_Item()
                  ui->cmdImdb->setVisible(false);
                  ui->cboEPGChannels->setVisible(true);
                  ui->cmdEPG->setVisible(true);
+                 ui->cmdWiki->setVisible(true);
+                 ui->chkOnlyEpg->setVisible(true);
                  break;
         case 2 : ui->radRadio->setChecked(true);
                  ui->cmdImdb->setVisible(false);
                  ui->cboEPGChannels->setVisible(false);
-                 ui->cmdEPG->setVisible(false);
+                 ui->cmdEPG->setVisible(true);
+                 ui->cmdWiki->setVisible(true);
+                 ui->chkOnlyEpg->setChecked(false);
+                 ui->chkOnlyEpg->setVisible(false);
                  break;
         case 3 : ui->radMovie->setChecked(true);
                  ui->cmdImdb->setVisible(true);
                  ui->cboEPGChannels->setVisible(false);
-                 ui->cmdEPG->setVisible(false);
+                 ui->cmdEPG->setVisible(true);
+                 ui->cmdWiki->setVisible(true);
+                 ui->chkOnlyEpg->setChecked(false);
+                 ui->chkOnlyEpg->setVisible(false);
                  break;
     }
 
@@ -1044,7 +1053,11 @@ void MainWindow::fillTwPls_Item()
         tvg_name = "%%";
     }
 
-    select = db.selectPLS_Items(pls_id, tvg_name);
+    if ( ui->chkOnlyEpg->isChecked() ) {
+        onlyEpg = 1;
+    }
+
+    select = db.selectPLS_Items(pls_id, tvg_name, onlyEpg);
     while ( select->next() ) {
 
         id = select->value(0).toByteArray().constData();
@@ -1187,6 +1200,8 @@ void MainWindow::on_cmdMoveUp_clicked()
         ui->twPLS_Items->setCurrentItem(item);
 
         somethingchanged = true;
+    } else {
+        statusBar()->showMessage(tr("already on top of the list..."),2000);
     }
 }
 
@@ -1194,14 +1209,19 @@ void MainWindow::on_cmdMoveDown_clicked()
 {
     QTreeWidgetItem* item = ui->twPLS_Items->currentItem();
     int              row  = ui->twPLS_Items->currentIndex().row();
+    int              rows = ui->twPLS_Items->topLevelItemCount();
 
-    if (item && row >= 0)
+    qDebug() << row << rows;
+
+    if (item && row + 1 < rows)
     {
         ui->twPLS_Items->takeTopLevelItem(row);
         ui->twPLS_Items->insertTopLevelItem(row + 1, item);
         ui->twPLS_Items->setCurrentItem(item);
 
         somethingchanged = true;
+    } else {
+        statusBar()->showMessage(tr("already on bottom of the list..."),2000);
     }
 }
 
@@ -1489,6 +1509,8 @@ void MainWindow::on_twPLS_Items_itemSelectionChanged()
     QPixmap   buttonImage;
     QPixmap   backImage;
 
+    ui->cmdWiki->setEnabled(true);
+
     QList<QTreeWidgetItem*>items = ui->twPLS_Items->selectedItems();
 
     foreach( QTreeWidgetItem* mitem, items) {
@@ -1739,11 +1761,14 @@ void MainWindow::on_cmdSavePosition_clicked()
         db.updateEXTINF_tvg_name_byRef(extinf_id,ui->edtStationName->text());
     }
 
-    for (int i = 0; i < ui->twPLS_Items->topLevelItemCount(); i++) {
+    if ( ui->edtFilter_2->text().isEmpty() ) {
 
-        item = ui->twPLS_Items->topLevelItem(i);
+        for (int i = 0; i < ui->twPLS_Items->topLevelItemCount(); i++) {
 
-        db.updatePLS_item_pls_pos(item->data(0, Qt::UserRole).toInt(), i );
+            item = ui->twPLS_Items->topLevelItem(i);
+
+            db.updatePLS_item_pls_pos(item->data(0, Qt::UserRole).toInt(), i );
+        }
     }
 
     fillTwPls_Item();
@@ -1876,6 +1901,8 @@ void MainWindow::getEPGFileData(const QString &sFileName)
     m_progressCancel->setVisible(false);
 
     this->fillComboEPGChannels();
+
+    QMessageBox::information(this, "m3uMan", QString("EPG data import done..."), QMessageBox::Ok);
 }
 
 void MainWindow::on_edtEPGDownload_clicked()
@@ -2073,15 +2100,13 @@ void MainWindow::serviceRequestFinished(QNetworkReply* reply)
 {
     if(reply->error() == QNetworkReply::NoError) {
 
-        qDebug() << reply->property("extinf_id");
-
         QString strReply = reply->readAll();
 
         this->displayMovieInfo(reply->property("extinf_id").toInt(), strReply, true);
 
     } else {
         ui->edtOutput->clear();
-        statusBar()->showMessage(tr("Netzwerk-Fehler auf themoviedb.org Zugriff..."));
+        statusBar()->showMessage(tr("Netzwerk-Fehler auf themoviedb.org Zugriff...%1").arg(reply->errorString()));
     }
 
    // delete reply;
@@ -2106,6 +2131,14 @@ void MainWindow::displayMovieInfo(int extinf_id, QString moviedata, bool storeda
     ui->edtOutput->append ( " " );
     ui->edtOutput->append ( doc_obj.value("overview").toString() );
 
+    QString poster =  doc_obj.value("poster_path").toString();
+    if ( ! poster.isEmpty() ) {
+
+        QString poster_url = QString("https://image.tmdb.org/t/p/w185/%1").arg(poster);
+
+        db.updateEXTINF_tvg_logo_byRef(extinf_id, poster_url);
+    }
+
     if ( storedata ) {
 
         QString filename = m_AppDataPath + "/tmdb/" + QString("%1.txt").arg(doc_obj.value("id").toDouble());
@@ -2120,13 +2153,12 @@ void MainWindow::displayMovieInfo(int extinf_id, QString moviedata, bool storeda
         }
     }
 
-    db.updatePLS_item_tmdb_by_extinf_id(extinf_id, doc_obj.value("id").toDouble() );
+    db.updatePLS_item_tmdb_by_extinf_id(extinf_id, doc_obj.value("id").toDouble() );    
 }
 
 void MainWindow::progressCancel_clicked()
 {
     m_ProgressWasCanceled = true;
-    qDebug() << "cancel";
 }
 
 
@@ -2602,6 +2634,7 @@ void MainWindow::on_radTv_clicked()
     ui->cmdImdb->setVisible(false);
     ui->cboEPGChannels->setVisible(true);
     ui->cmdEPG->setVisible(true);
+    ui->cmdWiki->setVisible(true);
 }
 
 void MainWindow::on_radRadio_clicked()
@@ -2614,6 +2647,7 @@ void MainWindow::on_radRadio_clicked()
     ui->cmdImdb->setVisible(false);
     ui->cboEPGChannels->setVisible(false);
     ui->cmdEPG->setVisible(false);
+    ui->cmdWiki->setVisible(true);
 }
 
 void MainWindow::on_radMovie_clicked()
@@ -2626,6 +2660,7 @@ void MainWindow::on_radMovie_clicked()
     ui->cmdImdb->setVisible(true);
     ui->cboEPGChannels->setVisible(false);
     ui->cmdEPG->setVisible(false);
+    ui->cmdWiki->setVisible(true);
 }
 
 void MainWindow::on_actionExport_M3U_file_triggered()
@@ -2664,4 +2699,56 @@ void MainWindow::on_cmdEPG_clicked()
     delete select;
 
     ui->edtOutput->moveCursor(QTextCursor::Start);
+}
+
+void MainWindow::on_chkOnlyEpg_clicked()
+{
+     fillTwPls_Item();
+}
+
+void MainWindow::on_cmdWiki_clicked()
+{
+    QString program = "Browser";
+    QStringList arguments;
+
+    QSettings settings(m_SettingsFile, QSettings::IniFormat);
+    program = settings.value(program).toByteArray();
+
+    QFile exe(program);
+
+    if ( exe.exists() ) {
+
+        arguments << QString("https://www.google.de/search?q=%1+Wikipedia").arg(ui->edtStationName->text());
+
+        m_Process->setProcessChannelMode(QProcess::MergedChannels);
+        m_Process->start(program, arguments);
+        qDebug() << program << arguments;
+
+    } else {
+
+        program = QFileDialog::getOpenFileName(this, ("Select browser program file"),
+                                               m_AppDataPath,
+                                               ("exe program file (*.exe)"));
+
+        if ( ! program.isNull() ) {
+
+            settings.setValue("Browser", program);
+            settings.sync();
+
+            QMessageBox::information(this, "m3uMan", QString("%1 set as browser...").arg(program) );
+        }
+    }
+}
+
+void MainWindow::Zip (const QString& filename , const QString& zipfilename){
+
+    QFile infile(filename);
+    QFile outfile(zipfilename);
+    infile.open(QIODevice::ReadOnly);
+    outfile.open(QIODevice::WriteOnly);
+    QByteArray uncompressedData = infile.readAll();
+    QByteArray compressedData = qCompress(uncompressedData,9);
+    outfile.write(compressedData);
+    infile.close();
+    outfile.close();
 }

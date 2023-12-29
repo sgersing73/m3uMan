@@ -57,7 +57,7 @@ public:
     QSqlQuery* selectPLS_Items_by_key(int, int);
 
     int insertPLS_Item(int, int, int);
-    QSqlQuery* selectPLS_Items(int, const QString& );
+    QSqlQuery* selectPLS_Items(int, const QString&, int);
     bool removePLS_Item(int);
     bool removePLS_Items(int);
 

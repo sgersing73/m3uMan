@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>953</width>
+    <width>1001</width>
     <height>787</height>
    </rect>
   </property>
@@ -595,6 +595,26 @@
              </property>
             </widget>
            </item>
+           <item>
+            <spacer name="horizontalSpacer_3">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="chkOnlyEpg">
+             <property name="text">
+              <string>only EPG</string>
+             </property>
+            </widget>
+           </item>
           </layout>
          </item>
          <item>
@@ -713,6 +733,9 @@
               <iconset resource="m3uMan.qrc">
                <normaloff>:/images/Ui/icons8-move-up-50.png</normaloff>:/images/Ui/icons8-move-up-50.png</iconset>
              </property>
+             <property name="autoRepeat">
+              <bool>true</bool>
+             </property>
             </widget>
            </item>
            <item>
@@ -726,6 +749,9 @@
              <property name="icon">
               <iconset resource="m3uMan.qrc">
                <normaloff>:/images/Ui/icons8-move-down-50.png</normaloff>:/images/Ui/icons8-move-down-50.png</iconset>
+             </property>
+             <property name="autoRepeat">
+              <bool>true</bool>
              </property>
             </widget>
            </item>
@@ -804,7 +830,17 @@
               <bool>false</bool>
              </property>
              <property name="text">
-              <string>EPG</string>
+              <string>epg</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="cmdWiki">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="text">
+              <string>web search</string>
              </property>
             </widget>
            </item>
@@ -885,8 +921,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>953</width>
-     <height>22</height>
+     <width>1001</width>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuSettings">

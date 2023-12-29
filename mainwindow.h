@@ -208,6 +208,12 @@ private slots:
 
     void on_cmdEPG_clicked();
 
+    void on_chkOnlyEpg_clicked();
+
+    void on_cmdWiki_clicked();
+
+    void Zip (const QString&, const QString&);
+
 private:
     QString         curFile;
     QDir            dir;
