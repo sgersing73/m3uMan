@@ -970,3 +970,16 @@ bool DbManager::removeINI()
 
     return success;
 }
+
+QSqlQuery* DbManager::selectINI()
+{
+    QSqlQuery *select = new QSqlQuery();
+
+    select->prepare(QString("select * from ini") );
+
+    if ( ! select->exec() ) {
+        qDebug() << "selectINI" << select->lastError();
+    }
+
+    return select;
+}

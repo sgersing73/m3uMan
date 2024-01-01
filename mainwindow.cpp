@@ -2762,17 +2762,51 @@ void MainWindow::on_cmdWiki_clicked()
     }
 }
 
-void MainWindow::Zip (const QString& filename , const QString& zipfilename){
+bool MainWindow::Zip (const QString& filename , const QString& zipfilename){
+
+    bool retVal = false;
 
     QFile infile(filename);
     QFile outfile(zipfilename);
-    infile.open(QIODevice::ReadOnly);
-    outfile.open(QIODevice::WriteOnly);
-    QByteArray uncompressedData = infile.readAll();
-    QByteArray compressedData = qCompress(uncompressedData,9);
-    outfile.write(compressedData);
-    infile.close();
-    outfile.close();
+
+    if ( infile.open(QIODevice::ReadOnly) ) {
+        if ( outfile.open(QIODevice::WriteOnly) ) {
+
+            QByteArray uncompressedData = infile.readAll();
+            QByteArray compressedData = qCompress(uncompressedData,9);
+
+            if ( outfile.write(compressedData) ) {
+                retVal = true;
+            }
+            infile.close();
+        }
+        outfile.close();
+    }
+    return retVal;
+}
+
+bool MainWindow::UnZip (const QString& zipfilename , const QString& filename){
+
+    bool retVal = false;
+
+    QFile infile(zipfilename);
+    QFile outfile(filename);
+
+    if ( infile.open(QIODevice::ReadOnly) ) {
+        if ( outfile.open(QIODevice::WriteOnly) ) {
+
+            QByteArray compressedData = infile.readAll();
+            QByteArray uncompressedData = qUncompress(compressedData);
+
+            if ( outfile.write(uncompressedData) ) {
+                retVal = true;
+            }
+            infile.close();
+        }
+        outfile.close();
+    }
+
+    return retVal;
 }
 
 void MainWindow::on_cboUrlEpgSource_currentTextChanged(const QString &arg1)
@@ -2820,7 +2854,7 @@ void MainWindow::on_actionWrite_INI_to_database_triggered()
             const QString line = stream.readLine();
 
             if ( line.contains("=") ) {
-                db.insertINI(line.split("=").at(0), line.split("=").at(1) );
+                db.insertINI(line.mid( 0, line.indexOf("=", 0 )), line.mid( line.indexOf("=", 0 ) + 1 ));
             } else {
                 db.insertINI(line, "" );
             }
@@ -2831,3 +2865,52 @@ void MainWindow::on_actionWrite_INI_to_database_triggered()
 
     QMessageBox::information(this, "m3uMan", QString("INI Settings written to database!" ) );
 }
+
+void MainWindow::on_actionRestore_backup_triggered()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, ("Open Backup File"),
+                                                    m_AppDataPath,
+                                                    ("bck File (*.bck)"));
+
+    if ( !fileName.isNull() ) {
+
+        if ( this->UnZip( fileName, m_AppDataPath + "/m3uMan.sqlite_restored") ) {
+            QMessageBox::information(this, "m3uMan", QString("Restore to <b>" +  m_AppDataPath + "/m3uMan.sqlite_restored") + "</b> successful done..." );
+        }
+    }
+}
+
+
+void MainWindow::on_actionRestore_INI_file_triggered()
+{
+    QSqlQuery *select ;
+
+    QString saveFile = QFileDialog::getSaveFileName(this, tr("INI Data Save As..."), m_AppDataPath + "/settings_restore.ini", tr("Settings Files (*.ini)"));
+
+    if ( saveFile.isEmpty() ) {
+        return;
+    }
+
+    select = db.selectINI();
+
+    QFile outfile(saveFile);
+
+    if ( outfile.open(QIODevice::WriteOnly | QIODevice::Text) ) {
+
+        while ( select->next() ) {
+
+            if ( QString( select->value(2).toByteArray().constData() ).isEmpty() ) {
+                outfile.write( QString("%1\n").arg(select->value(1).toByteArray().constData() ).toUtf8() ) ;
+            } else {
+                outfile.write( QString("%1=%2\n").arg(select->value(1).toByteArray().constData(),
+                                                      select->value(2).toByteArray().constData()).toUtf8() );
+            }
+        }
+        outfile.close();
+    }
+
+    delete select;
+
+    QMessageBox::information(this, "m3uMan", QString("Restore to <b>" + saveFile + "</b> successful done..." ) ) ;
+}
+

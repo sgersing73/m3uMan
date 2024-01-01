@@ -212,7 +212,8 @@ private slots:
 
     void on_cmdWiki_clicked();
 
-    void Zip (const QString&, const QString&);
+    bool Zip (const QString&, const QString&);
+    bool UnZip (const QString&, const QString&);
 
     void on_cboUrlEpgSource_currentTextChanged(const QString &arg1);
 
@@ -221,6 +222,10 @@ private slots:
     void on_actionMake_backup_on_next_run_triggered();
 
     void on_actionWrite_INI_to_database_triggered();
+
+    void on_actionRestore_backup_triggered();
+
+    void on_actionRestore_INI_file_triggered();
 
 private:
     QString         curFile;

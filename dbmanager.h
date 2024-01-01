@@ -68,6 +68,7 @@ public:
 
     QSqlQuery* selectEPGChannels(const QString&);
 
+    QSqlQuery* selectINI();
     int insertINI(const QString&, const QString&);
     bool removeINI();
 
